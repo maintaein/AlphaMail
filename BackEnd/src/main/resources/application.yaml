@@ -12,3 +12,8 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
