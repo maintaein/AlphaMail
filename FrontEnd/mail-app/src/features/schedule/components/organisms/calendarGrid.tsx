@@ -4,15 +4,27 @@ import { CalendarDayCell } from '@/features/schedule/components/molecules/calend
 interface EventItem {
   id: string;
   title: string;
+  startDate: Date;
+  endDate: Date;
+  description: string;
+  color?: string;
 }
 
 interface CalendarGridProps {
   year: number;
   month: number; // 0 = 1월, 11 = 12월
   eventsMap?: Record<string, EventItem[]>; // "YYYY-MM-DD" 형태로 매칭
+  onMonthChange: (year: number, month: number) => void;
+  onEventClick?: (event: EventItem) => void;
 }
 
-export const CalendarGrid: React.FC<CalendarGridProps> = ({ year, month, eventsMap = {} }) => {
+export const CalendarGrid: React.FC<CalendarGridProps> = ({ 
+  year, 
+  month, 
+  eventsMap = {}, 
+  onMonthChange,
+  onEventClick 
+}) => {
   const firstDayOfMonth = new Date(year, month, 1);
   const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sunday
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -44,8 +56,47 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({ year, month, eventsM
   // 3. 요일 헤더
   const weekDays = ['일', '월', '화', '수', '목', '금', '토'];
 
+  const handlePrevMonth = () => {
+    if (month === 0) {
+      onMonthChange(year - 1, 11);
+    } else {
+      onMonthChange(year, month - 1);
+    }
+  };
+
+  const handleNextMonth = () => {
+    if (month === 11) {
+      onMonthChange(year + 1, 0);
+    } else {
+      onMonthChange(year, month + 1);
+    }
+  };
+
   return (
     <div className="w-full">
+      {/* 월 네비게이션 */}
+      <div className="flex items-center justify-between mb-4">
+        <button
+          onClick={handlePrevMonth}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+          </svg>
+        </button>
+        <div className="text-xl font-semibold">
+          {year}년 {month + 1}월
+        </div>
+        <button
+          onClick={handleNextMonth}
+          className="p-2 rounded-full hover:bg-gray-100"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+          </svg>
+        </button>
+      </div>
+
       {/* 요일 헤더 */}
       <div className="grid grid-cols-7 text-center font-bold mb-2">
         {weekDays.map((day) => (
@@ -61,14 +112,16 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({ year, month, eventsM
           const dateString = date.toDateString();
           const isToday = dateString === todayString;
           const isCurrentMonth = date.getMonth() === month;
+          const dateKey = date.toISOString().split('T')[0];
 
           return (
             <CalendarDayCell
               key={index}
               date={date}
-              events={eventsMap[formatDateKey(date)] || []}
+              events={eventsMap[dateKey] || []}
               isToday={isToday}
               isCurrentMonth={isCurrentMonth}
+              onEventClick={onEventClick}
             />
           );
         })}
