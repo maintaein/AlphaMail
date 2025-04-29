@@ -84,8 +84,19 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
           </svg>
         </button>
-        <div className="text-xl font-semibold">
-          {year}년 {month + 1}월
+        <div className="flex items-center gap-4">
+          <div className="text-xl font-semibold">
+            {year}년 {month + 1}월
+          </div>
+          <button
+            onClick={() => {
+              const today = new Date();
+              onMonthChange(today.getFullYear(), today.getMonth());
+            }}
+            className="px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
+          >
+            오늘
+          </button>
         </div>
         <button
           onClick={handleNextMonth}
