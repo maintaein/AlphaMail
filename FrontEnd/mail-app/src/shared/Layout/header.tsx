@@ -6,7 +6,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ children }) => {
   return (
-    <header className="w-full h-[70px] min-h-[70px] border-b border-[#C4C4C4] flex items-center px-6">
+    <header className="w-full h-[70px] min-h-[70px] border-b border-[#DBD5D5] flex items-center px-6">
       <div className="flex-1">{children}</div>
       <div className="w-10 h-10 rounded-full bg-[#B1B1B1] ml-auto">
         {/* 프로필 이미지가 있다면 아래 주석을 해제하고 사용 */}
