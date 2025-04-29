@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.alphamail.common.formatter.P6SpyFormatter;
 import com.p6spy.engine.spy.P6SpyOptions;
+
 import jakarta.annotation.PostConstruct;
 
 /**
@@ -17,7 +18,6 @@ public class P6SpyConfig {
 	public void setLogMessageFormat() {
 		// 로그 포맷터 설정
 		P6SpyOptions.getActiveInstance().setLogMessageFormat(P6SpyFormatter.class.getName());
-
 
 	}
 }
