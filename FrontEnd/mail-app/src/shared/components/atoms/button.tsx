@@ -1,0 +1,47 @@
+import { cn } from '@/shared/utils/cn';
+import React from 'react';
+
+type Size = 'small' | 'large';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'text';
+
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  size?: Size;
+  variant?: Variant;
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const Button = ({
+  size = 'small',
+  variant = 'primary',
+  className,
+  children,
+  ...props
+}: ButtonProps) => {
+  // 공통 스타일
+  const base = 'font-ligth flex items-center justify-center transition-colors';
+
+  // 크기별 스타일
+  const sizeMap: Record<Size, string> = {
+    small: 'text-[12px] w-[90px] h-[30px] rounded-lg',
+    large: 'text-[12px] w-[180px] h-[35px] rounded-lg',
+  };
+
+  // variant별 스타일
+  const variantMap: Record<Variant, string> = {
+    primary: 'bg-[#3E99C6] text-white hover:bg-[#66BAE4] border-none',
+    secondary: 'bg-[#AFAFAF] text-white hover:bg-opacity-90 border-none',
+    ghost: 'bg-white border border-[#3E99C6] text-[#3E99C6] hover:bg-[#3E99C6]/10 border-none',
+    text: 'bg-white text-black border border-[#CEC9C9] hover:bg-[#66BAE4] hover:text-white',
+  };
+
+  return (
+    <button
+      className={cn(base, sizeMap[size], variantMap[variant], className)}
+      style={{ boxShadow: 'none' }}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+};
