@@ -44,7 +44,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(FailResponse.failWithFieldErrors(
-				HttpStatus.BAD_REQUEST.value(),
 				ErrorMessage.VALIDATION_FAILED.getMessage(),
 				errors
 			));
@@ -67,7 +66,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 			.body(FailResponse.fail(
-				HttpStatus.BAD_REQUEST.value(),
 				errorMessage
 			));
 	}
@@ -79,7 +77,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(ex.getStatus())
 			.body(FailResponse.fail(
-				ex.getStatus().value(),
 				ex.getMessage()
 			));
 	}
@@ -91,7 +88,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(ex.getStatus())
 			.body(FailResponse.fail(
-				ex.getStatus().value(),
 				ex.getMessage()
 			));
 	}
@@ -103,7 +99,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(ex.getStatus())
 			.body(FailResponse.fail(
-				ex.getStatus().value(),
 				ex.getMessage()
 			));
 
@@ -116,7 +111,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(ex.getStatus())
 			.body(FailResponse.fail(
-				ex.getStatus().value(),
 				ex.getMessage()
 			));
 	}
@@ -127,7 +121,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(ex.getStatus())
 			.body(FailResponse.fail(
-				ex.getStatus().value(),
 				ex.getMessage()
 			));
 	}
@@ -138,7 +131,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(FailResponse.fail(
-				HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				ErrorMessage.INTERNAL_SERVER_ERROR.getMessage()
 			));
 	}
