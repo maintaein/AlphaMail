@@ -1,6 +1,6 @@
 import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
-import { Typography } from '@/shared/components/atoms/typography';
+import { Typography } from '@/shared/components/atoms/Typography';
 
 const HomePage = () => {
   return (
