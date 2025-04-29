@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import  HomePage  from '@/pages/HomePage';
 import  MailPage  from '@/pages/MailPage';
 import  SchedulePage  from '@/pages/SchedulePage';
@@ -9,7 +9,6 @@ import  SearchTest  from '@/pages/SearchTest';
 
 export const Router = () => {
   return (
-    <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/mail" element={<MailPage />} />
@@ -19,6 +18,5 @@ export const Router = () => {
         <Route path="/calendar-test" element={<CalendarTest />} />
         <Route path="/search-test" element={<SearchTest />} />
       </Routes>
-    </BrowserRouter>
   );
 };
