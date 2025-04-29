@@ -6,6 +6,7 @@ import  WorkPage  from '@/pages/WorkPage';
 import  GroupManagePage  from '@/pages/GroupManagePage';
 import  CalendarTest  from '@/pages/CalendarTest';
 import  SearchTest  from '@/pages/SearchTest';
+import ScheduleMainTest from '@/pages/ScheduleMainTest';
 
 export const Router = () => {
   return (
@@ -17,6 +18,7 @@ export const Router = () => {
         <Route path="/group" element={<GroupManagePage />} />
         <Route path="/calendar-test" element={<CalendarTest />} />
         <Route path="/search-test" element={<SearchTest />} />
+        <Route path="/schedule-main" element={<ScheduleMainTest />} />
       </Routes>
   );
 };

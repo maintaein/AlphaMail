@@ -9,6 +9,7 @@ interface SearchListRowProps {
     startDate: string;
     endDate: string;
     description: string;
+    userId: string;
   };
 }
 

@@ -1,22 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
-
-interface ScheduleDetail {
-  id?: string;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  description: string;
-}
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface ScheduleDetailTemplateProps {
   isEdit: boolean;
-  initialData?: ScheduleDetail;
-  onSave: (data: ScheduleDetail) => void;
+  initialData?: Schedule;
+  onSave: (data: Schedule) => void;
   onClose: () => void;
   isOpen: boolean;
   isAnimating: boolean;
+  onDelete?: () => void;
+  isSubmitting?: boolean;
 }
 
 export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
@@ -27,11 +21,13 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   isOpen,
   isAnimating,
 }) => {
-  const [schedule, setSchedule] = useState<ScheduleDetail>({
+  const [schedule, setSchedule] = useState<Schedule>({
+    id: '',
     title: '',
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
     description: '',
+    userId: 'current-user-id'
   });
 
   useEffect(() => {
@@ -98,8 +94,8 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               </label>
               <input
                 type="datetime-local"
-                value={format(schedule.startDate, "yyyy-MM-dd'T'HH:mm")}
-                onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value) })}
+                value={format(new Date(schedule.startDate), "yyyy-MM-dd'T'HH:mm")}
+                onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value).toISOString() })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
@@ -111,8 +107,8 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               </label>
               <input
                 type="datetime-local"
-                value={format(schedule.endDate, "yyyy-MM-dd'T'HH:mm")}
-                onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value) })}
+                value={format(new Date(schedule.endDate), "yyyy-MM-dd'T'HH:mm")}
+                onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value).toISOString() })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
