@@ -1,0 +1,10 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8081:8080"  # ← 호스트는 8081로 변경
+
+  frontend:
+    build: ./FrontEnd/mail-app
+    ports:
+      - "3000:3000"
