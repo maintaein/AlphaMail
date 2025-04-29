@@ -10,6 +10,7 @@ const SearchTest: React.FC = () => {
       startDate: '2024-03-20T10:00:00',
       endDate: '2024-03-20T12:00:00',
       description: '프로젝트 진행 상황 공유',
+      userId: 'test-user-1'
     },
     {
       id: '2',
@@ -17,6 +18,7 @@ const SearchTest: React.FC = () => {
       startDate: '2024-03-21T14:00:00',
       endDate: '2024-03-21T16:00:00',
       description: '새로운 기능 코드 리뷰',
+      userId: 'test-user-1'
     },
     {
       id: '3',
@@ -24,6 +26,7 @@ const SearchTest: React.FC = () => {
       startDate: '2024-03-22T09:00:00',
       endDate: '2024-03-22T18:00:00',
       description: '팀 빌딩 활동',
+      userId: 'test-user-1'
     },
   ]);
 

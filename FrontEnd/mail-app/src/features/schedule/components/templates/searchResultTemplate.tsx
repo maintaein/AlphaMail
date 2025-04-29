@@ -8,6 +8,7 @@ interface SearchResultTemplateProps {
     startDate: string;
     endDate: string;
     description: string;
+    userId: string;
   }>;
   isLoading?: boolean;
   error?: Error | null;

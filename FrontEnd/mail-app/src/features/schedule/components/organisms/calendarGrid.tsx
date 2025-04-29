@@ -1,21 +1,13 @@
 import React from 'react';
 import { CalendarDayCell } from '@/features/schedule/components/molecules/calendarDayCell';
-
-interface EventItem {
-  id: string;
-  title: string;
-  startDate: Date;
-  endDate: Date;
-  description: string;
-  color?: string;
-}
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface CalendarGridProps {
   year: number;
   month: number; // 0 = 1월, 11 = 12월
-  eventsMap?: Record<string, EventItem[]>; // "YYYY-MM-DD" 형태로 매칭
+  eventsMap?: Record<string, Schedule[]>; // "YYYY-MM-DD" 형태로 매칭
   onMonthChange: (year: number, month: number) => void;
-  onEventClick?: (event: EventItem) => void;
+  onEventClick?: (event: Schedule) => void;
 }
 
 export const CalendarGrid: React.FC<CalendarGridProps> = ({ 
@@ -23,7 +15,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   month, 
   eventsMap = {}, 
   onMonthChange,
-  onEventClick 
+  onEventClick
 }) => {
   const firstDayOfMonth = new Date(year, month, 1);
   const firstDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sunday
@@ -141,7 +133,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   );
 };
 
-// 헬퍼 함수: "YYYY-MM-DD" 포맷
-function formatDateKey(date: Date) {
-  return date.toISOString().split('T')[0]; // 예: "2025-04-28"
-}
+// // 헬퍼 함수: "YYYY-MM-DD" 포맷
+// function formatDateKey(date: Date) {
+//   return date.toISOString().split('T')[0]; // 예: "2025-04-28"
+// }
