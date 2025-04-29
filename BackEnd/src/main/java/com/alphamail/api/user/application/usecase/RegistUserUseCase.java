@@ -1,0 +1,30 @@
+package com.alphamail.api.user.application.usecase;
+
+
+import com.alphamail.api.user.domain.User;
+import com.alphamail.api.user.domain.repository.UserRepository;
+import com.alphamail.api.user.presentation.dto.SignUpRequest;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class RegistUserUseCase {
+
+    private final UserRepository userRepository;
+
+    @Transactional
+    public Boolean execute(SignUpRequest request) {
+        // 이메일 중복 검사도 추가 해야할 수도 있다 .
+
+//        if (userRepository.findByEmail(command.getEmail()).isPresent()) {
+//            throw new RuntimeException("이미 등록된 이메일입니다.");
+//        }
+
+        User user = User.create(request);
+        User savedUser = userRepository.save(user);
+        return savedUser != null; // 저장 성공 여부를 반환
+    }
+
+}
