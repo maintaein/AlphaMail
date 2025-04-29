@@ -11,20 +11,19 @@ import lombok.Value;
 @Builder
 public class FailResponse {
 
-
 	String message;
 
 	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	List<FieldErrorDetail> errors;
 
-	public static FailResponse fail( String message) {
+	public static FailResponse fail(String message) {
 		return FailResponse.builder()
 
 			.message(message)
 			.build();
 	}
 
-	public static FailResponse failWithFieldErrors( String message, List<FieldErrorDetail> errors) {
+	public static FailResponse failWithFieldErrors(String message, List<FieldErrorDetail> errors) {
 		return FailResponse.builder()
 
 			.message(message)

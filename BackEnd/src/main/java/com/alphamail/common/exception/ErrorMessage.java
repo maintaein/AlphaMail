@@ -39,4 +39,4 @@ public enum ErrorMessage {
 	UNEXPECTED_ERROR("예상치 못한 오류가 발생했습니다");
 
 	private final String message;
-	}
+}

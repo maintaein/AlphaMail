@@ -14,7 +14,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.alphamail.common.exception.BadRequestException;
-import com.alphamail.common.exception.BaseException;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.ForbiddenException;
 import com.alphamail.common.exception.InternalServerException;

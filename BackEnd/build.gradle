@@ -30,6 +30,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
+	// === BE .env 파일 읽기 위한 의존성 (추후 제거할 것) ===
+	implementation 'me.paulschwarz:spring-dotenv:3.0.0'
+
 	// === DB 드라이버 ===
 	runtimeOnly 'org.postgresql:postgresql:42.5.0'
 
