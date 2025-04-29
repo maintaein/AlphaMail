@@ -1,27 +1,61 @@
 import React from 'react';
-import { useSchedule } from '../../hooks/useSchedule';
 import { CalendarGrid } from '../organisms/calendarGrid';
+import { ScheduleManagerGrid } from '../organisms/scheduleManagerGrid';
 import { ScheduleDetailTemplate } from './scheduleDetailTemplate';
 import { useModalStore, useModalKeyboard } from '@/shared/stores/useModalStore';
+import { useScheduleStore } from '../../stores/useScheduleStore';
 import { Schedule } from '../../types/schedule';
+import { useCalendarSchedules } from '../../hooks/useCalendarSchedules';
+import { useWeeklySchedules } from '../../hooks/useWeeklySchedules';
+import { scheduleService } from '../../services/scheduleService';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const MainTemplate: React.FC = () => {
-  const { 
-    isLoading, 
-    error,
-    createSchedule,
-    updateSchedule,
-    deleteSchedule,
-    isCreating,
-    isUpdating,
-    isDeleting
-  } = useSchedule();
-
+  const queryClient = useQueryClient();
   const { isOpen, isAnimating, openModal, closeModal } = useModalStore();
-  useModalKeyboard(); // ESC 키 처리 추가
+  const { selectedSchedule, setSelectedSchedule } = useScheduleStore();
+  useModalKeyboard();
 
-  const [selectedSchedule, setSelectedSchedule] = React.useState<Schedule | null>(null);
   const [currentDate, setCurrentDate] = React.useState(new Date());
+  const [selectedWeekDate] = React.useState(new Date());
+
+  const { data: calendarSchedules, isLoading: isCalendarLoading, isError, error } = useCalendarSchedules(currentDate);
+  const { data: weeklySchedules, isLoading: isWeeklyLoading } = useWeeklySchedules(selectedWeekDate);
+
+  React.useEffect(() => {
+    console.log('React Query 상태:', {
+      isLoading: isCalendarLoading,
+      isError,
+      error,
+      data: calendarSchedules,
+      queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()]
+    });
+  }, [calendarSchedules, isCalendarLoading, isError, error, currentDate]);
+
+  const eventsMap = React.useMemo(() => {
+    if (!calendarSchedules) {
+      console.log('calendarSchedules가 없습니다');
+      return {};
+    }
+    
+    console.log('calendarSchedules 데이터:', calendarSchedules);
+    
+    const map = (calendarSchedules as Schedule[]).reduce((acc: Record<string, Schedule[]>, schedule: Schedule) => {
+      const dateKey = new Date(schedule.startDate).toISOString().split('T')[0];
+      if (!acc[dateKey]) {
+        acc[dateKey] = [];
+      }
+      acc[dateKey].push(schedule);
+      return acc;
+    }, {});
+    
+    console.log('생성된 eventsMap:', map);
+    return map;
+  }, [calendarSchedules]);
+
+  const handleMonthChange = (year: number, month: number) => {
+    setCurrentDate(new Date(year, month));
+  };
 
   const handleEventClick = (event: Schedule) => {
     setSelectedSchedule(event);
@@ -33,28 +67,53 @@ export const MainTemplate: React.FC = () => {
     openModal();
   };
 
-  const handleSaveSchedule = (scheduleData: Omit<Schedule, 'id'>) => {
-    if (selectedSchedule) {
-      updateSchedule({ id: selectedSchedule.id, ...scheduleData });
-    } else {
-      createSchedule(scheduleData);
-    }
-    closeModal();
-  };
+  const handleSaveSchedule = async (scheduleData: Omit<Schedule, 'id'>) => {
+    try {
+      if (selectedSchedule) {
+        await scheduleService.updateSchedule({ id: selectedSchedule.id, ...scheduleData });
+      } else {
+        await scheduleService.createSchedule(scheduleData);
+      }
 
-  const handleDeleteSchedule = () => {
-    if (selectedSchedule) {
-      deleteSchedule(selectedSchedule.id);
+      await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
+      await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
+      
       closeModal();
+    } catch (error) {
+      console.error('일정 저장 중 오류 발생:', error);
     }
   };
 
-  const handleMonthChange = (year: number, month: number) => {
-    setCurrentDate(new Date(year, month));
+  const handleDeleteSchedule = async () => {
+    if (selectedSchedule) {
+      try {
+        await scheduleService.deleteSchedule(selectedSchedule.id);
+
+        await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
+        await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
+
+        closeModal();
+      } catch (error) {
+        console.error('일정 삭제 중 오류 발생:', error);
+      }
+    }
   };
 
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>에러가 발생했습니다.</div>;
+  const handleToggleComplete = async (schedule: Schedule) => {
+    try {
+      await scheduleService.updateSchedule({
+        ...schedule,
+        isCompleted: !schedule.isCompleted
+      });
+
+      await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
+      await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
+    } catch (error) {
+      console.error('일정 상태 변경 중 오류 발생:', error);
+    }
+  };
+
+  if (isCalendarLoading || isWeeklyLoading) return <div>로딩 중...</div>;
 
   return (
     <div className="relative p-4">
@@ -67,13 +126,23 @@ export const MainTemplate: React.FC = () => {
           일정 추가
         </button>
       </div>
-      <div className="max-w-4xl mx-auto">
-        <CalendarGrid 
-          year={currentDate.getFullYear()}
-          month={currentDate.getMonth()}
-          onEventClick={handleEventClick}
-          onMonthChange={handleMonthChange}
-        />
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <CalendarGrid 
+            year={currentDate.getFullYear()}
+            month={currentDate.getMonth()}
+            eventsMap={eventsMap}
+            onEventClick={handleEventClick}
+            onMonthChange={handleMonthChange}
+          />
+        </div>
+        <div className="w-80">
+          <ScheduleManagerGrid
+            schedules={weeklySchedules || []}
+            onToggleComplete={handleToggleComplete}
+            onScheduleClick={handleEventClick}
+          />
+        </div>
       </div>
 
       <ScheduleDetailTemplate
@@ -87,7 +156,6 @@ export const MainTemplate: React.FC = () => {
         }}
         isOpen={isOpen}
         isAnimating={isAnimating}
-        isSubmitting={isCreating || isUpdating || isDeleting}
       />
     </div>
   );

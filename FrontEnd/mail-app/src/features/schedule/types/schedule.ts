@@ -6,23 +6,23 @@ export interface Schedule {
   description: string;
   color?: string;
   userId: string;
+  isCompleted?: boolean;
   isAllDay?: boolean;
 }
 
 export interface ScheduleResponse {
-  data: Schedule[];
-  message: string;
-  status: number;
+  items: Array<{
+    name: string;
+    created_at: string;
+    start_time: string;
+    end_time: string;
+    is_done: boolean;
+    description: string;
+  }>;
+  total_count: number;
+  page_count: number;
+  current_page: number;
 }
 
-export interface CreateScheduleRequest {
-  title: string;
-  startDate: string;
-  endDate: string;
-  description: string;
-  color?: string;
-}
-
-export interface UpdateScheduleRequest extends CreateScheduleRequest {
-  id: string;
-} 
+export type CreateScheduleRequest = Omit<Schedule, 'id'>;
+export type UpdateScheduleRequest = Schedule; 

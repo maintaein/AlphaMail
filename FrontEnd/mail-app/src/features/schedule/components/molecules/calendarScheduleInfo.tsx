@@ -1,19 +1,10 @@
 import React from 'react';
-
-interface ScheduleInfo {
-  id: string;
-  title: string;
-  startTime: string;
-  endTime: string;
-  color?: string;
-  isAllDay?: boolean;
-  isCompleted?: boolean;
-}
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface CalendarScheduleInfoProps {
-  schedule: ScheduleInfo;
-  onToggleComplete?: (schedule: ScheduleInfo) => void;
-  onClick?: (schedule: ScheduleInfo) => void;
+  schedule: Schedule;
+  onToggleComplete?: (schedule: Schedule) => Promise<void>;
+  onClick?: (schedule: Schedule) => void;
 }
 
 export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({ 
@@ -55,7 +46,7 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({
         ) : (
           <>
             <span className="text-xs">
-              {schedule.startTime} - {schedule.endTime}
+              {new Date(schedule.startDate).toLocaleTimeString()} - {new Date(schedule.endDate).toLocaleTimeString()}
             </span>
             <span className="font-medium ml-1">{schedule.title}</span>
           </>
