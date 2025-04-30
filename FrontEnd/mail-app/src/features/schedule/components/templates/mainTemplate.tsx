@@ -7,11 +7,8 @@ import { useScheduleStore } from '../../stores/useScheduleStore';
 import { Schedule } from '../../types/schedule';
 import { useCalendarSchedules } from '../../hooks/useCalendarSchedules';
 import { useWeeklySchedules } from '../../hooks/useWeeklySchedules';
-import { scheduleService } from '../../services/scheduleService';
-import { useQueryClient } from '@tanstack/react-query';
 
 export const MainTemplate: React.FC = () => {
-  const queryClient = useQueryClient();
   const { isOpen, isAnimating, openModal, closeModal } = useModalStore();
   const { selectedSchedule, setSelectedSchedule } = useScheduleStore();
   useModalKeyboard();
@@ -67,52 +64,6 @@ export const MainTemplate: React.FC = () => {
     openModal();
   };
 
-  const handleSaveSchedule = async (scheduleData: Omit<Schedule, 'id'>) => {
-    try {
-      if (selectedSchedule) {
-        await scheduleService.updateSchedule({ id: selectedSchedule.id, ...scheduleData });
-      } else {
-        await scheduleService.createSchedule(scheduleData);
-      }
-
-      await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
-      await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
-      
-      closeModal();
-    } catch (error) {
-      console.error('일정 저장 중 오류 발생:', error);
-    }
-  };
-
-  const handleDeleteSchedule = async () => {
-    if (selectedSchedule) {
-      try {
-        await scheduleService.deleteSchedule(selectedSchedule.id);
-
-        await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
-        await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
-
-        closeModal();
-      } catch (error) {
-        console.error('일정 삭제 중 오류 발생:', error);
-      }
-    }
-  };
-
-  const handleToggleComplete = async (schedule: Schedule) => {
-    try {
-      await scheduleService.updateSchedule({
-        ...schedule,
-        isCompleted: !schedule.isCompleted
-      });
-
-      await queryClient.invalidateQueries({ queryKey: ['schedules', 'calendar', currentDate.getFullYear(), currentDate.getMonth()] });
-      await queryClient.invalidateQueries({ queryKey: ['schedules', 'week', selectedWeekDate.getFullYear(), selectedWeekDate.getMonth(), selectedWeekDate.getDate()] });
-    } catch (error) {
-      console.error('일정 상태 변경 중 오류 발생:', error);
-    }
-  };
-
   if (isCalendarLoading || isWeeklyLoading) return <div>로딩 중...</div>;
 
   return (
@@ -139,8 +90,6 @@ export const MainTemplate: React.FC = () => {
         <div className="w-80">
           <ScheduleManagerGrid
             schedules={weeklySchedules || []}
-            onToggleComplete={handleToggleComplete}
-            onScheduleClick={handleEventClick}
           />
         </div>
       </div>
@@ -148,8 +97,6 @@ export const MainTemplate: React.FC = () => {
       <ScheduleDetailTemplate
         isEdit={!!selectedSchedule}
         initialData={selectedSchedule || undefined}
-        onSave={handleSaveSchedule}
-        onDelete={handleDeleteSchedule}
         onClose={() => {
           closeModal();
           setSelectedSchedule(null);

@@ -1,16 +1,10 @@
 import React from 'react';
 import { ScheduleDetailTemplate } from '../templates/scheduleDetailTemplate';
 import { useModal } from '@/hooks/useModal';
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface SearchListRowProps {
-  schedule: {
-    id: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-    userId: string;
-  };
+  schedule: Schedule;
 }
 
 export const SearchListRow: React.FC<SearchListRowProps> = ({ schedule }) => {
@@ -24,10 +18,10 @@ export const SearchListRow: React.FC<SearchListRowProps> = ({ schedule }) => {
     <>
       <tr className="hover:bg-gray-50">
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {new Date(schedule.startDate).toLocaleDateString()}
+          {schedule.startDate.toLocaleDateString()}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {new Date(schedule.endDate).toLocaleDateString()}
+          {schedule.endDate.toLocaleDateString()}
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <button
@@ -42,7 +36,6 @@ export const SearchListRow: React.FC<SearchListRowProps> = ({ schedule }) => {
       <ScheduleDetailTemplate
         isEdit={true}
         initialData={schedule}
-        onSave={() => {}}
         onClose={closeModal}
         isOpen={isOpen}
         isAnimating={isAnimating}

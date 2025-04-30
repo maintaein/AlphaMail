@@ -36,7 +36,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             className="text-sm truncate cursor-pointer hover:bg-gray-100 p-1 rounded"
             onClick={() => onEventClick?.(event)}
           >
-            {formatTime(event.startDate)} {event.title}
+            {formatTime(event.startDate.toISOString())} {event.title}
           </div>
         ))}
       </div>

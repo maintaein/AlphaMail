@@ -1,15 +1,9 @@
 import React from 'react';
 import { SearchListRow } from '../molecules/searchListRow';
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface SearchListGridProps {
-  schedules: Array<{
-    id: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-    userId: string;
-  }>;
+  schedules: Schedule[];
 }
 
 export const SearchListGrid: React.FC<SearchListGridProps> = ({ schedules }) => {
