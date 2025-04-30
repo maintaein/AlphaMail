@@ -18,6 +18,7 @@ export const useCalendarSchedules = (selectedMonth: Date) => {
       
       return response.data;
     },
+    placeholderData: (previousData) => previousData,
     staleTime: 1000 * 60 * 5, // 5분
   });
 
