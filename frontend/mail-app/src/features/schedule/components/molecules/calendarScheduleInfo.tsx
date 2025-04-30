@@ -1,53 +1,47 @@
 import React from 'react';
-
-interface ScheduleInfo {
-  id: string;
-  title: string;
-  startTime: string;
-  endTime: string;
-  color?: string;
-  isAllDay?: boolean;
-  isCompleted?: boolean;
-}
+import { Schedule } from '@/features/schedule/types/schedule';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { scheduleService } from '@/features/schedule/services/scheduleService';
 
 interface CalendarScheduleInfoProps {
-  schedule: ScheduleInfo;
-  onToggleComplete?: (schedule: ScheduleInfo) => void;
-  onClick?: (schedule: ScheduleInfo) => void;
+  schedule: Schedule;
 }
 
 export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({ 
-  schedule,
-  onToggleComplete,
-  onClick 
+  schedule
 }) => {
-  const handleCheckboxChange = () => {
-    if (onToggleComplete) {
-      onToggleComplete(schedule);
-    }
-  };
+  const queryClient = useQueryClient();
 
-  const handleClick = () => {
-    if (onClick) {
-      onClick(schedule);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, isCompleted }: { id: string; isCompleted: boolean }) => 
+      scheduleService.patchSchedule(id, isCompleted),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
     }
+  });
+
+  const handleCheckboxChange = () => {
+    updateMutation.mutate({ 
+      id: schedule.id, 
+      isCompleted: !schedule.isCompleted 
+    });
   };
 
   return (
     <div
       className={`
-        flex items-center p-2 mb-1 rounded text-sm cursor-pointer
+        flex items-center p-2 mb-1 rounded text-sm
         ${schedule.color ? `bg-${schedule.color}-100 text-${schedule.color}-800` : 'bg-blue-100 text-blue-800'}
         hover:opacity-80
         ${schedule.isCompleted ? 'opacity-50' : ''}
       `}
-      onClick={handleClick}
     >
       <input
         type="checkbox"
         checked={schedule.isCompleted}
         onChange={handleCheckboxChange}
         className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+        disabled={updateMutation.isPending}
       />
       <div className="flex-1">
         {schedule.isAllDay ? (
@@ -55,7 +49,7 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({
         ) : (
           <>
             <span className="text-xs">
-              {schedule.startTime} - {schedule.endTime}
+              {new Date(schedule.startDate).toLocaleTimeString()} - {new Date(schedule.endDate).toLocaleTimeString()}
             </span>
             <span className="font-medium ml-1">{schedule.title}</span>
           </>

@@ -1,26 +1,13 @@
 import React from 'react';
 import { CalendarScheduleInfo } from '../molecules/calendarScheduleInfo';
-
-interface Schedule {
-  id: string;
-  title: string;
-  startTime: string;
-  endTime: string;
-  color?: string;
-  isAllDay?: boolean;
-  isCompleted?: boolean;
-}
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface ScheduleManagerGridProps {
   schedules: Schedule[];
-  onToggleComplete: (schedule: Schedule) => void;
-  onScheduleClick: (schedule: Schedule) => void;
 }
 
 export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
   schedules,
-  onToggleComplete,
-  onScheduleClick,
 }) => {
   const today = new Date();
   const startOfWeek = new Date(today);
@@ -29,11 +16,11 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
   const completedSchedules = schedules.filter(
-    (schedule) => schedule.isCompleted && new Date(schedule.startTime) >= startOfWeek && new Date(schedule.startTime) <= endOfWeek
+    (schedule) => schedule.isCompleted && new Date(schedule.startDate) >= startOfWeek && new Date(schedule.startDate) <= endOfWeek
   );
 
   const remainingSchedules = schedules.filter(
-    (schedule) => !schedule.isCompleted && new Date(schedule.startTime) >= startOfWeek && new Date(schedule.startTime) <= endOfWeek
+    (schedule) => !schedule.isCompleted && new Date(schedule.startDate) >= startOfWeek && new Date(schedule.startDate) <= endOfWeek
   );
 
   return (
@@ -47,8 +34,6 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
             <CalendarScheduleInfo
               key={schedule.id}
               schedule={schedule}
-              onToggleComplete={onToggleComplete}
-              onClick={onScheduleClick}
             />
           ))
         )}
@@ -63,8 +48,6 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
             <CalendarScheduleInfo
               key={schedule.id}
               schedule={schedule}
-              onToggleComplete={onToggleComplete}
-              onClick={onScheduleClick}
             />
           ))
         )}

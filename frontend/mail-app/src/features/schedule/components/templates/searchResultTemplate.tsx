@@ -1,15 +1,9 @@
 import React from 'react';
 import { SearchListGrid } from '../organisms/searchListGrid';
+import { Schedule } from '@/features/schedule/types/schedule';
 
 interface SearchResultTemplateProps {
-  schedules: Array<{
-    id: string;
-    title: string;
-    startDate: string;
-    endDate: string;
-    description: string;
-    userId: string;
-  }>;
+  schedules: Schedule[];
   isLoading?: boolean;
   error?: Error | null;
 }

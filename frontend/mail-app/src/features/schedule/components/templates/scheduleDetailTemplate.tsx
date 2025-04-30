@@ -1,33 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Schedule } from '@/features/schedule/types/schedule';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { scheduleService } from '@/features/schedule/services/scheduleService';
 
 interface ScheduleDetailTemplateProps {
   isEdit: boolean;
   initialData?: Schedule;
-  onSave: (data: Schedule) => void;
   onClose: () => void;
   isOpen: boolean;
   isAnimating: boolean;
   onDelete?: () => void;
-  isSubmitting?: boolean;
 }
 
 export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   isEdit,
   initialData,
-  onSave,
   onClose,
   isOpen,
   isAnimating,
 }) => {
+  const queryClient = useQueryClient();
   const [schedule, setSchedule] = useState<Schedule>({
     id: '',
     title: '',
-    startDate: new Date().toISOString(),
-    endDate: new Date().toISOString(),
+    startDate: new Date(),
+    endDate: new Date(),
     description: '',
     userId: 'current-user-id'
+  });
+
+  const createMutation = useMutation({
+    mutationFn: scheduleService.createSchedule,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      onClose();
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: scheduleService.updateSchedule,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      onClose();
+    }
   });
 
   useEffect(() => {
@@ -38,8 +54,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(schedule);
+    if (isEdit) {
+      updateMutation.mutate(schedule);
+    } else {
+      createMutation.mutate(schedule);
+    }
   };
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   if (!isOpen && !isAnimating) return null;
 
@@ -95,7 +117,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               <input
                 type="datetime-local"
                 value={format(new Date(schedule.startDate), "yyyy-MM-dd'T'HH:mm")}
-                onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value).toISOString() })}
+                onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
@@ -108,7 +130,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               <input
                 type="datetime-local"
                 value={format(new Date(schedule.endDate), "yyyy-MM-dd'T'HH:mm")}
-                onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value).toISOString() })}
+                onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value) })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
                 required
               />
@@ -126,19 +148,36 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               />
             </div>
 
+            {isEdit && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isCompleted"
+                  checked={schedule.isCompleted}
+                  onChange={(e) => setSchedule({ ...schedule, isCompleted: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <label htmlFor="isCompleted" className="ml-2 block text-sm text-gray-700">
+                  완료 여부
+                </label>
+              </div>
+            )}
+
             <div className="flex justify-end space-x-2 mt-6">
               <button
                 type="button"
                 onClick={onClose}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                disabled={isSubmitting}
               >
                 취소
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 disabled:opacity-50"
+                disabled={isSubmitting}
               >
-                {isEdit ? '수정' : '등록'}
+                {isSubmitting ? '처리중...' : (isEdit ? '수정' : '등록')}
               </button>
             </div>
           </form>

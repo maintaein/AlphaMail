@@ -110,18 +110,21 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* 날짜 셀 */}
-      <div className="grid grid-cols-7 gap-px bg-gray-200">
+      <div className="grid grid-cols-7 gap-1">
         {dates.map((date, index) => {
           const dateString = date.toDateString();
           const isToday = dateString === todayString;
           const isCurrentMonth = date.getMonth() === month;
-          const dateKey = date.toISOString().split('T')[0];
-
+          
+          // 로컬 날짜를 YYYY-MM-DD 형식으로 변환
+          const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          const events = eventsMap[dateKey] || [];
+          
           return (
             <CalendarDayCell
               key={index}
               date={date}
-              events={eventsMap[dateKey] || []}
+              events={events}
               isToday={isToday}
               isCurrentMonth={isCurrentMonth}
               onEventClick={onEventClick}
