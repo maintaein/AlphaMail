@@ -7,6 +7,7 @@ import { useScheduleStore } from '../../stores/useScheduleStore';
 import { Schedule } from '../../types/schedule';
 import { useCalendarSchedules } from '../../hooks/useCalendarSchedules';
 import { useWeeklySchedules } from '../../hooks/useWeeklySchedules';
+import { addDays, format, isBefore, startOfDay } from 'date-fns';
 
 export const MainTemplate: React.FC = () => {
   const { isOpen, isAnimating, openModal, closeModal } = useModalStore();
@@ -31,22 +32,55 @@ export const MainTemplate: React.FC = () => {
 
   const eventsMap = React.useMemo(() => {
     if (!calendarSchedules) {
-      console.log('calendarSchedules가 없습니다');
       return {};
     }
-    
-    console.log('calendarSchedules 데이터:', calendarSchedules);
-    
-    const map = (calendarSchedules as Schedule[]).reduce((acc: Record<string, Schedule[]>, schedule: Schedule) => {
-      const dateKey = new Date(schedule.startDate).toISOString().split('T')[0];
-      if (!acc[dateKey]) {
-        acc[dateKey] = [];
+
+    const map: Record<string, Schedule[]> = {};
+    const schedulePositions = new Map<string, number>(); // 일정의 위치(순서)를 저장
+
+    // 모든 일정을 시작일 기준으로 정렬
+    const sortedSchedules = [...calendarSchedules].sort((a, b) => {
+      return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+    });
+
+    // 각 일정에 대해 시작일부터 종료일까지의 모든 날짜에 일정 추가
+    sortedSchedules.forEach((schedule) => {
+      let currentDate = startOfDay(new Date(schedule.startDate));
+      const endDate = startOfDay(new Date(schedule.endDate));
+
+      // 사용 가능한 위치 찾기
+      let position = 0;
+      while (true) {
+        let isPositionAvailable = true;
+        for (let date = currentDate; date <= endDate; date = addDays(date, 1)) {
+          const dateKey = format(date, 'yyyy-MM-dd');
+          if (map[dateKey] && map[dateKey][position]) {
+            isPositionAvailable = false;
+            break;
+          }
+        }
+        if (isPositionAvailable) break;
+        position++;
       }
-      acc[dateKey].push(schedule);
-      return acc;
-    }, {});
-    
-    console.log('생성된 eventsMap:', map);
+
+      schedulePositions.set(schedule.id, position);
+
+      while (isBefore(currentDate, endDate) || currentDate.getTime() === endDate.getTime()) {
+        const dateKey = format(currentDate, 'yyyy-MM-dd');
+        if (!map[dateKey]) {
+          map[dateKey] = [];
+        }
+
+        // 해당 일정의 위치에 맞게 빈 슬롯 채우기
+        while (map[dateKey].length <= position) {
+          map[dateKey].push(null as any);
+        }
+        map[dateKey][position] = schedule;
+
+        currentDate = addDays(currentDate, 1);
+      }
+    });
+
     return map;
   }, [calendarSchedules]);
 

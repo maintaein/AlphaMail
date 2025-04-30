@@ -110,7 +110,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* 날짜 셀 */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7">
         {dates.map((date, index) => {
           const dateString = date.toDateString();
           const isToday = dateString === todayString;
@@ -135,8 +135,8 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
     </div>
   );
 };
-
 // // 헬퍼 함수: "YYYY-MM-DD" 포맷
 // function formatDateKey(date: Date) {
 //   return date.toISOString().split('T')[0]; // 예: "2025-04-28"
 // }
+

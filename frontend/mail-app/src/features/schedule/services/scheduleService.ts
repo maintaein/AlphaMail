@@ -138,8 +138,10 @@ export const scheduleService = {
   },
 
   // 스케줄 삭제
-  deleteSchedule: async (id: string): Promise<void> => {
-    await axios.delete(`${baseUrl}/api/schedules/${id}`);
+  deleteSchedule: async (id: string) => {
+    return axios.delete(`${baseUrl}/api/schedules/${id}`).then(response => {
+      return response.data;
+    });
   },
 
   // 스케줄 완료 변경
