@@ -4,6 +4,13 @@ import { Schedule } from '@/features/schedule/types/schedule';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleService } from '@/features/schedule/services/scheduleService';
 
+interface ValidationErrors {
+  title?: string;
+  description?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
 interface ScheduleDetailTemplateProps {
   isEdit: boolean;
   initialData?: Schedule;
@@ -29,6 +36,36 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
     description: '',
     userId: 'current-user-id'
   });
+  const [errors, setErrors] = useState<ValidationErrors>({});
+
+  const validateSchedule = (schedule: Schedule): ValidationErrors => {
+    const newErrors: ValidationErrors = {};
+    const now = new Date();
+
+    if (!schedule.title) {
+      newErrors.title = '일정명을 입력해주세요.';
+    } else if (schedule.title.length > 20) {
+      newErrors.title = '일정명은 20자 이내로 입력해주세요.';
+    }
+
+    if (schedule.description && schedule.description.length > 50) {
+      newErrors.description = '일정 메모는 50자 이내로 입력해주세요.';
+    }
+
+    if (!schedule.startDate) {
+      newErrors.startDate = '시작 일시를 선택해주세요.';
+    } else if (schedule.startDate < now) {
+      newErrors.startDate = '시작 일시는 현재 시간보다 이후여야 합니다.';
+    }
+
+    if (!schedule.endDate) {
+      newErrors.endDate = '종료 일시를 선택해주세요.';
+    } else if (schedule.endDate <= schedule.startDate) {
+      newErrors.endDate = '종료 일시는 시작 일시보다 이후여야 합니다.';
+    }
+
+    return newErrors;
+  };
 
   const createMutation = useMutation({
     mutationFn: scheduleService.createSchedule,
@@ -47,17 +84,23 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   });
 
   useEffect(() => {
-    if (initialData) {
+    if (isOpen && initialData) {
       setSchedule(initialData);
+      setErrors({});
     }
-  }, [initialData]);
+  }, [isOpen, initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (isEdit) {
-      updateMutation.mutate(schedule);
-    } else {
-      createMutation.mutate(schedule);
+    const validationErrors = validateSchedule(schedule);
+    setErrors(validationErrors);
+
+    if (Object.keys(validationErrors).length === 0) {
+      if (isEdit) {
+        updateMutation.mutate(schedule);
+      } else {
+        createMutation.mutate(schedule);
+      }
     }
   };
 
@@ -105,9 +148,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 type="text"
                 value={schedule.title}
                 onChange={(e) => setSchedule({ ...schedule, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.title ? 'border-red-500' : 'border-gray-300'
+                }`}
                 required
               />
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+              )}
             </div>
 
             <div>
@@ -118,9 +166,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 type="datetime-local"
                 value={format(new Date(schedule.startDate), "yyyy-MM-dd'T'HH:mm")}
                 onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.startDate ? 'border-red-500' : 'border-gray-300'
+                }`}
                 required
               />
+              {errors.startDate && (
+                <p className="mt-1 text-sm text-red-500">{errors.startDate}</p>
+              )}
             </div>
 
             <div>
@@ -131,9 +184,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 type="datetime-local"
                 value={format(new Date(schedule.endDate), "yyyy-MM-dd'T'HH:mm")}
                 onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value) })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.endDate ? 'border-red-500' : 'border-gray-300'
+                }`}
                 required
               />
+              {errors.endDate && (
+                <p className="mt-1 text-sm text-red-500">{errors.endDate}</p>
+              )}
             </div>
 
             <div>
@@ -143,9 +201,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
               <textarea
                 value={schedule.description}
                 onChange={(e) => setSchedule({ ...schedule, description: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                className={`w-full px-3 py-2 border rounded-md ${
+                  errors.description ? 'border-red-500' : 'border-gray-300'
+                }`}
                 rows={4}
               />
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-500">{errors.description}</p>
+              )}
             </div>
 
             {isEdit && (

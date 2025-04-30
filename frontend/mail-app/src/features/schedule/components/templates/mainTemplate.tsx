@@ -97,10 +97,7 @@ export const MainTemplate: React.FC = () => {
       <ScheduleDetailTemplate
         isEdit={!!selectedSchedule}
         initialData={selectedSchedule || undefined}
-        onClose={() => {
-          closeModal();
-          setSelectedSchedule(null);
-        }}
+        onClose={closeModal}
         isOpen={isOpen}
         isAnimating={isAnimating}
       />
