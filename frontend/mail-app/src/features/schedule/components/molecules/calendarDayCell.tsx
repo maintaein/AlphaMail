@@ -1,6 +1,6 @@
 import React from 'react';
 import { Schedule } from '@/features/schedule/types/schedule';
-import { format, isEqual, isSameDay, startOfDay } from 'date-fns';
+import { format, isSameDay, startOfDay } from 'date-fns';
 
 interface CalendarDayCellProps {
   date: Date;
