@@ -2,7 +2,7 @@ package com.alphamail.api.user.infrastructure.repository;
 
 import org.springframework.stereotype.Repository;
 
-import com.alphamail.api.user.domain.User;
+import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.api.user.domain.repository.UserRepository;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 import com.alphamail.api.user.infrastructure.mapping.UserMapper;

@@ -1,8 +1,8 @@
 package com.alphamail.api.user.domain.repository;
 
-import com.alphamail.api.user.domain.User;
+import com.alphamail.api.user.domain.entity.User;
 
 public interface UserRepository {
 
-	User save(User user);
+	com.alphamail.api.user.domain.entity.User save(User user);
 }

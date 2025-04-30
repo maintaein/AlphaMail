@@ -1,4 +1,4 @@
-package com.alphamail.api.user.domain;
+package com.alphamail.api.user.domain.entity;
 
 import java.time.LocalDateTime;
 

@@ -3,7 +3,7 @@ package com.alphamail.api.user.application.usecase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alphamail.api.user.domain.User;
+import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.api.user.domain.repository.UserRepository;
 import com.alphamail.api.user.presentation.dto.SignUpRequest;
 

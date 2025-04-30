@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-import com.alphamail.api.user.domain.User;
+import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.api.user.domain.valueobject.UserId;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
