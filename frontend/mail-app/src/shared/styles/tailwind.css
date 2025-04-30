@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
+<<<<<<< HEAD
 @tailwind utilities;
+=======
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+>>>>>>> 47954d76e5867bc2c31c520dfa75f4f0a6d75c79

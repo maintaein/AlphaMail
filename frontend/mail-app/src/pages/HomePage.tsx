@@ -4,7 +4,7 @@ import { Typography } from '@/shared/components/atoms/Typography';
 
 const HomePage = () => {
   return (
-    <div className="p-8 space-y-12 bg-background min-h-screen">
+    <div className="p-8 space-y-12 bg-background">
       {/* Buttons */}
       <section>
         <Typography variant="titleMedium">Buttons</Typography>
