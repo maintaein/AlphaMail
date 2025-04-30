@@ -11,6 +11,7 @@ export const App = () => {
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <Suspense fallback={<div>로딩 중...</div>}>
+          <Router />
           <BrowserRouter>
             <div className="flex h-screen">
               <NavBar />
