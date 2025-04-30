@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.entity.EmailType;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -16,8 +17,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EmailEntity {
 
 	@Id
@@ -67,6 +69,7 @@ public class EmailEntity {
 
 	private String inReplyTo;
 
+	@Column(name = "email_references")
 	private String references;
 
 	@Column(length = 100, nullable = false)
@@ -75,13 +78,17 @@ public class EmailEntity {
 	private String filePath;
 
 	@Enumerated(EnumType.STRING)
-	@Column( nullable = false)
+	@Column(nullable = false)
 	private EmailType emailType;
 
 	@Enumerated(EnumType.STRING)
-	@Column( nullable = false)
+	@Column(nullable = false)
 	private EmailStatus emailStatus;
 
 	private Integer originalFolderId;
+
+	public void updateStatus(EmailStatus status) {
+		this.emailStatus = status;
+	}
 
 }
