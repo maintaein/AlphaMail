@@ -1,5 +1,6 @@
 services:
   backend:
+    build: ./backend
     image: alphaMail/backend:latest
     ports:
       - "8081:8080"
@@ -9,6 +10,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
 
   frontend:
+    build: ./frontend/mail-app
     image: alphaMail/frontend:latest
     ports:
       - "3000:3000"

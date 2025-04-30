@@ -26,9 +26,6 @@ pipeline {
         echo '🗑️ 안 쓰는 Docker 이미지 정리 중...'
         sh 'docker image prune -af || true'  // 이미지까지 싹 정리 (선택적)
 
-        echo '📥 최신 이미지 Pull (필요 시)...'
-        sh 'docker compose -f $COMPOSE_FILE pull || true' // optional
-
         echo '🚀 컨테이너 빌드 및 재시작 중...'
         sh 'docker compose -f $COMPOSE_FILE up -d --build'
       }
