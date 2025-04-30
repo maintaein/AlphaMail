@@ -16,7 +16,7 @@ public class RegistUserUseCase {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public Boolean execute(RegistRequest request) {
+	public boolean execute(RegistRequest request) {
 		// 이메일 중복 검사도 추가 해야할 수도 있다 .
 
 		//        if (userRepository.findByEmail(command.getEmail()).isPresent()) {

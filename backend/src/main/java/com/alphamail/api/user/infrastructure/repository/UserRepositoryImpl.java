@@ -20,6 +20,7 @@ public class UserRepositoryImpl implements UserRepository {
 	public User save(User user) {
 		UserEntity userEntity = userMapper.toEntity(user);
 		UserEntity savedUserEntity = userJpaRepository.save(userEntity);
+
 		return userMapper.toDomain(savedUserEntity);
 	}
 }

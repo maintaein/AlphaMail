@@ -42,7 +42,7 @@ public class UserEntity {
 	@Column(name = "email", nullable = false, length = 100)
 	private String email;
 
-	@Column(name = "phone_num", nullable = false, length = 14)
+	@Column(name = "phone_num", nullable = false, length = 20)
 	private String phoneNumber;
 
 	@Column(name = "hashed_password", nullable = false, length = 255)
@@ -51,7 +51,7 @@ public class UserEntity {
 	@Column(name = "status", nullable = false)
 	private boolean status = false;
 
-	@Column(name = "image", nullable = false, length = 100)
+	@Column(name = "image", nullable = false, length = 300)
 	private String imageUrl;
 
 	@UpdateTimestamp

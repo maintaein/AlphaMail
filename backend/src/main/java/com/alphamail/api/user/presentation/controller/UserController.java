@@ -19,7 +19,7 @@ public class UserController {
 	private final RegistUserUseCase registUserUseCase;
 
 	@PostMapping
-	public ResponseEntity<Boolean> signUp(@RequestBody RegistRequest registRequest) {
+	public ResponseEntity<Boolean> regist(@RequestBody RegistRequest registRequest) {
 		return ResponseEntity.ok(registUserUseCase.execute(registRequest));
 	}
 
