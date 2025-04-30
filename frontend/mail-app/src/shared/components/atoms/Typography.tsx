@@ -9,8 +9,8 @@ interface TypographyProps {
 }
 
 export const Typography = ({ children, variant = 'body', bold, color, className}: TypographyProps) => {
-  const baseStyle = 'text-gray-900 font-pretendard';
-
+  const baseStyle = color ? 'font-pretendard' : 'text-gray-900 font-pretendard';
+  
   const variantStyle = {
     titleLarge: 'text-[20px]',
     titleMedium: 'text-[17px]',
