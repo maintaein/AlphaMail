@@ -2,6 +2,7 @@ import React from 'react';
 import { Schedule } from '@/features/schedule/types/schedule';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleService } from '@/features/schedule/services/scheduleService';
+import { format } from 'date-fns';
 
 interface CalendarScheduleInfoProps {
   schedule: Schedule;
@@ -49,7 +50,7 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({
         ) : (
           <>
             <span className="text-xs">
-              {new Date(schedule.startDate).toLocaleTimeString()} - {new Date(schedule.endDate).toLocaleTimeString()}
+              {format(new Date(schedule.startDate), 'MM/dd HH:mm')}
             </span>
             <span className="font-medium ml-1">{schedule.title}</span>
           </>
