@@ -25,18 +25,13 @@ export const scheduleService = {
       
       // API 응답을 Schedule[] 타입으로 변환
       const schedules: Schedule[] = response.data.items.map((item: ScheduleResponse['items'][0]) => {
-        // UTC 시간을 로컬 시간으로 변환
-        const startDate = new Date(item.start_time);
-        const endDate = new Date(item.end_time);
-        
-        // 로컬 날짜를 YYYY-MM-DD 형식으로 변환
-        const startDateKey = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`;
-        
+        console.log(item.start_time);
+        console.log(item.end_time);
         return {
           id: crypto.randomUUID(),
           title: item.name,
-          startDate: startDateKey,
-          endDate: endDate.toISOString(),
+          startDate: new Date(item.start_time),
+          endDate: new Date(item.end_time),
           description: item.description,
           userId: 'current-user-id',
           isCompleted: item.is_done
@@ -66,12 +61,31 @@ export const scheduleService = {
       
       // API 응답을 Schedule[] 타입으로 변환
       const schedules: Schedule[] = response.data.items.map((item: ScheduleResponse['items'][0]) => ({
-        id: crypto.randomUUID(), // 임시 ID 생성
+        id: crypto.randomUUID(),
         title: item.name,
-        startDate: item.start_time,
-        endDate: item.end_time,
+        startDate: new Date(item.start_time),
+        endDate: new Date(item.end_time),
         description: item.description,
-        userId: 'current-user-id', // 임시 사용자 ID
+        userId: 'current-user-id',
+        isCompleted: item.is_done
+      }));
+      
+      return { data: schedules };
+    });
+  },
+
+  getSchedulesForSearch: (query: string) => {
+    return axios.get<ScheduleResponse>(`${baseUrl}/api/schedules`, {
+      params: { query }
+    }).then(response => {
+      // API 응답을 Schedule[] 타입으로 변환
+      const schedules: Schedule[] = response.data.items.map((item: ScheduleResponse['items'][0]) => ({
+        id: crypto.randomUUID(),
+        title: item.name,
+        startDate: new Date(item.start_time),
+        endDate: new Date(item.end_time),
+        description: item.description,
+        userId: 'current-user-id',
         isCompleted: item.is_done
       }));
       
@@ -81,18 +95,55 @@ export const scheduleService = {
 
   // 스케줄 생성
   createSchedule: async (schedule: CreateScheduleRequest): Promise<Schedule> => {
-    const response = await axios.post(`${baseUrl}/api/schedules`, schedule);
-    return response.data;
+    const requestData = {
+      name: schedule.title,
+      start_time: schedule.startDate.toISOString(),
+      end_time: schedule.endDate.toISOString(),
+      description: schedule.description
+    };
+
+    const response = await axios.post(`${baseUrl}/api/schedules`, requestData);
+    
+    // API 응답을 Schedule 타입으로 변환
+    return {
+      id: response.data.id,
+      title: response.data.name,
+      startDate: new Date(response.data.start_time),
+      endDate: new Date(response.data.end_time),
+      description: response.data.description,
+      userId: 'current-user-id'
+    };
   },
 
   // 스케줄 수정
   updateSchedule: async (schedule: UpdateScheduleRequest): Promise<Schedule> => {
-    const response = await axios.put(`${baseUrl}/api/schedules/${schedule.id}`, schedule);
-    return response.data;
+    const requestData = {
+      name: schedule.title,
+      start_time: schedule.startDate.toISOString(),
+      end_time: schedule.endDate.toISOString(),
+      description: schedule.description
+    };
+
+    const response = await axios.put(`${baseUrl}/api/schedules/${schedule.id}`, requestData);
+    
+    // API 응답을 Schedule 타입으로 변환
+    return {
+      id: response.data.id,
+      title: response.data.name,
+      startDate: new Date(response.data.start_time),
+      endDate: new Date(response.data.end_time),
+      description: response.data.description,
+      userId: 'current-user-id'
+    };
   },
 
   // 스케줄 삭제
   deleteSchedule: async (id: string): Promise<void> => {
     await axios.delete(`${baseUrl}/api/schedules/${id}`);
+  },
+
+  // 스케줄 완료 변경
+  patchSchedule: async (id: string, isCompleted: boolean): Promise<void> => {
+    await axios.patch(`${baseUrl}/api/schedules/${id}`, { is_done: isCompleted });
   }
 }; 

@@ -1,8 +1,8 @@
 export interface Schedule {
   id: string;
   title: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   description: string;
   color?: string;
   userId: string;

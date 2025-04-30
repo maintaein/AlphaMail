@@ -4,14 +4,10 @@ import { Schedule } from '@/features/schedule/types/schedule';
 
 interface ScheduleManagerGridProps {
   schedules: Schedule[];
-  onToggleComplete: (schedule: Schedule) => Promise<void>;
-  onScheduleClick: (schedule: Schedule) => void;
 }
 
 export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
   schedules,
-  onToggleComplete,
-  onScheduleClick,
 }) => {
   const today = new Date();
   const startOfWeek = new Date(today);
@@ -38,8 +34,6 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
             <CalendarScheduleInfo
               key={schedule.id}
               schedule={schedule}
-              onToggleComplete={onToggleComplete}
-              onClick={onScheduleClick}
             />
           ))
         )}
@@ -54,8 +48,6 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
             <CalendarScheduleInfo
               key={schedule.id}
               schedule={schedule}
-              onToggleComplete={onToggleComplete}
-              onClick={onScheduleClick}
             />
           ))
         )}
