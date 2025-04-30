@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import com.alphamail.api.user.domain.valueobject.UserId;
-import com.alphamail.api.user.presentation.dto.SignUpRequest;
+import com.alphamail.api.user.presentation.dto.RegistRequest;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,15 +27,15 @@ public class User {
 	private LocalDateTime updatedAt;
 	private LocalDateTime deletedAt;
 
-	public static User create(SignUpRequest signUpRequest) {
+	public static User create(RegistRequest registRequest) {
 		return User.builder()
-			.groupId(signUpRequest.groupId())
-			.position(signUpRequest.position())
-			.name(signUpRequest.name())
-			.email(signUpRequest.email())
-			.phoneNumber(signUpRequest.phoneNumber())
-			.hashedPassword(hashPassword(signUpRequest.password()))
-			.imageUrl(signUpRequest.imageUrl())
+			.groupId(registRequest.groupId())
+			.position(registRequest.position())
+			.name(registRequest.name())
+			.email(registRequest.email())
+			.phoneNumber(registRequest.phoneNumber())
+			.hashedPassword(hashPassword(registRequest.password()))
+			.imageUrl(registRequest.imageUrl())
 			.build();
 	}
 
