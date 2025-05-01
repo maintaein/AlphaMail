@@ -34,7 +34,7 @@ public class ProductController {
 	public ResponseEntity<GetProductResponse> get(@PathVariable Integer productId) {
 		GetProductResponse response = getProductUseCase.execute(productId);
 
-		if(response == null) {
+		if (response == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 
