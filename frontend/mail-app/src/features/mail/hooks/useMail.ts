@@ -1,0 +1,81 @@
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { mailService } from '../services/mailService';
+import { MAIL_QUERY_KEYS } from '../constants/queryKeys';
+
+export const useMail = () => {
+  const queryClient = useQueryClient();
+  
+  // useQuery 직접 호출
+  const useMailList = (folderId?: number, page: number = 1, sort: number = 0, content?: string) => {
+    return useQuery({
+      queryKey: MAIL_QUERY_KEYS.mailList(folderId, page, sort, content),
+      queryFn: () => mailService.getMailList(folderId, page, 15, sort, content),
+      placeholderData: keepPreviousData,
+    });
+  };
+  
+  // useQuery 직접 호출
+  const useMailDetail = (id: string) => {
+    return useQuery({
+      queryKey: MAIL_QUERY_KEYS.mailDetail(id),
+      queryFn: () => mailService.getMailDetail(id),
+      enabled: !!id,
+    });
+  };
+  
+  // 메일 읽음 상태 변경 뮤테이션
+  const markAsRead = useMutation({
+    mutationFn: (ids: string[]) => 
+      Promise.all(ids.map(id => mailService.updateMailReadStatus(Number(id), true))),
+    onSuccess: () => {
+      // 메일 목록 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    },
+  });
+  
+  // 메일 안읽음 상태 변경 뮤테이션
+  const markAsUnread = useMutation({
+    mutationFn: (ids: string[]) => 
+      Promise.all(ids.map(id => mailService.updateMailReadStatus(Number(id), false))),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    },
+  });
+  
+  // 메일 휴지통으로 이동 뮤테이션
+  const moveToTrash = useMutation({
+    mutationFn: (ids: string[]) => 
+      mailService.moveMails(ids.map(Number), 4), // 4는 휴지통 폴더 ID로 가정
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    },
+  });
+  
+  // 메일 폴더 이동 뮤테이션
+  const moveToFolder = useMutation({
+    mutationFn: ({ ids, targetFolderId }: { ids: string[], targetFolderId: number }) => 
+      mailService.moveMails(ids.map(Number), targetFolderId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    },
+  });
+  
+  // 메일 영구 삭제 뮤테이션
+  const permanentlyDelete = useMutation({
+    mutationFn: (ids: string[]) => 
+      mailService.permanentlyDeleteMails(ids.map(Number)),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    },
+  });
+  
+  return {
+    useMailList,
+    useMailDetail,
+    markAsRead,
+    markAsUnread,
+    moveToTrash,
+    moveToFolder,
+    permanentlyDelete,
+  };
+};

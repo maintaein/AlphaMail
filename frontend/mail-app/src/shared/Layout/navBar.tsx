@@ -6,12 +6,14 @@ import { useEffect } from 'react';
 
 export const NavBar = () => {
     const location = useLocation();
+    const path = location.pathname;
+
     const { isCollapsed, toggleCollapse, contentVisible, setContentVisible } = useNavbarStore();
     
-    // 현재 경로에 따라 활성화된 메뉴 스타일 적용
-    const isActive = (path: string) => {
-      return location.pathname === path;
-    };
+    // 현재 경로가 /mail로 시작하는지 확인
+    const isMailActive = path.startsWith('/mail');
+    const isScheduleActive = path.startsWith('/schedule');
+    const isWorkActive = path.startsWith('/work');
   
       // isCollapsed 상태가 변경될 때 콘텐츠 가시성 관리
     useEffect(() => {
@@ -26,10 +28,9 @@ export const NavBar = () => {
     }, [isCollapsed, setContentVisible]);
 
     return (
-        
         <div className={cn(
             "h-screen bg-[#66BAE4] flex flex-col transition-all duration-300",
-            isCollapsed ? "w-[70px]" : "w-[200px]"
+            isCollapsed ? "w-[70px]" : "w-[190px]"
           )}>
             {/* 햄버거 버튼 영역 */}
             <div className="p-4 flex justify-start">
@@ -59,16 +60,16 @@ export const NavBar = () => {
                 )}
             </div>
 
-            <div className="py-4"></div>
+            <div className="py-2"></div>
 
             {/* 메뉴 영역 */}
             <nav className="flex-1 mt-4">
-                <ul className="px-2 space-y-4">
+                <ul className="px-2 space-y-1">
                 <li>
                     <Link to="/">
                     <div className={cn(
-                        "flex items-center h-[40px] px-4 text-white rounded-lg transition-colors",
-                        isActive('/') ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                        "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
+                        path === '/' ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
                     )}>
                         <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                         <img src="/home.png" alt="홈" className="w-5 h-5" />
@@ -82,8 +83,8 @@ export const NavBar = () => {
                 <li>
                     <Link to="/mail">
                     <div className={cn(
-                        "flex items-center h-[40px] px-4 text-white rounded-lg transition-colors",
-                        isActive('/mail') ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                        "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
+                        isMailActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
                     )}>
                         <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                         <img src="/mail_outline.png" alt="메일" className="w-5 h-5" />
@@ -97,8 +98,8 @@ export const NavBar = () => {
                 <li>
                     <Link to="/schedule">
                     <div className={cn(
-                        "flex items-center h-[40px] px-4 text-white rounded-lg transition-colors",
-                        isActive('/schedule') ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                        "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
+                        isScheduleActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
                     )}>
                         <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                         <img src="/date_range.png" alt="일정" className="w-5 h-5" />
@@ -112,8 +113,8 @@ export const NavBar = () => {
                 <li>
                     <Link to="/work">
                     <div className={cn(
-                        "flex items-center h-[40px] px-4 text-white rounded-lg transition-colors",
-                        isActive('/work') ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                        "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
+                        isWorkActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
                     )}>
                         <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                         <img src="/business_center.png" alt="work+" className="w-5 h-5" />

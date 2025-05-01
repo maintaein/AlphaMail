@@ -3,6 +3,8 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { useSidebarStore } from '../stores/useSidebarStore';
 import { cn } from '../utils/cn';
 import { Button } from '@/shared/components/atoms/button';
+import { useNavigate } from 'react-router-dom';
+import { useMailStore } from '@/features/mail/stores/useMailStore';
 
 interface SideBarProps {
   type: 'mail' | 'work';
@@ -10,7 +12,7 @@ interface SideBarProps {
 
 
 export const SideBar: React.FC<SideBarProps> = ({ type }) => {
-
+    const navigate = useNavigate();
     const { 
         activeItem, 
         setActiveItem, 
@@ -20,6 +22,8 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
         setContentVisible
       } = useSidebarStore();
     
+    const { setCurrentFolder } = useMailStore();
+
     // isCollapsed 상태가 변경될 때 콘텐츠 가시성 관리
     useEffect(() => {
         // 사이드바가 확장될 때만 지연 후 콘텐츠 표시
@@ -35,10 +39,22 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
     // 메뉴 아이템 클릭 핸들러
     const handleMenuItemClick = (itemName: string) => {
         setActiveItem(itemName);
-        // 해당 아이템의 템플릿을 띄우는 로직 추가 예정
-        console.log(`${itemName} 메뉴 클릭됨`);
+        // 메일 메뉴 아이템에 따라 라우팅 및 폴더 설정
+        if (type === 'mail') {
+          if (itemName === "받은 메일함") {
+            setCurrentFolder(1);
+            navigate('/mail');
+          } else if (itemName === "보낸 메일함") {
+            setCurrentFolder(2);
+            navigate('/mail/sent');
+          } else if (itemName === "휴지통") {
+            setCurrentFolder(4);
+            navigate('/mail/trash');
+          }
+        }
       };
     
+
     // 타입에 따라 다른 타이틀과 메뉴 아이템 표시
     const renderContent = () => {
         if (type === 'mail') {

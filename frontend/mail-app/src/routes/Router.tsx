@@ -11,6 +11,8 @@ export const Router = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/mail" element={<MailPage />} />
+        <Route path="/mail/sent" element={<MailPage />} />
+        <Route path="/mail/trash" element={<MailPage />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/work" element={<WorkPage />} />
         <Route path="/group" element={<GroupManagePage />} />
