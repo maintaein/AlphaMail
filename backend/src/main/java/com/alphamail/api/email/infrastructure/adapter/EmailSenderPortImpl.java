@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.port.EmailSenderPort;
+import com.alphamail.common.exception.ErrorMessage;
+import com.alphamail.common.exception.InternalServerException;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
+import com.amazonaws.services.simpleemail.model.MessageRejectedException;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
@@ -37,6 +40,11 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			// 기본 필드 설정
 			message.setFrom(new InternetAddress(email.getSender()));
 			message.setSubject(email.getSubject(), "UTF-8");
+
+			// 수신자 설정
+			if (email.getRecipients() == null || email.getRecipients().isEmpty()) {
+				throw new InternalServerException(ErrorMessage.INVALID_PARAMETER);
+			}
 
 			// 수신자 설정
 			for (String recipient : email.getRecipients().split(",")) {
@@ -69,7 +77,9 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 				multipart.addBodyPart(htmlPart);
 			}else {
 				// HTML이 없는 경우 빈 HTML 설정
-				message.setContent("<div></div>", "text/html; charset=UTF-8");
+				MimeBodyPart htmlPart = new MimeBodyPart();
+				htmlPart.setContent("<div></div>", "text/html; charset=UTF-8");
+				multipart.addBodyPart(htmlPart);
 			}
 
 			message.setContent(multipart);
@@ -95,8 +105,10 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 
 			sesClient.sendRawEmail(rawRequest);
 
-		} catch (Exception e) {
-			throw new RuntimeException("이메일 전송 실패: " + e.getMessage(), e);
+		} catch (MessageRejectedException e) {
+			throw new InternalServerException(ErrorMessage.FILE_UPLOAD_FAIL);
+		}catch (Exception e) {
+			throw new InternalServerException(ErrorMessage.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
