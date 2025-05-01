@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.erp.application.usecase.product.RegistProductUseCase;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
+import com.alphamail.api.erp.presentation.dto.product.RegistProductResult;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,13 @@ public class ProductController {
 	// 품목 등록하기
 	@PostMapping("/products")
 	public ResponseEntity<Void> regist(@RequestBody RegistProductRequest registProductRequest) {
-		boolean result = registProductUseCase.execute(registProductRequest);
+		RegistProductResult result = registProductUseCase.execute(registProductRequest);
 
-		if (result) {
-			return ResponseEntity.status(HttpStatus.CREATED).build();
-		}
-		return ResponseEntity.badRequest().build();
+		return switch (result.status()) {
+			case SUCCESS -> ResponseEntity.status(HttpStatus.CREATED).build();
+			case DUPLICATED -> ResponseEntity.status(HttpStatus.CONFLICT).build();
+			case SAVE_FAILED -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		};
 	}
 
 }

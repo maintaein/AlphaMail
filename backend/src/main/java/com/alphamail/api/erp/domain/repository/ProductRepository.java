@@ -1,10 +1,12 @@
 package com.alphamail.api.erp.domain.repository;
 
+import java.util.Optional;
+
 import com.alphamail.api.erp.domain.entity.Product;
 
 public interface ProductRepository {
 
-	Product duplicateProduct(Integer companyId, String name, String standard);
+	Optional<Product> duplicateProduct(Integer companyId, String name, String standard);
 
 	Product save(Product product);
 }

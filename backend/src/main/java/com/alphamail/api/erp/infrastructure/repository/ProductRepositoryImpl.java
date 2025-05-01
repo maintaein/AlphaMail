@@ -19,10 +19,10 @@ public class ProductRepositoryImpl implements ProductRepository {
 	private final ProductMapper productMapper;
 
 	@Override
-	public Product duplicateProduct(Integer companyId, String name, String standard) {
-		Optional<ProductEntity> existProduct = productJpaRepository.findByCompanyIdAndNameAndStandard(companyId, name, standard);
-
-		return productMapper.toDomain(existProduct);
+	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard) {
+		return productJpaRepository
+			.findByCompanyIdAndNameAndStandard(companyId, name, standard)
+			.map(productMapper::toDomain);
 	}
 
 	@Override
