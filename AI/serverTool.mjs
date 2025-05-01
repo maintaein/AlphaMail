@@ -1,3 +1,4 @@
+// server.remote.mjs
 import { FastMCP } from "fastmcp";
 import { z } from "zod"; 
 
@@ -53,7 +54,7 @@ const parseJsonString = (val) => {
 
 server.addTool({
   name: "calendar",
-  description: "메일을 분석하여 일정 정보를 추출합니다.",
+  description: "메일을 분석하여 일정 및 미팅 정보를 추출합니다.",
   parameters: z.object({
     title: z.string(),
     start: z.string(),  // ISO8601 포맷 추천: "2025-04-30T14:00:00"
@@ -63,7 +64,10 @@ server.addTool({
   
   execute: async (args) => {
     console.log("추출된 일정", args);
-    return `일정이 추가되었습니다: ${args.title} (${args.start} ~ ${args.end})`;
+    return {
+      message: `일정이 추가되었습니다.`,
+      data: args,
+    };
   },
 });
 
@@ -91,7 +95,7 @@ server.addTool({
     )
   }),
   execute: async (args) => {
-    console.log("📦 원본 발주 정보:", args);
+    console.log("원본 발주 정보:", args);
     
     // items 처리 - 배열인지 확인
     let processedItems = [];
@@ -100,9 +104,9 @@ server.addTool({
       try {
         // 문자열로 들어온 경우 다시 파싱 시도
         processedItems = parseJsonString(args.items);
-        console.log("📦 문자열에서 파싱한 items:", processedItems);
+        console.log("문자열에서 파싱한 items:", processedItems);
       } catch (e) {
-        console.error("❌ items 문자열 파싱 실패:", e);
+        console.error("items 문자열 파싱 실패:", e);
       }
     } else if (Array.isArray(args.items)) {
       processedItems = args.items;
@@ -115,12 +119,14 @@ server.addTool({
         quantity: typeof item.quantity === "string" ? parseInt(item.quantity, 10) : item.quantity
       }));
     } catch (e) {
-      console.error("❌ 아이템 변환 실패:", e);
+      console.error("아이템 변환 실패:", e);
     }
-    
-    console.log("📦 최종 처리된 items:", processedItems);
+  
 
-    return `발주 정보가 정상적으로 수신되었습니다. 회사: ${args.company}, 납기일: ${args.deliveryDate}, 총 ${processedItems.length}개의 품목이 포함되어 있습니다.`;
+    return {
+      message: `발주 정보가 정상적으로 수신되었습니다.`,
+      data: args,  // <== 전달된 args 포함
+    };
   },
 });
 
@@ -155,7 +161,7 @@ server.addTool({
         processedItems = parseJsonString(args.items);
         console.log("📄 문자열에서 파싱한 items:", processedItems);
       } catch (e) {
-        console.error("❌ items 문자열 파싱 실패:", e);
+        console.error("items 문자열 파싱 실패:", e);
       }
     } else if (Array.isArray(args.items)) {
       processedItems = args.items;
@@ -168,12 +174,13 @@ server.addTool({
         quantity: typeof item.quantity === "string" ? parseInt(item.quantity, 10) : item.quantity
       }));
     } catch (e) {
-      console.error("❌ 아이템 변환 실패:", e);
+      console.error("아이템 변환 실패:", e);
     }
     
-    console.log("📄 최종 처리된 items:", processedItems);
-
-    return `견적 요청이 등록되었습니다. ${args.company} 대상으로 ${processedItems.length}개 품목 요청됨.`;
+    return {
+      message: `견적적 정보가 정상적으로 수신되었습니다.`,
+      data: args,  // <== 전달된 args 포함
+    };
   },
 });
 
