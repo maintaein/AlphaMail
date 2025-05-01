@@ -43,16 +43,17 @@ public class UserEntity {
 	private String email;
 
 	@Column(name = "phone_num", nullable = false, length = 20)
-	private String phoneNumber;
+	private String phoneNum;
 
 	@Column(name = "hashed_password", nullable = false, length = 255)
 	private String hashedPassword;
 
+	@Builder.Default
 	@Column(name = "status", nullable = false)
 	private boolean status = false;
 
-	@Column(name = "image", nullable = false, length = 300)
-	private String imageUrl;
+	@Column(name = "image", nullable = false, length = 255)
+	private String image;
 
 	@UpdateTimestamp
 	@Column(name = "updated_at")

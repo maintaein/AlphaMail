@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.user.application.usecase.RegistUserUseCase;
-import com.alphamail.api.user.presentation.dto.RegistRequest;
+import com.alphamail.api.user.presentation.dto.RegistUserRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +19,8 @@ public class UserController {
 	private final RegistUserUseCase registUserUseCase;
 
 	@PostMapping
-	public ResponseEntity<Boolean> regist(@RequestBody RegistRequest registRequest) {
-		return ResponseEntity.ok(registUserUseCase.execute(registRequest));
+	public ResponseEntity<Boolean> regist(@RequestBody RegistUserRequest registUserRequest) {
+		return ResponseEntity.ok(registUserUseCase.execute(registUserRequest));
 	}
 
 }

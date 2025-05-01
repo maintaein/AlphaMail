@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.api.user.domain.repository.UserRepository;
-import com.alphamail.api.user.presentation.dto.RegistRequest;
+import com.alphamail.api.user.presentation.dto.RegistUserRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ public class RegistUserUseCase {
 	private final UserRepository userRepository;
 
 	@Transactional
-	public boolean execute(RegistRequest request) {
+	public boolean execute(RegistUserRequest request) {
 		// 이메일 중복 검사도 추가 해야할 수도 있다 .
 
 		//        if (userRepository.findByEmail(command.getEmail()).isPresent()) {
