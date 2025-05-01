@@ -23,8 +23,8 @@ public class Email {
 	private String subject;
 	private String bodyText;
 	private String bodyHtml;
-	private LocalDateTime receivedDatetime;
-	private LocalDateTime sentDatetime;
+	private LocalDateTime receivedDateTime;
+	private LocalDateTime sentDateTime;
 	private Boolean readStatus;
 	private Boolean hasAttachment;
 	private String inReplyTo;
@@ -47,67 +47,13 @@ public class Email {
 			.subject(request.subject())
 			.bodyText(request.bodyText())
 			.bodyHtml(request.bodyHtml())
-			.sentDatetime(LocalDateTime.now())
+			.sentDateTime(LocalDateTime.now())
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
 			.references(request.references() != null ? String.join(",", request.references()) : null)
 			.threadId(generateThreadId(request.inReplyTo()))
 			.emailType(EmailType.SENT)
 			.emailStatus(EmailStatus.RETRYING)
-			.build();
-	}
-
-
-
-	// 이메일 발송 성공 처리
-	public Email markAsSent() {
-		return Email.builder()
-			.emailId(this.emailId)
-			.folderId(this.folderId)
-			.userId(this.userId)
-			.messageId(this.messageId)
-			.sender(this.sender)
-			.recipients(this.recipients)
-			.subject(this.subject)
-			.bodyText(this.bodyText)
-			.bodyHtml(this.bodyHtml)
-			.receivedDatetime(this.receivedDatetime)
-			.sentDatetime(this.sentDatetime)
-			.readStatus(this.readStatus)
-			.hasAttachment(this.hasAttachment)
-			.inReplyTo(this.inReplyTo)
-			.references(this.references)
-			.threadId(this.threadId)
-			.filePath(this.filePath)
-			.emailType(this.emailType)
-			.emailStatus(EmailStatus.SENT)
-			.originalFolderId(this.originalFolderId)
-			.build();
-	}
-
-	// 이메일 발송 실패 처리
-	public Email markAsFailed() {
-		return Email.builder()
-			.emailId(this.emailId)
-			.folderId(this.folderId)
-			.userId(this.userId)
-			.messageId(this.messageId)
-			.sender(this.sender)
-			.recipients(this.recipients)
-			.subject(this.subject)
-			.bodyText(this.bodyText)
-			.bodyHtml(this.bodyHtml)
-			.receivedDatetime(this.receivedDatetime)
-			.sentDatetime(this.sentDatetime)
-			.readStatus(this.readStatus)
-			.hasAttachment(this.hasAttachment)
-			.inReplyTo(this.inReplyTo)
-			.references(this.references)
-			.threadId(this.threadId)
-			.filePath(this.filePath)
-			.emailType(this.emailType)
-			.emailStatus(EmailStatus.FAILED)
-			.originalFolderId(this.originalFolderId)
 			.build();
 	}
 

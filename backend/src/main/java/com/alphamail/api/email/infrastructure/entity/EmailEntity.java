@@ -82,7 +82,6 @@ public class EmailEntity {
 	private EmailType emailType;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	private EmailStatus emailStatus;
 
 	private Integer originalFolderId;
