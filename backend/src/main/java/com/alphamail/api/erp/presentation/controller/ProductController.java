@@ -40,7 +40,7 @@ public class ProductController {
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.PRODUCTS_BASE_API)
 	public ResponseEntity<Page<GetAllProductsResponse>> getAll(@PathVariable Integer companyId,
 		@RequestParam(required = false) String name, @PageableDefault(size = 10) Pageable pageable) {
-		Page<GetAllProductsResponse> response = getAllProductsUseCase.execute(name, pageable);
+		Page<GetAllProductsResponse> response = getAllProductsUseCase.execute(companyId, name, pageable);
 
 		return ResponseEntity.ok(response);
 	}

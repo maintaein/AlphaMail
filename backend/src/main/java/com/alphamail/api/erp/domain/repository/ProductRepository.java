@@ -9,9 +9,9 @@ import com.alphamail.api.erp.domain.entity.Product;
 
 public interface ProductRepository {
 
-	Page<Product> findAll(Pageable pageable);
+	Page<Product> findByCompanyId(Integer companyId, Pageable pageable);
 
-	Page<Product> findByNameContaining(String name, Pageable pageable);
+	Page<Product> findByCompanyIdAndNameContaining(Integer companyId, String name, Pageable pageable);
 
 	Optional<Product> findById(Integer productId);
 

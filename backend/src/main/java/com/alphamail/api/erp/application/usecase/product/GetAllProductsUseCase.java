@@ -17,15 +17,15 @@ public class GetAllProductsUseCase {
 
 	private final ProductRepository productRepository;
 
-	public Page<GetAllProductsResponse> execute(String name, Pageable pageable) {
+	public Page<GetAllProductsResponse> execute(Integer companyId, String name, Pageable pageable) {
 		if (name != null && !name.isBlank()) {
 			return productRepository
-				.findByNameContaining(name, pageable)
+				.findByCompanyIdAndNameContaining(companyId, name, pageable)
 				.map(GetAllProductsResponse::from);
 		}
 
 		return productRepository
-			.findAll(pageable)
+			.findByCompanyId(companyId, pageable)
 			.map(GetAllProductsResponse::from);
 	}
 }

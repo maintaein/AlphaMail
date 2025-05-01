@@ -12,7 +12,9 @@ import com.alphamail.api.erp.infrastructure.entity.ProductEntity;
 @Repository
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Integer> {
 
-	Page<ProductEntity> findByNameContaining(String name, Pageable pageable);
+	Page<ProductEntity> findByCompanyId(Integer companyId, Pageable pageable);
+
+	Page<ProductEntity> findByCompanyIdAndNameContaining(Integer companyId, String name, Pageable pageable);
 
 	Optional<ProductEntity> findByCompanyIdAndNameAndStandard(Integer companyId, String name, String standard);
 }

@@ -21,16 +21,16 @@ public class ProductRepositoryImpl implements ProductRepository {
 	private final ProductMapper productMapper;
 
 	@Override
-	public Page<Product> findAll(Pageable pageable) {
+	public Page<Product> findByCompanyId(Integer companyId, Pageable pageable) {
 		return productJpaRepository
-			.findAll(pageable)
+			.findByCompanyId(companyId, pageable)
 			.map(productMapper::toDomain);
 	}
 
 	@Override
-	public Page<Product> findByNameContaining(String name, Pageable pageable) {
+	public Page<Product> findByCompanyIdAndNameContaining(Integer companyId, String name, Pageable pageable) {
 		return productJpaRepository
-			.findByNameContaining(name, pageable)
+			.findByCompanyIdAndNameContaining(companyId, name, pageable)
 			.map(productMapper::toDomain);
 	}
 
