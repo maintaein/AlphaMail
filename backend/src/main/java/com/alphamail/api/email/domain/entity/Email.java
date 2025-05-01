@@ -5,15 +5,16 @@ import java.util.UUID;
 
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Email {
-	private Integer id;
+	private Integer emailId;
 	private Integer folderId;
 	private Integer userId;
 	private String messageId;
@@ -25,7 +26,7 @@ public class Email {
 	private LocalDateTime receivedDatetime;
 	private LocalDateTime sentDatetime;
 	private Boolean readStatus;
-	private Boolean hasAttachments;
+	private Boolean hasAttachment;
 	private String inReplyTo;
 	private String references;
 	private String threadId;
@@ -36,6 +37,7 @@ public class Email {
 
 	// 발송용 이메일 생성 정적 팩토리 메서드
 	public static Email createForSending(SendEmailRequest request, Integer userId, Integer sentFolderId) {
+
 		return Email.builder()
 			.folderId(sentFolderId)
 			.userId(userId)
@@ -46,7 +48,7 @@ public class Email {
 			.bodyText(request.bodyText())
 			.bodyHtml(request.bodyHtml())
 			.sentDatetime(LocalDateTime.now())
-			.hasAttachments(request.attachments() != null && !request.attachments().isEmpty())
+			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
 			.references(request.references() != null ? String.join(",", request.references()) : null)
 			.threadId(generateThreadId(request.inReplyTo()))
@@ -55,10 +57,12 @@ public class Email {
 			.build();
 	}
 
+
+
 	// 이메일 발송 성공 처리
 	public Email markAsSent() {
 		return Email.builder()
-			.id(this.id)
+			.emailId(this.emailId)
 			.folderId(this.folderId)
 			.userId(this.userId)
 			.messageId(this.messageId)
@@ -70,7 +74,7 @@ public class Email {
 			.receivedDatetime(this.receivedDatetime)
 			.sentDatetime(this.sentDatetime)
 			.readStatus(this.readStatus)
-			.hasAttachments(this.hasAttachments)
+			.hasAttachment(this.hasAttachment)
 			.inReplyTo(this.inReplyTo)
 			.references(this.references)
 			.threadId(this.threadId)
@@ -84,7 +88,7 @@ public class Email {
 	// 이메일 발송 실패 처리
 	public Email markAsFailed() {
 		return Email.builder()
-			.id(this.id)
+			.emailId(this.emailId)
 			.folderId(this.folderId)
 			.userId(this.userId)
 			.messageId(this.messageId)
@@ -96,7 +100,7 @@ public class Email {
 			.receivedDatetime(this.receivedDatetime)
 			.sentDatetime(this.sentDatetime)
 			.readStatus(this.readStatus)
-			.hasAttachments(this.hasAttachments)
+			.hasAttachment(this.hasAttachment)
 			.inReplyTo(this.inReplyTo)
 			.references(this.references)
 			.threadId(this.threadId)

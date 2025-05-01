@@ -67,12 +67,15 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 				MimeBodyPart htmlPart = new MimeBodyPart();
 				htmlPart.setContent(email.getBodyHtml(), "text/html; charset=UTF-8");
 				multipart.addBodyPart(htmlPart);
+			}else {
+				// HTML이 없는 경우 빈 HTML 설정
+				message.setContent("<div></div>", "text/html; charset=UTF-8");
 			}
 
 			message.setContent(multipart);
 
 			// 첨부 파일 처리 (필요하다면)
-			if (email.getHasAttachments()) {
+			if (email.getHasAttachment()) {
 				// MimeMultipart를 mixed 타입으로 변경 (alternative는 본문 표현 방식만 다른 경우)
 				MimeMultipart mixedMultipart = new MimeMultipart("mixed");
 

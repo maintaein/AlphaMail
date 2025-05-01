@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphamail.api.email.application.usecase.SendEmailUseCase;
-import com.alphamail.api.email.domain.entity.Email;
+import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmailController {
 
-	private final SendEmailUseCase sendEmailUseCase;
+	private final EmailService emailService;
 
 	@PostMapping
 	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest, @AuthenticationPrincipal
@@ -28,7 +27,7 @@ public class EmailController {
 		//test용 임의 유저아이디
 		Integer userId = 1;
 
-		sendEmailUseCase.execute(emailRequest, userId);
+		emailService.sendEmail(emailRequest, userId);
 		return ResponseEntity.ok().build();
 	}
 }
