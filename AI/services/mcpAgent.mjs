@@ -51,8 +51,11 @@ const toolSystemMessages = {
   이메일에 일정 관련 정보가 있다면 이를 함께 추출하세요.
   `.trim(),
   
-    calendar: `
+  
+  date: `
   메일을 분석하여 다음 항목을 정확히 추출하여 JSON으로 응답하십시오.
+  이메일 내용에 회의, 미팅(meeting), 일정(schedule), 이벤트(event), 예약(appointment), 예정(planned), 시간 안내(time slot), 캘린더(calendar) 등과 관련된 표현이 있다면 반드시 아래 형식에 따라 추출하십시오.
+  연도나 월이 없을 경우 현재 시점을 기준으로 추출하세요.
   - title: 일정 제목
   - start: ISO8601 일정 시작 날짜 ("2025-04-30T14:00:00")
   - end: ISO8601 일정 종료 날짜
@@ -81,35 +84,51 @@ const toolSystemMessages = {
     });
   
     const allowedToolNames = tools.map((tool) => tool.name);
-  // 다음 도구만 사용할 수 있습니다: ${allowedToolNames.join(", ")}.
-  // 1. 발주(주문) 관련 이메일이면 orderRequest 도구를 사용하세요.
-  // 2. 견적 요청 관련 이메일이면 estimateRequest 도구를 사용하세요.
-  // 3. 일정 관련 정보가 있으면 calendar 도구를 사용하세요.
   const finalSystemMessage = `
-  당신은 이메일을 분석하여 적절한 정보를 추출하는 한국어 AI 비서입니다.
-  아래 내용을 하나라도 따르지 않을 경우 벌을 줄것임.
-  하지만 내용을 잘 준수할 경우 보상을 줄것임.
+ 메일 내용을 읽고 발주 요청, 견적 요청, 일정 세개 중 속하는게 있는지, 몇개로 분류 될수 있는지 확인해
+ 그리고 확인 되는 것들의 모든 tool을 실행시켜
 
-  이메일에 발주서 관련 내용이 있는지, 견적서 관련 내용이 있는지, 일정 관련 내용이 있는지 판단하세요.
-  그리고 각각의 내용이 몇개가 있는지 판단하세요.
 
-  그리고 관련 내용에 대해서 모든 도구를 호출해서 아래 내용 및 도구별 지침을 따르세요.
-  업무 관련 날짜나 일정과 관련한 내용이 있을 경우 일정 도구는 무조건 사용하세요.(공휴일 제외)
-  각각의 내용이 있는 수만큼 도구를 사용하세요.
+도구 사용 판단 기준:
 
-  도구별 지침:
+1. 일정 정보가 있다면 → "date" 도구 호출
+2. 발주 요청이 포함되어 있다면 → "orderRequest" 도구 호출
+3. 견적 요청이 포함되어 있다면 → "estimateRequest" 도구 호출
+
+
+예시 판단 기준:
+
+- 날짜/요일(예: 5월 6일, 다음 주 화요일), 시간(예: 오전 10시, 오후 2시)과 행동성 단어(회의, 방문, 상담, 미팅 등)가 함께 있는 경우 → 반드시 "date" 도구 호출
+- "견적서 부탁드립니다", "견적 요청드립니다" 문장이 있으면 → "estimateRequest" 도구 호출
+- 품목명 + 수량 + 납기일 + 결제 조건 등이 포함되면 → "orderRequest" 도구 호출
+
+
+예시 상황:
+이메일 내용:
+> 5월 6일 오전 10시에 회의가 예정되어 있습니다.  
+> 아래 품목을 발주합니다: 프린터 2대, 토너 10개.  
+> 견적서도 부탁드립니다.
+
+도구 호출 : "orderRequest","date","estimateRequest"
+
+도구 호출은 필요한 만큼 여러 번 반복해도 되며, 반드시 각각의 정보를 분리하여 정확하게 추출하고, 해당 도구의 입력 형식에 맞게 호출하세요.
+  
+  도구별 세부 지침
   ${allowedToolNames.map((tool) => `### ${tool}\n${toolSystemMessages[tool] || ""}`).join("\n\n")}
   `.trim();
+  
 
   agent = createReactAgent({
     llm: new ChatOpenAI({
       apiKey: "lm-studio",
       model: "mathstral-7b-v0.1",
       configuration: { baseURL: "http://localhost:1234/v1" },
-      modelKwargs: { systemMessage: "" }
+      modelKwargs: {
+        systemMessage: finalSystemMessage 
+      }
     }),
     tools,
-    systemMessage: finalSystemMessage,
+    systemMessage: finalSystemMessage,      
     allowedTools: allowedToolNames,
   });
 
