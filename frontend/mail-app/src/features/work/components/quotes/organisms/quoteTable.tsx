@@ -29,12 +29,13 @@ export const QuoteTable: React.FC<QuoteTableProps> = ({
   const quotes: Quote[] = [
     {
       id: 1,
-      quoteNumber: '123-456',
-      date: '25/04/23',
-      receiverCompany: '빛도어',
-      sender: 'SSAFY',
-      product: '도기그룹',
-      amount: '990,000원',
+      quote_no: '123-456',
+      created_at: '25/04/23',
+      user_name: 'SSAFY',
+      client_name: '빛도어',
+      product_count: 3,
+      product_name: '도기그룹',
+      price: 990000,
     },
     // ... 더 많은 데이터
   ];
