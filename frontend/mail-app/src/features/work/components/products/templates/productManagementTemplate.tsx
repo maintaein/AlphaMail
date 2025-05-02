@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Product } from '../../../types/product';
 import { ProductSearchBar } from '../organisms/productSearchBar';
 import { ProductTable } from '../organisms/productTable';
 import { ProductDetailTemplate } from './productDetailTemplate';
 import { productService } from '../../../services/productService';
+import { useProductStore } from '../../../stores/productStore';
 
 interface ProductManagementTemplateProps {
   onAddProduct?: () => void;
@@ -14,15 +15,18 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
   onAddProduct,
   companyId = 1 
 }) => {
-  const [keyword, setKeyword] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [selectedProductIds, setSelectedProductIds] = useState<Set<number>>(new Set());
+  const {
+    keyword,
+    setKeyword,
+    selectedProduct,
+    setSelectedProduct,
+    selectedProductIds,
+    toggleProductSelection,
+    setSelectedProductIds
+  } = useProductStore();
 
   const handleSearch = (searchKeyword: string) => {
     setKeyword(searchKeyword);
-    if (searchKeyword.trim() !== '') {
-      console.log('검색 실행:', searchKeyword);
-    }
   };
 
   const handleProductClick = (product: Product) => {
@@ -31,18 +35,6 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
 
   const handleBack = () => {
     setSelectedProduct(null);
-  };
-
-  const handleSelectProduct = (id: number) => {
-    setSelectedProductIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
   };
 
   const handleDelete = async () => {
@@ -107,7 +99,7 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
           <ProductTable
             companyId={companyId}
             onProductClick={handleProductClick}
-            onSelectProduct={handleSelectProduct}
+            onSelectProduct={toggleProductSelection}
             selectedProductIds={selectedProductIds}
             searchQuery={keyword}
           />

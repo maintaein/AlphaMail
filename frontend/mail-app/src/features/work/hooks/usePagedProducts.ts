@@ -1,21 +1,23 @@
 import { useQuery } from '@tanstack/react-query'
 import { productService } from '../services/productService';
 import { ProductResponse } from '../types/product';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useProductStore } from '../stores/productStore';
 
 interface UsePagedProductsOptions {
-  initialPage?: number;
-  initialSize?: number;
-  initialSort?: number;
   companyId: number;
-  searchQuery?: string;
 }
 
 export const usePagedProducts = (options: UsePagedProductsOptions) => {
-  const [searchQuery, setSearchQuery] = useState<string>(options.searchQuery || '');
-  const [currentPage, setCurrentPage] = useState<number>(options.initialPage || 1);
-  const [pageSize, setPageSize] = useState<number>(options.initialSize || 10);
-  const [sortOption, setSortOption] = useState<number>(options.initialSort || 0);
+  const {
+    keyword: searchQuery,
+    currentPage,
+    pageSize,
+    sortOption,
+    setCurrentPage,
+    setPageSize,
+    setSortOption
+  } = useProductStore();
 
   console.log('Hook Initialized with options:', options);
   console.log('Current state:', {
@@ -69,12 +71,6 @@ export const usePagedProducts = (options: UsePagedProductsOptions) => {
     }
   }, [searchQuery, refetch]);
 
-  const handleSearch = (query: string) => {
-    console.log('Search query changed:', query);
-    setSearchQuery(query);
-    setCurrentPage(1);
-  };
-
   const handlePageChange = (page: number) => {
     console.log('Page changed:', page);
     setCurrentPage(page);
@@ -105,7 +101,6 @@ export const usePagedProducts = (options: UsePagedProductsOptions) => {
     searchQuery,
     isLoading,
     error,
-    handleSearch,
     handlePageChange,
     handleSizeChange,
     handleSortChange,
