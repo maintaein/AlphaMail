@@ -20,6 +20,9 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
 
   const handleSearch = (searchKeyword: string) => {
     setKeyword(searchKeyword);
+    if (searchKeyword.trim() !== '') {
+      console.log('검색 실행:', searchKeyword);
+    }
   };
 
   const handleProductClick = (product: Product) => {
@@ -106,6 +109,7 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
             onProductClick={handleProductClick}
             onSelectProduct={handleSelectProduct}
             selectedProductIds={selectedProductIds}
+            searchQuery={keyword}
           />
         </div>
       </div>

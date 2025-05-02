@@ -1,17 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { productService } from '../services/productService';
 import { ProductResponse } from '../types/product';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface UsePagedProductsOptions {
   initialPage?: number;
   initialSize?: number;
   initialSort?: number;
   companyId: number;
+  searchQuery?: string;
 }
 
 export const usePagedProducts = (options: UsePagedProductsOptions) => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>(options.searchQuery || '');
   const [currentPage, setCurrentPage] = useState<number>(options.initialPage || 1);
   const [pageSize, setPageSize] = useState<number>(options.initialSize || 10);
   const [sortOption, setSortOption] = useState<number>(options.initialSort || 0);
@@ -57,7 +58,16 @@ export const usePagedProducts = (options: UsePagedProductsOptions) => {
     },
     placeholderData: (previousData) => previousData,
     staleTime: 30000, // 30초 동안 데이터를 신선한 상태로 유지
+    enabled: true // 항상 활성화
   });
+
+  // 검색어가 변경될 때마다 API 호출
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      console.log('검색어 변경으로 인한 API 호출:', searchQuery);
+      refetch();
+    }
+  }, [searchQuery, refetch]);
 
   const handleSearch = (query: string) => {
     console.log('Search query changed:', query);
