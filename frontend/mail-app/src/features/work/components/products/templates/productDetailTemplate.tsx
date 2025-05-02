@@ -1,54 +1,95 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { Product } from '../../../types/product';
+import { productService } from '../../../services/productService';
+import { useNavigate } from 'react-router-dom';
 
 interface ProductDetailTemplateProps {
   product?: Product;
   onBack?: () => void;
+  companyId?: number;
 }
 
 interface ProductDetailForm {
   name: string;
-  quantity: string;
-  grade: string;
+  standard: string;
   stock: number;
-  purchasePrice: number;
-  sellingPrice: number;
-  description: string;
+  inboundPrice: number;
+  outboundPrice: number;
+  image?: File;
 }
 
-export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({ product, onBack }) => {
+export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({ 
+  product, 
+  onBack,
+  companyId = 1 
+}) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<ProductDetailForm>({
     name: '',
-    quantity: '',
-    grade: '',
+    standard: '',
     stock: 0,
-    purchasePrice: 0,
-    sellingPrice: 0,
-    description: ''
+    inboundPrice: 0,
+    outboundPrice: 0,
   });
 
   useEffect(() => {
     if (product) {
       setFormData({
         name: product.name,
-        quantity: product.quantity,
-        grade: product.grade,
+        standard: product.standard,
         stock: product.stock,
-        purchasePrice: product.purchasePrice,
-        sellingPrice: product.sellingPrice,
-        description: product.description || ''
+        inboundPrice: product.inboundPrice,
+        outboundPrice: product.outboundPrice,
       });
     }
   }, [product]);
 
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'stock' || name === 'inboundPrice' || name === 'outboundPrice' 
+        ? Number(value) 
+        : value
     }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({
+        ...prev,
+        image: e.target.files![0]
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      if (product) {
+        // 수정
+        await productService.updateProduct(product.id.toString(), {
+          id: product.id,
+          ...formData,
+          companyId
+        });
+      } else {
+        // 등록
+        await productService.createProduct({
+          ...formData,
+          companyId
+        });
+      }
+      if (onBack) {
+        onBack();
+      } else {
+        navigate('/products');
+      }
+    } catch (error) {
+      console.error('상품 저장 실패:', error);
+      alert('상품 저장에 실패했습니다.');
+    }
   };
 
   return (
@@ -67,13 +108,12 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({ pr
         )}
       </div>
       
-      <form className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
-
           {/* 상품 정보 입력 섹션 */}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">상품명</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">품목명</label>
               <input
                 type="text"
                 name="name"
@@ -82,70 +122,68 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({ pr
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">수량</label>
-                <input
-                  type="text"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">등급</label>
-                <input
-                  type="text"
-                  name="grade"
-                  value={formData.grade}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">재고</label>
-                <input
-                  type="number"
-                  name="stock"
-                  value={formData.stock}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">매입가</label>
-                <input
-                  type="number"
-                  name="purchasePrice"
-                  value={formData.purchasePrice}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">규격</label>
+              <input
+                type="text"
+                name="standard"
+                value={formData.standard}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">판매가</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">재고</label>
               <input
                 type="number"
-                name="sellingPrice"
-                value={formData.sellingPrice}
+                name="stock"
+                value={formData.stock}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">상품 설명</label>
-              <textarea
-                name="description"
-                value={formData.description}
+              <label className="block text-sm font-medium text-gray-700 mb-1">입고단가</label>
+              <input
+                type="number"
+                name="inboundPrice"
+                value={formData.inboundPrice}
                 onChange={handleInputChange}
-                rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">출고단가</label>
+              <input
+                type="number"
+                name="outboundPrice"
+                value={formData.outboundPrice}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+          </div>
+
+          {/* 이미지 업로드 섹션 */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">상품 이미지</label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              />
+            </div>
+            {formData.image && (
+              <div className="mt-4">
+                <img 
+                  src={URL.createObjectURL(formData.image)} 
+                  alt="상품 이미지 미리보기"
+                  className="max-w-full h-auto rounded-md"
+                />
+              </div>
+            )}
           </div>
         </div>
 

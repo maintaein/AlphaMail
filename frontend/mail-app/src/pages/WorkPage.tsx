@@ -21,11 +21,6 @@ const WorkPage = () => {
     setShowProductDetail(true);
   };
 
-  const handleProductClick = (product: Product) => {
-    setSelectedProduct(product);
-    setShowProductDetail(true);
-  };
-
   const handleBack = () => {
     setShowProductDetail(false);
     setSelectedProduct(null);
@@ -46,7 +41,6 @@ const WorkPage = () => {
         ) : (
           <ProductManagementTemplate 
             onAddProduct={handleAddProduct}
-            onProductClick={handleProductClick}
           />
         );
       case '견적서 관리':

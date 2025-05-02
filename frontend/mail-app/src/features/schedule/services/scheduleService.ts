@@ -1,7 +1,6 @@
 import { Schedule, CreateScheduleRequest, UpdateScheduleRequest, ScheduleResponse } from '../types/schedule';
-import axios from 'axios';
-
-const baseUrl = 'https://65cbb986-d62d-4747-8554-6b4f334092a8.mock.pstmn.io';
+import { api } from '@/shared/lib/axiosInstance';
+import { AxiosResponse } from 'axios';
 
 export const scheduleService = {
   getSchedulesForMonthRange: (selectedMonth: Date) => {
@@ -18,9 +17,9 @@ export const scheduleService = {
       endDate: endDate.toISOString()
     });
     
-    return axios.get<ScheduleResponse>(`${baseUrl}/api/schedules`, {
+    return api.get<ScheduleResponse>('/api/schedules', {
       params: { startDate: startDate.toISOString(), endDate: endDate.toISOString() }
-    }).then(response => {
+    }).then((response: AxiosResponse<ScheduleResponse>) => {
       console.log('scheduleService - API 응답:', response.data);
       
       // API 응답을 Schedule[] 타입으로 변환
@@ -39,7 +38,7 @@ export const scheduleService = {
       });
       
       return { data: schedules };
-    }).catch(error => {
+    }).catch((error: Error) => {
       console.error('scheduleService - API 오류:', error);
       throw error;
     });
@@ -47,19 +46,18 @@ export const scheduleService = {
 
   getSchedulesForWeek: (selectedDate: Date) => {
     const startOfWeek = new Date(selectedDate);
-    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay()); // 일요일로 설정
+    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay());
     startOfWeek.setHours(0, 0, 0, 0);
 
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // 토요일로 설정
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
     endOfWeek.setHours(23, 59, 59, 999);
 
-    return axios.get<ScheduleResponse>(`${baseUrl}/api/schedules`, {
+    return api.get<ScheduleResponse>('/api/schedules', {
       params: { startDate: startOfWeek.toISOString(), endDate: endOfWeek.toISOString() }
-    }).then(response => {
+    }).then((response: AxiosResponse<ScheduleResponse>) => {
       console.log('주간 일정 응답:', response.data);
       
-      // API 응답을 Schedule[] 타입으로 변환
       const schedules: Schedule[] = response.data.items.map((item: ScheduleResponse['items'][0]) => ({
         id: crypto.randomUUID(),
         title: item.name,
@@ -75,10 +73,9 @@ export const scheduleService = {
   },
 
   getSchedulesForSearch: (query: string) => {
-    return axios.get<ScheduleResponse>(`${baseUrl}/api/schedules`, {
+    return api.get<ScheduleResponse>('/api/schedules', {
       params: { query }
-    }).then(response => {
-      // API 응답을 Schedule[] 타입으로 변환
+    }).then((response: AxiosResponse<ScheduleResponse>) => {
       const schedules: Schedule[] = response.data.items.map((item: ScheduleResponse['items'][0]) => ({
         id: crypto.randomUUID(),
         title: item.name,
@@ -102,7 +99,7 @@ export const scheduleService = {
       description: schedule.description
     };
 
-    const response = await axios.post(`${baseUrl}/api/schedules`, requestData);
+    const response = await api.post('/api/schedules', requestData);
     
     // API 응답을 Schedule 타입으로 변환
     return {
@@ -124,7 +121,7 @@ export const scheduleService = {
       description: schedule.description
     };
 
-    const response = await axios.put(`${baseUrl}/api/schedules/${schedule.id}`, requestData);
+    const response = await api.put(`/api/schedules/${schedule.id}`, requestData);
     
     // API 응답을 Schedule 타입으로 변환
     return {
@@ -139,13 +136,13 @@ export const scheduleService = {
 
   // 스케줄 삭제
   deleteSchedule: async (id: string) => {
-    return axios.delete(`${baseUrl}/api/schedules/${id}`).then(response => {
+    return api.delete(`/api/schedules/${id}`).then((response: AxiosResponse) => {
       return response.data;
     });
   },
 
   // 스케줄 완료 변경
   patchSchedule: async (id: string, isCompleted: boolean): Promise<void> => {
-    await axios.patch(`${baseUrl}/api/schedules/${id}`, { is_done: isCompleted });
+    await api.patch(`/api/schedules/${id}`, { is_done: isCompleted });
   }
 }; 

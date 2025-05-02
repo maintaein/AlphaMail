@@ -12,6 +12,8 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
   onSelect,
   onProductClick,
 }) => {
+  console.log('Product in Row:', product);
+
   return (
     <tr className={`border-b hover:bg-gray-50 ${product.isSelected ? 'bg-blue-50' : ''}`}>
       <td className="p-4">
@@ -35,11 +37,10 @@ export const ProductTableRow: React.FC<ProductTableRowProps> = ({
           <span>{product.name}</span>
         )}
       </td>
-      <td className="p-4 text-center">{product.quantity}</td>
-      <td className="p-4 text-center">{product.grade}</td>
+      <td className="p-4 text-center">{product.standard}</td>
       <td className="p-4 text-center">{product.stock}</td>
-      <td className="p-4 text-right">{product.purchasePrice.toLocaleString()}/원</td>
-      <td className="p-4 text-right">{product.sellingPrice.toLocaleString()}/원</td>
+      <td className="p-4 text-right">{product.inboundPrice.toLocaleString()}원</td>
+      <td className="p-4 text-right">{product.outboundPrice.toLocaleString()}원</td>
     </tr>
   );
 }; 
