@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.domain.entity;
 
+import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
 
 import lombok.AccessLevel;
@@ -30,5 +31,26 @@ public class Product {
 			.outboundPrice(request.outboundPrice())
 			.image(request.image())
 			.build();
+	}
+
+	public void update(ModifyProductRequest request) {
+		if (request.name() != null) {
+			this.name = request.name();
+		}
+		if (request.standard() != null) {
+			this.standard = request.standard();
+		}
+		if (request.stock() != null) {
+			this.stock = request.stock();
+		}
+		if (request.inboundPrice() != null) {
+			this.inboundPrice = request.inboundPrice();
+		}
+		if (request.outboundPrice() != null) {
+			this.outboundPrice = request.outboundPrice();
+		}
+		if (request.image() != null) {
+			this.image = request.image();
+		}
 	}
 }
