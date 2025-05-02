@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.alphamail.api.email.domain.entity.Email;
+import com.alphamail.api.email.domain.repository.EmailAttachmentRepository;
 import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class GetEmailUseCase {
 	private final EmailRepository emailRepository;
 	private final EmailFolderRepository emailFolderRepository;
+	private final EmailAttachmentRepository emailAttachmentRepository;
 
 	public EmailListResponse execute(Integer folderId, Integer userId, String query, String sort, Pageable pageable) {
 
@@ -68,7 +70,7 @@ public class GetEmailUseCase {
 				email.getSubject(),
 				email.getReceivedDateTime(),
 				email.getSentDateTime(),
-				calculateSize(email),
+				emailAttachmentRepository.getTotalSizeByEmailId(email.getEmailId()),
 				email.getReadStatus()
 			))
 			.collect(Collectors.toList());
@@ -77,10 +79,6 @@ public class GetEmailUseCase {
 			emailPage.getNumber());
 	}
 
-	private Integer calculateSize(Email email) {
-		return (email.getBodyText() != null ? email.getBodyText().length() : 0)
-			+ (email.getBodyHtml() != null ? email.getBodyHtml().length() : 0);
 
-	}
 
 }
