@@ -1,8 +1,9 @@
 package com.alphamail.api.erp.presentation.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,10 +23,13 @@ import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.erp.presentation.dto.product.GetProductResponse;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductResult;
+import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ApiPaths.ERP_BASE_API)
@@ -38,9 +42,15 @@ public class ProductController {
 
 	// 품목 전체 조회
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.PRODUCTS_BASE_API)
-	public ResponseEntity<Page<GetAllProductsResponse>> getAll(@PathVariable Integer companyId,
-		@RequestParam(required = false) String name, @PageableDefault(size = 10) Pageable pageable) {
-		Page<GetAllProductsResponse> response = getAllProductsUseCase.execute(companyId, name, pageable);
+	public ResponseEntity<GetPageResponse<GetAllProductsResponse>> getAll(@PathVariable Integer companyId,
+		@RequestParam(name = "query", required = false) String query, @RequestParam(defaultValue = "0") int page,
+		@RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "0") int sort) {
+		Sort.Direction direction = sort == 0 ? Sort.Direction.ASC : Sort.Direction.DESC;
+		Sort sortOption = Sort.by(direction, "name");
+
+		Pageable pageable = PageRequest.of(page, size, sortOption);
+
+		GetPageResponse<GetAllProductsResponse> response = getAllProductsUseCase.execute(companyId, query, pageable);
 
 		return ResponseEntity.ok(response);
 	}

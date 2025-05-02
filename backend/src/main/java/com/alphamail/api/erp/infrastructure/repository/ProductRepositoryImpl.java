@@ -28,9 +28,9 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public Page<Product> findByCompanyIdAndNameContaining(Integer companyId, String name, Pageable pageable) {
+	public Page<Product> findByCompanyIdAndNameContainingIgnoreCase(Integer companyId, String name, Pageable pageable) {
 		return productJpaRepository
-			.findByCompanyIdAndNameContaining(companyId, name, pageable)
+			.findByCompanyIdAndNameContainingIgnoreCase(companyId, name, pageable)
 			.map(productMapper::toDomain);
 	}
 

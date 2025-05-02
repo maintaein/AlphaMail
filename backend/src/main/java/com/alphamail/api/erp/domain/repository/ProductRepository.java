@@ -11,7 +11,7 @@ public interface ProductRepository {
 
 	Page<Product> findByCompanyId(Integer companyId, Pageable pageable);
 
-	Page<Product> findByCompanyIdAndNameContaining(Integer companyId, String name, Pageable pageable);
+	Page<Product> findByCompanyIdAndNameContainingIgnoreCase(Integer companyId, String name, Pageable pageable);
 
 	Optional<Product> findById(Integer productId);
 
