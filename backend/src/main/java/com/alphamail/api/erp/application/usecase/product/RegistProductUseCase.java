@@ -26,7 +26,8 @@ public class RegistProductUseCase {
 		// 1. 품목 중복 체크
 		Optional<Product> duplicatedProduct = productRepository.duplicateProduct(product.getCompanyId(),
 			product.getName(),
-			product.getStandard());
+			product.getStandard(),
+			product.getInboundPrice());
 
 		if (duplicatedProduct.isPresent()) {
 			return RegistProductResult.duplicated();

@@ -42,9 +42,9 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard) {
+	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard, Long inboundPrice) {
 		return productJpaRepository
-			.findByCompanyIdAndNameAndStandard(companyId, name, standard)
+			.findByCompanyIdAndNameAndStandardAndInboundPrice(companyId, name, standard, inboundPrice)
 			.map(productMapper::toDomain);
 	}
 

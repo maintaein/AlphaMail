@@ -15,7 +15,7 @@ public interface ProductRepository {
 
 	Optional<Product> findById(Integer productId);
 
-	Optional<Product> duplicateProduct(Integer companyId, String name, String standard);
+	Optional<Product> duplicateProduct(Integer companyId, String name, String standard, Long inboundPrice);
 
 	Product save(Product product);
 
