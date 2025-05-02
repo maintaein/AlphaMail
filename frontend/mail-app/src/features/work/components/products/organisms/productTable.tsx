@@ -8,15 +8,13 @@ interface ProductTableProps {
   onProductClick?: (product: Product) => void;
   onSelectProduct?: (id: number) => void;
   selectedProductIds?: Set<number>;
-  searchQuery?: string;
 }
 
 export const ProductTable: React.FC<ProductTableProps> = ({ 
   companyId, 
   onProductClick,
   onSelectProduct,
-  selectedProductIds = new Set(),
-  searchQuery = ''
+  selectedProductIds = new Set()
 }) => {
   const {
     products,
@@ -31,11 +29,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
     handleSizeChange,
     handleSortChange
   } = usePagedProducts({
-    companyId,
-    initialPage: 1,
-    initialSize: 10,
-    initialSort: 0,
-    searchQuery
+    companyId
   });
 
   if (isLoading) return <div>로딩 중...</div>;

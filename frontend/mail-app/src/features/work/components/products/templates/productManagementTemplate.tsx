@@ -101,7 +101,6 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
             onProductClick={handleProductClick}
             onSelectProduct={toggleProductSelection}
             selectedProductIds={selectedProductIds}
-            searchQuery={keyword}
           />
         </div>
       </div>
