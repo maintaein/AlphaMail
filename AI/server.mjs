@@ -1,8 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import ocrRoutes from './routes/ocr.js';
-import mailRoutes from './routes/mail.js';
+import ocrRoutes from './routes/ocr.mjs';
+import mailRoutes from './routes/mail.mjs';
 
 dotenv.config();
 
