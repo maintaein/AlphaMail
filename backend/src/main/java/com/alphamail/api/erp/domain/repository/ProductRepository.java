@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface ProductRepository {
 	Optional<Product> duplicateProduct(Integer companyId, String name, String standard, Long inboundPrice);
 
 	Product save(Product product);
+
+	void deleteAllByIds(List<Integer> ids);
 
 	void delete(Integer productId);
 }

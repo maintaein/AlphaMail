@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -54,6 +55,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 		ProductEntity savedProductEntity = productJpaRepository.save(productEntity);
 
 		return productMapper.toDomain(savedProductEntity);
+	}
+
+	@Override
+	public void deleteAllByIds(List<Integer> ids) {
+		productJpaRepository.deleteAllByIdInBatch(ids);
 	}
 
 	@Override

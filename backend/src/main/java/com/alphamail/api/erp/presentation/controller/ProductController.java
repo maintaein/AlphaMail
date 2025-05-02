@@ -20,12 +20,14 @@ import com.alphamail.api.erp.application.usecase.product.GetAllProductsUseCase;
 import com.alphamail.api.erp.application.usecase.product.GetProductUseCase;
 import com.alphamail.api.erp.application.usecase.product.ModifyProductUseCase;
 import com.alphamail.api.erp.application.usecase.product.RegistProductUseCase;
+import com.alphamail.api.erp.application.usecase.product.RemoveAllProductsUseCase;
 import com.alphamail.api.erp.application.usecase.product.RemoveProductUseCase;
 import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.erp.presentation.dto.product.GetProductResponse;
 import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductResponse;
+import com.alphamail.api.erp.presentation.dto.product.RemoveAllProductsRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.common.constants.ApiPaths;
 
@@ -40,6 +42,7 @@ public class ProductController {
 	private final GetProductUseCase getProductUseCase;
 	private final RegistProductUseCase registProductUseCase;
 	private final ModifyProductUseCase modifyProductUseCase;
+	private final RemoveAllProductsUseCase removeAllProductsUseCase;
 	private final RemoveProductUseCase removeProductUseCase;
 
 	// 품목 전체 조회
@@ -96,6 +99,15 @@ public class ProductController {
 		}
 
 		return ResponseEntity.ok(new RegistProductResponse(result.id()));
+	}
+
+	// 품목 다중 삭제하기
+	@DeleteMapping(ApiPaths.PRODUCTS_BASE_API)
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllProductsRequest removeAllProductsRequest) {
+		boolean deleted = removeAllProductsUseCase.execute(removeAllProductsRequest);
+
+		return deleted ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
+			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
 	// 품목 삭제하기
