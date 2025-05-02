@@ -34,17 +34,28 @@ export const QuoteManagementTemplate: React.FC<QuoteManagementTemplateProps> = (
     // TODO: API 호출로 견적서 상세 정보 가져오기
     const quoteDetail: QuoteDetail = {
       quote_no: quote.quote_no,
+      order_no: '',
+      date: new Date().toISOString().split('T')[0],
       client_name: quote.client_name,
       business_no: '',
       representative: '',
+      business_type: '',
+      business_category: '',
       manager: quote.user_name,
+      client_manager: '',
+      client_contact: '',
+      payment_condition: '',
+      delivery_date: '',
+      address: '',
       products: [
         {
           name: quote.product_name,
           standard: '',
           quantity: 1,
           unit_price: quote.price,
-          amount: quote.price,
+          supply_amount: quote.price,
+          tax_amount: Math.round(quote.price * 0.1),
+          amount: quote.price + Math.round(quote.price * 0.1),
         },
       ],
     };
