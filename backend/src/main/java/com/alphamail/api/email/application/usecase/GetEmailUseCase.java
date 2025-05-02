@@ -16,6 +16,7 @@ import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.EmailResponse;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -49,7 +50,6 @@ public class GetEmailUseCase {
 			Sort.by(direction, sortField)
 		);
 
-
 		Page<Email> emailPage;
 
 		if (StringUtils.hasText(query)) {
@@ -78,8 +78,8 @@ public class GetEmailUseCase {
 	}
 
 	private Integer calculateSize(Email email) {
-		return (email.getBodyText() != null ? email.getBodyText().length() : 0) +
-			(email.getBodyHtml() != null ? email.getBodyHtml().length() : 0);
+		return (email.getBodyText() != null ? email.getBodyText().length() : 0)
+			+ (email.getBodyHtml() != null ? email.getBodyHtml().length() : 0);
 
 	}
 

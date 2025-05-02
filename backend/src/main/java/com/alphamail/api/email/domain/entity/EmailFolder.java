@@ -10,11 +10,8 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class EmailFolder {
 
-	private Integer EmailFolderId;
-	private Integer UserId;
-	private String EmailFolderName;
-
-
-
+	private Integer emailFolderId;
+	private Integer userId;
+	private String emailFolderName;
 
 }

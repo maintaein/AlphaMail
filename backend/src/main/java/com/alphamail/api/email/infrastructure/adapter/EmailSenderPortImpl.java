@@ -75,7 +75,7 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 				MimeBodyPart htmlPart = new MimeBodyPart();
 				htmlPart.setContent(email.getBodyHtml(), "text/html; charset=UTF-8");
 				multipart.addBodyPart(htmlPart);
-			}else {
+			} else {
 				// HTML이 없는 경우 빈 HTML 설정
 				MimeBodyPart htmlPart = new MimeBodyPart();
 				htmlPart.setContent("<div></div>", "text/html; charset=UTF-8");
@@ -107,7 +107,7 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 
 		} catch (MessageRejectedException e) {
 			throw new InternalServerException(ErrorMessage.FILE_UPLOAD_FAIL);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			throw new InternalServerException(ErrorMessage.INTERNAL_SERVER_ERROR);
 		}
 	}

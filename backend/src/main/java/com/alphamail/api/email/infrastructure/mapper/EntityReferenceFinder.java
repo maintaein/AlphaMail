@@ -7,6 +7,7 @@ import com.alphamail.api.email.infrastructure.entity.EmailFolderEntity;
 import com.alphamail.api.email.infrastructure.repository.EmailFolderJpaRepository;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 import com.alphamail.api.user.infrastructure.repository.UserJpaRepository;
+
 import lombok.AllArgsConstructor;
 
 @Component

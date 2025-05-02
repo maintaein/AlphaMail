@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.port.EmailSenderPort;
+
 import lombok.RequiredArgsConstructor;
 
 @Service

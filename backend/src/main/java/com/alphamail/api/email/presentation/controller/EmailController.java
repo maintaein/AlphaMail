@@ -1,8 +1,6 @@
 package com.alphamail.api.email.presentation.controller;
 
-
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +16,7 @@ import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.application.usecase.GetEmailUseCase;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
+
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -52,7 +51,6 @@ public class EmailController {
 		Integer userId = 1;
 
 		EmailListResponse emails = getEmailUseCase.execute(folderId, userId, query, sort, pageable);
-
 
 		return ResponseEntity.ok(emails);
 

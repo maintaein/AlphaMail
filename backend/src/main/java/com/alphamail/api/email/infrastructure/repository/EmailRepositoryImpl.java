@@ -1,6 +1,5 @@
 package com.alphamail.api.email.infrastructure.repository;
 
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -57,7 +56,8 @@ public class EmailRepositoryImpl implements EmailRepository {
 
 	@Override
 	public Page<Email> searchByFolderIdAndUserId(Integer folderId, Integer userId, String query, Pageable pageable) {
-		Page<EmailEntity> emailEntities = emailJpaRepository.findByFolder_EmailFolderIdAndUser_UserIdAndSubjectContaining(
+		Page<EmailEntity> emailEntities = emailJpaRepository
+			.findByFolder_EmailFolderIdAndUser_UserIdAndSubjectContaining(
 			folderId, userId, query, pageable);
 
 		return emailEntities.map(emailMapper::toDomain);
