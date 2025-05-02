@@ -1,16 +1,18 @@
 import React from 'react';
-import { Quote } from '../../../types/quote';
+import { Quote, QuoteDetail } from '../../../types/quote';
 import { QuoteSearchBar, QuoteSearchParams } from '../molecules/quoteSearchBar';
 import { QuoteTable } from '../organisms/quoteTable';
 import { useQuoteStore } from '../../../stores/quoteStore';
 
 interface QuoteManagementTemplateProps {
   onAddQuote?: () => void;
+  onQuoteClick?: (quote: QuoteDetail) => void;
   companyId?: number;
 }
 
 export const QuoteManagementTemplate: React.FC<QuoteManagementTemplateProps> = ({
   onAddQuote,
+  onQuoteClick,
   companyId = 1,
 }) => {
   const {
@@ -29,6 +31,24 @@ export const QuoteManagementTemplate: React.FC<QuoteManagementTemplateProps> = (
 
   const handleQuoteClick = (quote: Quote) => {
     setSelectedQuote(quote);
+    // TODO: API 호출로 견적서 상세 정보 가져오기
+    const quoteDetail: QuoteDetail = {
+      quote_no: quote.quote_no,
+      client_name: quote.client_name,
+      business_no: '',
+      representative: '',
+      manager: quote.user_name,
+      products: [
+        {
+          name: quote.product_name,
+          standard: '',
+          quantity: 1,
+          unit_price: quote.price,
+          amount: quote.price,
+        },
+      ],
+    };
+    onQuoteClick?.(quoteDetail);
   };
 
   const handleDelete = async () => {

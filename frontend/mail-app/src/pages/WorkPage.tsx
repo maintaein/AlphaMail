@@ -3,20 +3,24 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { ProductManagementTemplate } from '@/features/work/components/products/templates/productManagementTemplate';
 import { ProductDetailTemplate } from '@/features/work/components/products/templates/productDetailTemplate';
 import { QuoteManagementTemplate } from '@/features/work/components/quotes/templates/quoteManagementTemplate';
+import { QuoteDetailTemplate } from '@/features/work/components/quotes/templates/quoteDetailTemplate';
 import { useState, useEffect } from 'react';
 import { Product } from '@/features/work/types/product';
+import { QuoteDetail } from '@/features/work/types/quote';
 
 const WorkPage = () => {
   const { activeItem } = useSidebarStore();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showProductDetail, setShowProductDetail] = useState(false);
   const [showQuoteDetail, setShowQuoteDetail] = useState(false);
+  const [selectedQuote, setSelectedQuote] = useState<QuoteDetail | null>(null);
 
   // activeItem이 변경될 때 상세 화면 상태 초기화
   useEffect(() => {
     setShowProductDetail(false);
     setSelectedProduct(null);
     setShowQuoteDetail(false);
+    setSelectedQuote(null);
   }, [activeItem]);
 
   const handleAddProduct = () => {
@@ -25,13 +29,27 @@ const WorkPage = () => {
   };
 
   const handleAddQuote = () => {
+    setSelectedQuote(null);
     setShowQuoteDetail(true);
+  };
+
+  const handleQuoteClick = (quote: QuoteDetail) => {
+    setSelectedQuote(quote);
+    setShowQuoteDetail(true);
+  };
+
+  const handleQuoteSave = (quote: QuoteDetail) => {
+    // TODO: API 호출로 견적서 저장
+    console.log('견적서 저장:', quote);
+    setShowQuoteDetail(false);
+    setSelectedQuote(null);
   };
 
   const handleBack = () => {
     setShowProductDetail(false);
     setSelectedProduct(null);
     setShowQuoteDetail(false);
+    setSelectedQuote(null);
   };
 
   const renderTemplate = () => {
@@ -53,10 +71,15 @@ const WorkPage = () => {
         );
       case '견적서 관리':
         return showQuoteDetail ? (
-          <div className="p-4">견적서 상세 템플릿</div>
+          <QuoteDetailTemplate 
+            quote={selectedQuote || undefined}
+            onBack={handleBack}
+            onSave={handleQuoteSave}
+          />
         ) : (
           <QuoteManagementTemplate 
             onAddQuote={handleAddQuote}
+            onQuoteClick={handleQuoteClick}
           />
         );
       default:
