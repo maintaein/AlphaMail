@@ -7,8 +7,10 @@ public record EmailResponse(
 	String sender,
 	String subject,
 	LocalDateTime receivedDateTime,
+	LocalDateTime sentDateTime,
 	Integer size,
 	Boolean readStatus
+
 ) {
 
 }

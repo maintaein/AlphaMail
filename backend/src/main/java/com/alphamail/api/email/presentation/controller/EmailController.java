@@ -42,7 +42,8 @@ public class EmailController {
 	@GetMapping
 	public ResponseEntity<EmailListResponse> getAllEmails(@RequestParam Integer folderId,
 		@RequestParam(required = false) String query,
-		@PageableDefault(page = 0, size = 20, sort = "receivedDateTime", direction = Sort.Direction.DESC) Pageable pageable,
+		@RequestParam(required = false, defaultValue = "desc") String sort,
+		@PageableDefault(page = 0, size = 20) Pageable pageable,
 		@AuthenticationPrincipal UserDetails userDetails) {
 
 		// Integer userId = ((CustomUserDetails) userDetails).getId();
@@ -50,7 +51,7 @@ public class EmailController {
 		//test용 임의 유저아이디
 		Integer userId = 1;
 
-		EmailListResponse emails = getEmailUseCase.execute(folderId, userId, query, pageable);
+		EmailListResponse emails = getEmailUseCase.execute(folderId, userId, query, sort, pageable);
 
 
 		return ResponseEntity.ok(emails);
