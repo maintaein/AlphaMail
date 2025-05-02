@@ -5,10 +5,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alphamail.api.erp.application.dto.RegistProductResult;
 import com.alphamail.api.erp.domain.entity.Product;
 import com.alphamail.api.erp.domain.repository.ProductRepository;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
-import com.alphamail.api.erp.presentation.dto.product.RegistProductResult;
 
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +38,7 @@ public class RegistProductUseCase {
 			return RegistProductResult.saveFailed();
 		}
 
-		return RegistProductResult.saveSuccess();
+		return RegistProductResult.saveSuccess(savedProduct.getProductId());
 	}
 
 }
