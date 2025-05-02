@@ -1,5 +1,8 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.email.domain.entity.EmailFolder;
@@ -28,6 +31,14 @@ public class EmailFolderRepositoryImpl implements EmailFolderRepository {
 	public String getFolderNameById(Integer folderId) {
 		EmailFolderEntity folderEntity = emailFolderJpaRepository.findById(folderId).orElse(null);
 		return folderEntity.getName();
+	}
+
+	@Override
+	public List<EmailFolder> findAllByUserId(Integer userId) {
+		List<EmailFolderEntity> folders = emailFolderJpaRepository.findAllByUser_UserId(userId);
+		return folders.stream()
+			.map(emailFolderMapper::toDomain)
+			.collect(Collectors.toList());
 	}
 
 	@Override

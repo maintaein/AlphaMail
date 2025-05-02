@@ -1,5 +1,7 @@
 package com.alphamail.api.email.presentation.controller;
 
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -14,18 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.application.usecase.GetEmailUseCase;
+import com.alphamail.api.email.application.usecase.GetFolderUseCase;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
+import com.alphamail.api.email.presentation.dto.FolderResponse;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/emails")
+@RequestMapping("/api/mails")
 @RequiredArgsConstructor
 public class EmailController {
 
 	private final EmailService emailService;
 	private final GetEmailUseCase getEmailUseCase;
+	private final GetFolderUseCase getFolderUseCase;
 
 	@PostMapping
 	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest, @AuthenticationPrincipal
@@ -53,6 +58,17 @@ public class EmailController {
 		EmailListResponse emails = getEmailUseCase.execute(folderId, userId, query, sort, pageable);
 
 		return ResponseEntity.ok(emails);
+
+	}
+
+	@GetMapping("/folders")
+	public ResponseEntity<List<FolderResponse>> getUserFolders(@AuthenticationPrincipal UserDetails userDetails) {
+		Integer userId = 1;
+
+		List<FolderResponse> folders = getFolderUseCase.execute(userId);
+
+
+		return ResponseEntity.ok(folders);
 
 	}
 
