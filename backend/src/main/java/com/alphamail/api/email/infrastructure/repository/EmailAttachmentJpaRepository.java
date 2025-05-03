@@ -1,5 +1,7 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,4 +11,6 @@ public interface EmailAttachmentJpaRepository extends JpaRepository<EmailAttachm
 
 	@Query("SELECT SUM(e.size) FROM EmailAttachmentEntity e WHERE e.email.emailId = :emailId")
 	Integer sumSizeByEmailId(Integer emailId);
+
+	List<EmailAttachmentEntity> findAllByEmail_EmailId(Integer emailId);
 }

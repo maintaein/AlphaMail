@@ -1,16 +1,40 @@
 package com.alphamail.api.email.infrastructure.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.infrastructure.entity.EmailAttachmentEntity;
 
-@Mapper(componentModel = "spring", uses = {EntityReferenceFinder.class})
-public interface EmailAttachmentMapper {
+@Component
+public class EmailAttachmentMapper {
 
-	EmailAttachment toDomain(EmailAttachmentEntity entity);
+	public EmailAttachment toDomain(EmailAttachmentEntity entity) {
+		if (entity == null) {
+			return null;
+		}
 
-	EmailAttachmentEntity toEntity(EmailAttachment domain);
+		return EmailAttachment.builder()
+			.id(entity.getEmailAttachmentId())
+			.name(entity.getName())
+			.path(entity.getPath())
+			.size(entity.getSize())
+			.type(entity.getType())
+			.build();
+	}
 
+	public EmailAttachmentEntity toEntity(EmailAttachment domain) {
+		if (domain == null) {
+			return null;
+		}
+
+		return new EmailAttachmentEntity(
+			null,  // id 자동 생성
+			null,  // user
+			null,  // email
+			domain.getName(),
+			domain.getPath(),
+			domain.getSize(),
+			domain.getType()
+		);
+	}
 }

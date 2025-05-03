@@ -1,6 +1,8 @@
 package com.alphamail.api.email.domain.repository;
 
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +21,6 @@ public interface EmailRepository {
 	int countByFolderIdAndUserId(Integer folderId, Integer userId);
 
 	int countReadByFolderIdAndUserId(Integer folderId, Integer userId);
+
+	Optional<Email> findByIdAndUserId(Integer emailId, Integer userId);
 }

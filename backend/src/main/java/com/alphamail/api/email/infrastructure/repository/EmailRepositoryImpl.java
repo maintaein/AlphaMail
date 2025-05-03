@@ -1,5 +1,7 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -44,6 +46,13 @@ public class EmailRepositoryImpl implements EmailRepository {
 	@Override
 	public int countReadByFolderIdAndUserId(Integer folderId, Integer userId) {
 		return (int)emailJpaRepository.countByFolder_EmailFolderIdAndUser_UserIdAndReadStatusTrue(folderId, userId);
+	}
+
+	@Override
+	public Optional<Email> findByIdAndUserId(Integer emailId, Integer userId) {
+		return emailJpaRepository.findByEmailIdAndUser_UserId(emailId, userId)
+			.map(emailMapper::toDomain);
+
 	}
 
 	@Override

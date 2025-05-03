@@ -2,8 +2,10 @@ package com.alphamail.api.email.presentation.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.alphamail.api.email.domain.entity.Email;
+import com.alphamail.api.email.domain.entity.EmailAttachment;
 
 public record EmailDetailResponse(
 	Integer id,
@@ -22,7 +24,12 @@ public record EmailDetailResponse(
 	String emailType
 
 ) {
-	public static EmailDetailResponse from(Email email, List<EmailAttachmentResponse> attachments) {
+	public static EmailDetailResponse from(Email email, List<EmailAttachment> attachments) {
+
+		List<EmailAttachmentResponse> attachmentResponses = attachments.stream()
+			.map(EmailAttachmentResponse::from)
+			.collect(Collectors.toList());
+
 		return new EmailDetailResponse(
 			email.getEmailId(),
 			email.getSender(),
@@ -34,7 +41,7 @@ public record EmailDetailResponse(
 			email.getSentDateTime(),
 			email.getReadStatus(),
 			email.getHasAttachment(),
-			attachments,
+			attachmentResponses,
 			email.getThreadId(),
 			email.getInReplyTo(),
 			email.getEmailType().name()
