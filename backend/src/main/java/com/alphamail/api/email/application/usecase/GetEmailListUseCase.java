@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class GetEmailUseCase {
+public class GetEmailListUseCase {
 	private final EmailRepository emailRepository;
 	private final EmailFolderRepository emailFolderRepository;
 	private final EmailAttachmentRepository emailAttachmentRepository;

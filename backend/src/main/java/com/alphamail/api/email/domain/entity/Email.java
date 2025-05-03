@@ -1,6 +1,7 @@
 package com.alphamail.api.email.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
