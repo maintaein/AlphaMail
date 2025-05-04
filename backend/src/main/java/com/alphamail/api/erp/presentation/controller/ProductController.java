@@ -26,7 +26,7 @@ import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.erp.presentation.dto.product.GetProductResponse;
 import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
-import com.alphamail.api.erp.presentation.dto.product.RemoveAllProductsRequest;
+import com.alphamail.api.global.dto.RemoveAllErpRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.common.constants.ApiPaths;
@@ -103,8 +103,8 @@ public class ProductController {
 
 	// 품목 다중 삭제하기
 	@DeleteMapping(ApiPaths.PRODUCTS_BASE_API)
-	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllProductsRequest removeAllProductsRequest) {
-		boolean deleted = removeAllProductsUseCase.execute(removeAllProductsRequest);
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest removeAllErpRequest) {
+		boolean deleted = removeAllProductsUseCase.execute(removeAllErpRequest);
 
 		return deleted ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
 			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.erp.domain.repository.ProductRepository;
-import com.alphamail.api.erp.presentation.dto.product.RemoveAllProductsRequest;
+import com.alphamail.api.global.dto.RemoveAllErpRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +17,7 @@ public class RemoveAllProductsUseCase {
 
 	private final ProductRepository productRepository;
 
-	public boolean execute(RemoveAllProductsRequest request) {
+	public boolean execute(RemoveAllErpRequest request) {
 		List<Integer> ids = request.ids();
 		if (ids == null || ids.isEmpty()) {
 			return false;
