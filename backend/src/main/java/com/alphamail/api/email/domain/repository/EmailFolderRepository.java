@@ -8,6 +8,8 @@ public interface EmailFolderRepository {
 
 	Integer getSentFolderId(Integer userId);
 
+	Integer getInboxFolderId(Integer userId);
+
 	EmailFolder findById(Integer id);
 
 	String getFolderNameById(Integer folderId);
