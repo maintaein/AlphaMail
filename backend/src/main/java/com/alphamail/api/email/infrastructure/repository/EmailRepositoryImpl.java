@@ -57,18 +57,17 @@ public class EmailRepositoryImpl implements EmailRepository {
 
 	}
 
-	@Override
-	public List<Email> findAllByIdsAndUserId(List<Integer> emailIds, Integer userId) {
-		List<EmailEntity> entities = emailJpaRepository.findAllByEmailIdInAndUser_UserId(emailIds, userId);
-		return entities.stream()
-			.map(emailMapper::toDomain)
-			.collect(Collectors.toList());
-	}
 
 	@Override
 	public void updateFolder(List<Integer> emailIds, Integer folderId) {
 		emailJpaRepository.updateFolderByEmailIds(emailIds, folderId);
 
+	}
+
+	@Override
+	public boolean validateEmailOwnership(List<Integer> emailIds, Integer userId) {
+		long count = emailJpaRepository.countByEmailIdInAndUser_UserId(emailIds, userId);
+		return count == emailIds.size();
 	}
 
 	@Override

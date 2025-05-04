@@ -25,7 +25,7 @@ public interface EmailRepository {
 
 	Optional<Email> findByIdAndUserId(Integer emailId, Integer userId);
 
-	List<Email> findAllByIdsAndUserId(List<Integer> integers, Integer userId);
-
 	void updateFolder(List<Integer> integers, Integer emailFolderId);
+
+	boolean validateEmailOwnership(List<Integer> emailIds, Integer userId);
 }
