@@ -43,6 +43,7 @@ public class EmailController {
 	private final DeleteMailsUseCase deleteMailsUseCase;
 	private final ReceiveEmailUseCase receiveEmailUseCase;
 
+
 	@PostMapping("/ses")
 	public ResponseEntity<Void> receiveEmail(@RequestBody ReceiveEmailRequest receiveEmailRequest){
 		receiveEmailUseCase.excute(receiveEmailRequest);
