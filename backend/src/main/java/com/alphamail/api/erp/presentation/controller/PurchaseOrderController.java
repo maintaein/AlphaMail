@@ -16,6 +16,7 @@ import com.alphamail.api.erp.application.usecase.purchaseorder.GetPurchaseOrderU
 import com.alphamail.api.erp.application.usecase.purchaseorder.ModifyPurchaseOrderUseCase;
 import com.alphamail.api.erp.application.usecase.purchaseorder.RegistPurchaseOrderUseCase;
 import com.alphamail.api.erp.application.usecase.purchaseorder.RemoveAllPurchaseOrdersUseCase;
+import com.alphamail.api.erp.application.usecase.purchaseorder.RemovePurchaseOrderUseCase;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.GetPurchaseOrderResponse;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.RegistPurchaseOrderRequest;
 import com.alphamail.api.global.dto.RegistErpResponse;
@@ -33,6 +34,7 @@ public class PurchaseOrderController {
 	private final RegistPurchaseOrderUseCase registPurchaseOrderUseCase;
 	private final ModifyPurchaseOrderUseCase modifyPurchaseOrderUseCase;
 	private final RemoveAllPurchaseOrdersUseCase removeAllPurchaseOrdersUseCase;
+	private final RemovePurchaseOrderUseCase removePurchaseOrderUseCase;
 
 	// 발주서 상세 조회
 	@GetMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
@@ -87,5 +89,11 @@ public class PurchaseOrderController {
 
 		return deleted ? ResponseEntity.ok().build() :
 			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+
+	// 발주서 삭제하기
+	@DeleteMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
+	public ResponseEntity<Void> remove(@PathVariable Integer orderId) {
+		boolean deleted = removePurchaseOrderUseCase.execute(orderId);
 	}
 }
