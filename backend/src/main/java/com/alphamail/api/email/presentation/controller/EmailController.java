@@ -22,7 +22,10 @@ import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
 import com.alphamail.api.email.application.usecase.ReceiveEmailUseCase;
+<<<<<<< HEAD
 import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
+=======
+>>>>>>> c6611ec36cd3cd7326b401819e9ad6d7329e0989
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.FolderResponse;
