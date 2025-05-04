@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.AccessLevel;
@@ -20,7 +21,7 @@ public class Email {
 	private Integer userId;
 	private String messageId;
 	private String sender;
-	private String recipients;
+	private List<String> recipients;
 	private String subject;
 	private String bodyText;
 	private String bodyHtml;
@@ -44,7 +45,7 @@ public class Email {
 			.userId(userId)
 			.messageId(generateMessageId())
 			.sender(request.sender())
-			.recipients(String.join(",", request.recipients()))
+			.recipients(request.recipients())
 			.subject(request.subject())
 			.bodyText(request.bodyText())
 			.bodyHtml(request.bodyHtml())
@@ -70,6 +71,24 @@ public class Email {
 			return inReplyTo.replaceAll("[<>]", "").split("@")[0];
 		}
 		return UUID.randomUUID().toString();
+	}
+
+	public static Email createForReceiving(ReceiveEmailRequest request, Integer userId, Integer inboxFolderId) {
+		return Email.builder()
+			.userId(userId)
+			.folderId(inboxFolderId)
+			.messageId(request.messageId())
+			.sender(request.from())
+			.recipients(request.to())
+			.subject(request.subject())
+			.bodyText(request.text())
+			.bodyHtml(request.html())
+			.receivedDateTime(request.date())
+			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
+			.threadId(generateThreadId(request.messageId()))
+			.emailType(EmailType.RECEIVED)
+			.readStatus(false)
+			.build();
 	}
 
 }
