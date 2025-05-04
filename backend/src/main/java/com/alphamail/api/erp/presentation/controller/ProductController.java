@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphamail.api.erp.application.dto.RegistProductResult;
+import com.alphamail.api.erp.application.dto.RegistResultDto;
 import com.alphamail.api.erp.application.usecase.product.GetAllProductsUseCase;
 import com.alphamail.api.erp.application.usecase.product.GetProductUseCase;
 import com.alphamail.api.erp.application.usecase.product.ModifyProductUseCase;
@@ -75,11 +75,11 @@ public class ProductController {
 	// 품목 등록하기
 	@PostMapping(ApiPaths.PRODUCTS_BASE_API)
 	public ResponseEntity<?> regist(@RequestBody RegistProductRequest registProductRequest) {
-		RegistProductResult result = registProductUseCase.execute(registProductRequest);
+		RegistResultDto result = registProductUseCase.execute(registProductRequest);
 
-		if (result.status() == RegistProductResult.Status.DUPLICATED) {
+		if (result.status() == RegistResultDto.Status.DUPLICATED) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-		} else if (result.status() == RegistProductResult.Status.SAVE_FAILED) {
+		} else if (result.status() == RegistResultDto.Status.SAVE_FAILED) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 
@@ -90,11 +90,11 @@ public class ProductController {
 	@PutMapping(ApiPaths.PRODUCTS_BASE_API + "/{productId}")
 	public ResponseEntity<?> modify(@PathVariable Integer productId,
 		@RequestBody ModifyProductRequest modifyProductRequest) {
-		RegistProductResult result = modifyProductUseCase.execute(productId, modifyProductRequest);
+		RegistResultDto result = modifyProductUseCase.execute(productId, modifyProductRequest);
 
-		if (result.status() == RegistProductResult.Status.NOT_FOUND) {
+		if (result.status() == RegistResultDto.Status.NOT_FOUND) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-		} else if (result.status() == RegistProductResult.Status.SAVE_FAILED) {
+		} else if (result.status() == RegistResultDto.Status.SAVE_FAILED) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 

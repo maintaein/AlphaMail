@@ -10,9 +10,7 @@ import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.global.dto.GetPageResponse;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

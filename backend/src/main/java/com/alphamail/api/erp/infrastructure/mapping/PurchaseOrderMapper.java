@@ -12,6 +12,7 @@ public interface PurchaseOrderMapper {
 
 	@Mapping(source = "user", target = "userEntity")
 	@Mapping(source = "purchaseOrderProducts", target = "products")
+	@Mapping(source = "purchaseOrderId", target = "id")
 	PurchaseOrderEntity toEntity(PurchaseOrder purchaseOrder);
 
 	@Mapping(source = "userEntity", target = "user")

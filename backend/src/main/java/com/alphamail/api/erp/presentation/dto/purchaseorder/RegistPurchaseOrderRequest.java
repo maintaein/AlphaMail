@@ -12,7 +12,8 @@ public record RegistPurchaseOrderRequest(
 	List<ProductInfo> products
 ) {
 	public record ProductInfo(
-		Integer id,
+		Integer purchaseOrderProductId,
+		Integer productId,
 		Integer count,
 		Long price
 	) {

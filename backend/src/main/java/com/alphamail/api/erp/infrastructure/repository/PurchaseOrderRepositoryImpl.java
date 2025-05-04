@@ -29,9 +29,6 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 	public PurchaseOrder save(PurchaseOrder purchaseOrder) {
 		PurchaseOrderEntity entity = purchaseOrderMapper.toEntity(purchaseOrder);
 
-		System.out.println(entity.getUserEntity().toString());
-		// entity.setUserEntity(purchaseOrder.);
-
 		entity.setProducts(
 			entity.getProducts().stream()
 				.peek(product -> product.setPurchaseOrderEntity(entity))

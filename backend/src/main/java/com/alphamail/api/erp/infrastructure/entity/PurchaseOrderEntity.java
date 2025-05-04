@@ -1,7 +1,10 @@
 package com.alphamail.api.erp.infrastructure.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
@@ -33,7 +36,6 @@ public class PurchaseOrderEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;  // 발주서 아이디
 
-	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity userEntity;
