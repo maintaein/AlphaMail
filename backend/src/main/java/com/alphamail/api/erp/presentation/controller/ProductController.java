@@ -26,7 +26,7 @@ import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.erp.presentation.dto.product.GetProductResponse;
 import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
-import com.alphamail.api.erp.presentation.dto.product.RegistProductResponse;
+import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.api.erp.presentation.dto.product.RemoveAllProductsRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.common.constants.ApiPaths;
@@ -83,7 +83,7 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 		}
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistProductResponse(result.id()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.id()));
 	}
 
 	// 품목 수정하기
@@ -98,7 +98,7 @@ public class ProductController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 		}
 
-		return ResponseEntity.ok(new RegistProductResponse(result.id()));
+		return ResponseEntity.ok(new RegistErpResponse(result.id()));
 	}
 
 	// 품목 다중 삭제하기

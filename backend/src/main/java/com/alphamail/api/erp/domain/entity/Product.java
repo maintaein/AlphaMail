@@ -12,7 +12,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Product {
-	private Integer productId;  // 품목 아이디
+	private final Integer productId;  // 품목 아이디
 	private Integer companyId;  // FK (companies.id)
 	private String name;  // 재고 이름
 	private String standard;  // 규격
@@ -20,6 +20,19 @@ public class Product {
 	private Long inboundPrice;  // 입고 단가
 	private Long outboundPrice;  // 출고 단가
 	private String image;  // 이미지 URL (nullable)
+
+	public static Product of(Integer id) {
+		return Product.builder()
+			.productId(id)
+			.companyId(null)
+			.name(null)
+			.standard(null)
+			.stock(null)
+			.inboundPrice(null)
+			.outboundPrice(null)
+			.image(null)
+			.build();
+	}
 
 	public static Product create(RegistProductRequest request) {
 		return Product.builder()

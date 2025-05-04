@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "purchase_order_products")
@@ -31,11 +32,16 @@ public class PurchaseOrderProductEntity {
 	@Column(name = "price", nullable = false)
 	private Long price;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "purchase_order_id", nullable = false)
 	private PurchaseOrderEntity purchaseOrderEntity;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id", nullable = false)
 	private ProductEntity productEntity;
+
+	@SuppressWarnings("LombokSetterMayBeUsed")
+	public void setPurchaseOrderEntity(PurchaseOrderEntity purchaseOrderEntity) {
+		this.purchaseOrderEntity = purchaseOrderEntity;
+	}
 }

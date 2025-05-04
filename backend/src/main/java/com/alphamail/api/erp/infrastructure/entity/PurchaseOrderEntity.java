@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "purchase_orders")
@@ -32,6 +33,7 @@ public class PurchaseOrderEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;  // 발주서 아이디
 
+	@Setter
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity userEntity;
@@ -57,6 +59,7 @@ public class PurchaseOrderEntity {
 	@Column(name = "order_no", nullable = false, length = 255)
 	private String orderNo;
 
+	@Setter
 	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PurchaseOrderProductEntity> products;
 }

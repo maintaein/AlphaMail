@@ -7,4 +7,6 @@ import com.alphamail.api.erp.domain.entity.PurchaseOrder;
 public interface PurchaseOrderRepository {
 
 	Optional<PurchaseOrder> findById(Integer orderId);
+
+	PurchaseOrder save(PurchaseOrder purchaseOrder);
 }
