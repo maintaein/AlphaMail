@@ -19,6 +19,12 @@ public class UserRepositoryImpl implements UserRepository {
 	private final UserMapper userMapper;
 
 	@Override
+	public Optional<User> findByEmail(String email) {
+		return userJpaRepository.findByEmail(email)
+			.map(userMapper::toDomain);
+	}
+
+	@Override
 	public User findById(Integer id) {
 		UserEntity userEntity = userJpaRepository.findById(id).orElse(null);
 
