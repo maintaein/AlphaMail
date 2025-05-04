@@ -21,10 +21,16 @@ public class EmailFolderRepositoryImpl implements EmailFolderRepository {
 
 	@Override
 	public Integer getSentFolderId(Integer userId) {
-		EmailFolderEntity folderEntity = emailFolderJpaRepository.findByUser_UserIdAndName(userId, "sent");
+		EmailFolderEntity folderEntity = emailFolderJpaRepository.findByUser_UserIdAndName(userId, "SENT");
 
-		return  folderEntity.getEmailFolderId();
+		return folderEntity.getEmailFolderId();
 
+	}
+
+	@Override
+	public Integer getInboxFolderId(Integer userId) {
+		EmailFolderEntity folderEntity = emailFolderJpaRepository.findByUser_UserIdAndName(userId, "INBOX");
+		return folderEntity.getEmailFolderId();
 	}
 
 	@Override
