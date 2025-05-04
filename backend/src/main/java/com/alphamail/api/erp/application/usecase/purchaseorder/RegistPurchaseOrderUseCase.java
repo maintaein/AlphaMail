@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alphamail.api.erp.domain.entity.PurchaseOrder;
 import com.alphamail.api.erp.domain.entity.PurchaseOrderProduct;
 import com.alphamail.api.erp.domain.repository.PurchaseOrderRepository;
+import com.alphamail.api.erp.domain.service.UserReader;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.RegistPurchaseOrderRequest;
+import com.alphamail.api.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,9 +20,15 @@ import lombok.RequiredArgsConstructor;
 public class RegistPurchaseOrderUseCase {
 
 	private final PurchaseOrderRepository purchaseOrderRepository;
+	private final UserReader userReader;
 
 	public PurchaseOrder execute(RegistPurchaseOrderRequest request) {
-		PurchaseOrder order = PurchaseOrder.create(request);
+		User user = userReader.findById(request.userId());
+
+		if (user == null) {
+			return null;
+		}
+		PurchaseOrder order = PurchaseOrder.create(request, user);
 
 		return purchaseOrderRepository.save(order);
 	}

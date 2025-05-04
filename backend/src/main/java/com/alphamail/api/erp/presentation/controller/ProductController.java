@@ -26,9 +26,9 @@ import com.alphamail.api.erp.presentation.dto.product.GetAllProductsResponse;
 import com.alphamail.api.erp.presentation.dto.product.GetProductResponse;
 import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
-import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.api.erp.presentation.dto.product.RemoveAllProductsRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
+import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;

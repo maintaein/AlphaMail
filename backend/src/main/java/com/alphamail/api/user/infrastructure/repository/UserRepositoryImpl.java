@@ -1,5 +1,7 @@
 package com.alphamail.api.user.infrastructure.repository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.user.domain.entity.User;
@@ -15,6 +17,13 @@ public class UserRepositoryImpl implements UserRepository {
 
 	private final UserJpaRepository userJpaRepository;
 	private final UserMapper userMapper;
+
+	@Override
+	public User findById(Integer id) {
+		UserEntity userEntity = userJpaRepository.findById(id).orElse(null);
+
+		return userEntity != null ? userMapper.toDomain(userEntity) : null;
+	}
 
 	@Override
 	public User save(User user) {

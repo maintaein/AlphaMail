@@ -30,9 +30,9 @@ public class PurchaseOrder {
 	private String orderNo;
 	private List<PurchaseOrderProduct> purchaseOrderProducts;
 
-	public static PurchaseOrder create(RegistPurchaseOrderRequest request) {
+	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user) {
 		return PurchaseOrder.builder()
-			.user(User.of(request.userId()))
+			.user(user)
 			.groupId(request.groupId())
 			.clientId(request.clientId())
 			.orderNo(

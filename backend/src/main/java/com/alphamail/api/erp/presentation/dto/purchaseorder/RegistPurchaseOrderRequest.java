@@ -15,5 +15,6 @@ public record RegistPurchaseOrderRequest(
 		Integer id,
 		Integer count,
 		Long price
-	) {}
+	) {
+	}
 }

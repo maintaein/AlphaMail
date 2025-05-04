@@ -27,21 +27,6 @@ public class User {
 	private LocalDateTime updatedAt;
 	private LocalDateTime deletedAt;
 
-	public static User of(Integer id) {
-		return User.builder()
-			.id(UserId.of(id))
-			.groupId(null)
-			.position(null)
-			.name(null)
-			.email(null)
-			.phoneNum(null)
-			.hashedPassword(null)
-			.image(null)
-			.updatedAt(null)
-			.deletedAt(null)
-			.build();
-	}
-
 	public static User create(RegistUserRequest registUserRequest) {
 		return User.builder()
 			.groupId(registUserRequest.groupId())
