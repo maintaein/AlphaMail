@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.email.application.service.EmailService;
+import com.alphamail.api.email.application.usecase.DeleteMailsUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
+import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.FolderResponse;
@@ -35,10 +38,11 @@ public class EmailController {
 	private final GetEmailListUseCase getEmailListUseCase;
 	private final GetFolderUseCase getFolderUseCase;
 	private final GetEmailDetailUseCase getEmailDetailUseCase;
+	private final DeleteMailsUseCase deleteMailsUseCase;
 
 	@PostMapping
 	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest, @AuthenticationPrincipal
-		UserDetails userDetails) {
+	UserDetails userDetails) {
 
 		//test용 임의 유저아이디
 		Integer userId = 1;
@@ -71,7 +75,6 @@ public class EmailController {
 
 		List<FolderResponse> folders = getFolderUseCase.execute(userId);
 
-
 		return ResponseEntity.ok(folders);
 
 	}
@@ -85,5 +88,18 @@ public class EmailController {
 
 		return ResponseEntity.ok(emailDetail);
 	}
+
+	@PatchMapping("/trash")
+	public ResponseEntity<Void> moveMailsToTrash(@RequestBody DeleteMailsRequest request,
+		@AuthenticationPrincipal UserDetails userDetails) {
+
+		//임시용
+		Integer userId = 1;
+
+		deleteMailsUseCase.execute(request, userId);
+		return ResponseEntity.ok().build();
+
+	}
+
 
 }

@@ -13,4 +13,6 @@ public interface EmailFolderRepository {
 	String getFolderNameById(Integer folderId);
 
 	List<EmailFolder> findAllByUserId(Integer userId);
+
+	EmailFolder findByUserIdAndFolderName(Integer userId, String folderName);
 }

@@ -8,6 +8,9 @@ import javax.swing.text.html.Option;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
@@ -27,4 +30,10 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	List<EmailEntity> user(UserEntity user);
 
 	Optional<EmailEntity> findByEmailIdAndUser_UserId(Integer emailId, Integer userId);
+
+	List<EmailEntity> findAllByEmailIdInAndUser_UserId(List<Integer> emailIds, Integer userId);
+
+	@Modifying
+	@Query("UPDATE EmailEntity e SET e.folder.emailFolderId = :folderId WHERE e.emailId IN :emailIds")
+	void updateFolderByEmailIds(@Param("emailIds") List<Integer> emailIds, @Param("folderId") Integer folderId);
 }

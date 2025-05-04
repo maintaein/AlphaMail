@@ -1,6 +1,7 @@
 package com.alphamail.api.email.domain.repository;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -23,4 +24,8 @@ public interface EmailRepository {
 	int countReadByFolderIdAndUserId(Integer folderId, Integer userId);
 
 	Optional<Email> findByIdAndUserId(Integer emailId, Integer userId);
+
+	List<Email> findAllByIdsAndUserId(List<Integer> integers, Integer userId);
+
+	void updateFolder(List<Integer> integers, Integer emailFolderId);
 }

@@ -42,6 +42,12 @@ public class EmailFolderRepositoryImpl implements EmailFolderRepository {
 	}
 
 	@Override
+	public EmailFolder findByUserIdAndFolderName(Integer userId, String folderName) {
+		EmailFolderEntity folderEntity = emailFolderJpaRepository.findByUser_UserIdAndName(userId, folderName);
+		return emailFolderMapper.toDomain(folderEntity);
+	}
+
+	@Override
 	public EmailFolder findById(Integer folderId) {
 		EmailFolderEntity folderEntity = emailFolderJpaRepository.findById(folderId).orElse(null);
 

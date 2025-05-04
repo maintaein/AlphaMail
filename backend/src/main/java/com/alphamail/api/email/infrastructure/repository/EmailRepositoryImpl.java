@@ -1,6 +1,8 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +54,20 @@ public class EmailRepositoryImpl implements EmailRepository {
 	public Optional<Email> findByIdAndUserId(Integer emailId, Integer userId) {
 		return emailJpaRepository.findByEmailIdAndUser_UserId(emailId, userId)
 			.map(emailMapper::toDomain);
+
+	}
+
+	@Override
+	public List<Email> findAllByIdsAndUserId(List<Integer> emailIds, Integer userId) {
+		List<EmailEntity> entities = emailJpaRepository.findAllByEmailIdInAndUser_UserId(emailIds, userId);
+		return entities.stream()
+			.map(emailMapper::toDomain)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public void updateFolder(List<Integer> emailIds, Integer folderId) {
+		emailJpaRepository.updateFolderByEmailIds(emailIds, folderId);
 
 	}
 
