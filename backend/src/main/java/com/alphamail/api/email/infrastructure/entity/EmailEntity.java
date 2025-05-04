@@ -1,12 +1,19 @@
 package com.alphamail.api.email.infrastructure.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.entity.EmailType;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -48,8 +55,9 @@ public class EmailEntity {
 	@Column(nullable = false)
 	private String sender;
 
-	@Column(nullable = false)
-	private String recipients;
+	@Column(columnDefinition = "text[]", nullable = false)
+	@JdbcTypeCode(SqlTypes.ARRAY)
+	private List<String> recipients;
 
 	@Column(nullable = false)
 	private String subject;
