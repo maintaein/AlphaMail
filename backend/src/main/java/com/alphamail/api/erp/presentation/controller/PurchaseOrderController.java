@@ -47,13 +47,17 @@ public class PurchaseOrderController {
 	// 발주서 등록하기
 	@PostMapping(ApiPaths.ORDERS_BASE_API)
 	public ResponseEntity<?> regist(@RequestBody RegistPurchaseOrderRequest request) {
-		PurchaseOrder result = registPurchaseOrderUseCase.execute(request);
+		RegistResultDto result = registPurchaseOrderUseCase.execute(request);
 
-		if (result == null) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+		if (!result.isDone()) {
+			if (result.status() == RegistResultDto.Status.BAD_REQUEST) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+			} else if (result.status() == RegistResultDto.Status.SAVE_FAILED) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			}
 		}
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.getPurchaseOrderId()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.id()));
 	}
 
 	// 발주서 수정하기
