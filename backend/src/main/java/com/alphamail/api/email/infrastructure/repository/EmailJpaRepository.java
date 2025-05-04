@@ -32,10 +32,11 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	Optional<EmailEntity> findByEmailIdAndUser_UserId(Integer emailId, Integer userId);
 
 	@Modifying(clearAutomatically = true)
-	@Query("UPDATE EmailEntity e SET " +
-		"e.originalFolderId = CASE WHEN e.originalFolderId IS NULL THEN e.folder.emailFolderId ELSE e.originalFolderId END, " +
-		"e.folder.emailFolderId = :folderId " +
-		"WHERE e.emailId IN :emailIds")
+	@Query("UPDATE EmailEntity e SET "
+		+ "e.originalFolderId = CASE WHEN e.originalFolderId IS NULL THEN e.folder.emailFolderId "
+		+ "ELSE e.originalFolderId END, "
+		+ "e.folder.emailFolderId = :folderId "
+		+ "WHERE e.emailId IN :emailIds")
 	void updateFolderByEmailIds(@Param("emailIds") List<Integer> emailIds, @Param("folderId") Integer folderId);
 
 	long countByEmailIdInAndUser_UserId(List<Integer> emailIds, Integer userId);

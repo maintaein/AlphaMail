@@ -41,8 +41,8 @@ public class EmailController {
 	private final DeleteMailsUseCase deleteMailsUseCase;
 
 	@PostMapping
-	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest, @AuthenticationPrincipal
-	UserDetails userDetails) {
+	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest,
+		@AuthenticationPrincipal UserDetails userDetails) {
 
 		//test용 임의 유저아이디
 		Integer userId = 1;
