@@ -8,7 +8,8 @@ services:
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-
+      - YOUR_ACCESS_KEY=${YOUR_ACCESS_KEY}
+      - YOUR_SECRET_KEY=${YOUR_SECRET_KEY}
   frontend:
     build: ./frontend/mail-app
     image: alphaMail/frontend:latest

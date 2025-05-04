@@ -14,7 +14,7 @@ public interface UserMapper {
 	@Mapping(source = "userId", target = "id", qualifiedByName = "integerToUserId")
 	User toDomain(UserEntity userEntity);
 
-	@Mapping(source = "id", target = "userId", qualifiedByName = "userIdToInteger", ignore = true)
+	@Mapping(source = "id", target = "userId", qualifiedByName = "userIdToInteger")
 	UserEntity toEntity(User user);
 
 	@Named("integerToUserId")

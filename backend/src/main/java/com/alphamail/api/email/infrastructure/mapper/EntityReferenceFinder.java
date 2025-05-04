@@ -7,6 +7,9 @@ import com.alphamail.api.email.infrastructure.entity.EmailFolderEntity;
 import com.alphamail.api.email.infrastructure.repository.EmailFolderJpaRepository;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 import com.alphamail.api.user.infrastructure.repository.UserJpaRepository;
+import com.alphamail.common.exception.ErrorMessage;
+import com.alphamail.common.exception.NotFoundException;
+
 import lombok.AllArgsConstructor;
 
 @Component
@@ -21,7 +24,7 @@ public class EntityReferenceFinder {
 			throw new IllegalArgumentException("Folder ID cannot be null");
 		}
 		return folderRepository.findById(folderId)
-			.orElseThrow(() -> new RuntimeException("Folder not found with id: " + folderId));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 	}
 
 	@Named("toUserEntity")
@@ -30,6 +33,6 @@ public class EntityReferenceFinder {
 			throw new IllegalArgumentException("User ID cannot be null");
 		}
 		return userRepository.findById(userId)
-			.orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+			.orElseThrow(() -> new NotFoundException(ErrorMessage.MEMBER_NOT_FOUND));
 	}
 }

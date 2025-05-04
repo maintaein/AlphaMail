@@ -1,7 +1,10 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.erp.domain.entity.Product;
@@ -19,9 +22,30 @@ public class ProductRepositoryImpl implements ProductRepository {
 	private final ProductMapper productMapper;
 
 	@Override
-	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard) {
+	public Page<Product> findByCompanyId(Integer companyId, Pageable pageable) {
 		return productJpaRepository
-			.findByCompanyIdAndNameAndStandard(companyId, name, standard)
+			.findByCompanyId(companyId, pageable)
+			.map(productMapper::toDomain);
+	}
+
+	@Override
+	public Page<Product> findByCompanyIdAndNameContainingIgnoreCase(Integer companyId, String name, Pageable pageable) {
+		return productJpaRepository
+			.findByCompanyIdAndNameContainingIgnoreCase(companyId, name, pageable)
+			.map(productMapper::toDomain);
+	}
+
+	@Override
+	public Optional<Product> findById(Integer productId) {
+		return productJpaRepository
+			.findById(productId)
+			.map(productMapper::toDomain);
+	}
+
+	@Override
+	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard, Long inboundPrice) {
+		return productJpaRepository
+			.findByCompanyIdAndNameAndStandardAndInboundPrice(companyId, name, standard, inboundPrice)
 			.map(productMapper::toDomain);
 	}
 
@@ -34,10 +58,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public Optional<Product> findById(Integer productId) {
-		return productJpaRepository
-			.findById(productId)
-			.map(productMapper::toDomain);
+	public void deleteAllByIds(List<Integer> ids) {
+		productJpaRepository.deleteAllByIdInBatch(ids);
 	}
 
 	@Override

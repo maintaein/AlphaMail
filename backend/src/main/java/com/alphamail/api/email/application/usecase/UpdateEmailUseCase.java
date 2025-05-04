@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.repository.EmailRepository;
+
 import lombok.AllArgsConstructor;
 
 @Service

@@ -1,8 +1,10 @@
 package com.alphamail.api.email.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.AccessLevel;
@@ -19,12 +21,12 @@ public class Email {
 	private Integer userId;
 	private String messageId;
 	private String sender;
-	private String recipients;
+	private List<String> recipients;
 	private String subject;
 	private String bodyText;
 	private String bodyHtml;
-	private LocalDateTime receivedDatetime;
-	private LocalDateTime sentDatetime;
+	private LocalDateTime receivedDateTime;
+	private LocalDateTime sentDateTime;
 	private Boolean readStatus;
 	private Boolean hasAttachment;
 	private String inReplyTo;
@@ -43,71 +45,17 @@ public class Email {
 			.userId(userId)
 			.messageId(generateMessageId())
 			.sender(request.sender())
-			.recipients(String.join(",", request.recipients()))
+			.recipients(request.recipients())
 			.subject(request.subject())
 			.bodyText(request.bodyText())
 			.bodyHtml(request.bodyHtml())
-			.sentDatetime(LocalDateTime.now())
+			.sentDateTime(LocalDateTime.now())
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
 			.references(request.references() != null ? String.join(",", request.references()) : null)
 			.threadId(generateThreadId(request.inReplyTo()))
 			.emailType(EmailType.SENT)
 			.emailStatus(EmailStatus.RETRYING)
-			.build();
-	}
-
-
-
-	// 이메일 발송 성공 처리
-	public Email markAsSent() {
-		return Email.builder()
-			.emailId(this.emailId)
-			.folderId(this.folderId)
-			.userId(this.userId)
-			.messageId(this.messageId)
-			.sender(this.sender)
-			.recipients(this.recipients)
-			.subject(this.subject)
-			.bodyText(this.bodyText)
-			.bodyHtml(this.bodyHtml)
-			.receivedDatetime(this.receivedDatetime)
-			.sentDatetime(this.sentDatetime)
-			.readStatus(this.readStatus)
-			.hasAttachment(this.hasAttachment)
-			.inReplyTo(this.inReplyTo)
-			.references(this.references)
-			.threadId(this.threadId)
-			.filePath(this.filePath)
-			.emailType(this.emailType)
-			.emailStatus(EmailStatus.SENT)
-			.originalFolderId(this.originalFolderId)
-			.build();
-	}
-
-	// 이메일 발송 실패 처리
-	public Email markAsFailed() {
-		return Email.builder()
-			.emailId(this.emailId)
-			.folderId(this.folderId)
-			.userId(this.userId)
-			.messageId(this.messageId)
-			.sender(this.sender)
-			.recipients(this.recipients)
-			.subject(this.subject)
-			.bodyText(this.bodyText)
-			.bodyHtml(this.bodyHtml)
-			.receivedDatetime(this.receivedDatetime)
-			.sentDatetime(this.sentDatetime)
-			.readStatus(this.readStatus)
-			.hasAttachment(this.hasAttachment)
-			.inReplyTo(this.inReplyTo)
-			.references(this.references)
-			.threadId(this.threadId)
-			.filePath(this.filePath)
-			.emailType(this.emailType)
-			.emailStatus(EmailStatus.FAILED)
-			.originalFolderId(this.originalFolderId)
 			.build();
 	}
 
@@ -123,6 +71,24 @@ public class Email {
 			return inReplyTo.replaceAll("[<>]", "").split("@")[0];
 		}
 		return UUID.randomUUID().toString();
+	}
+
+	public static Email createForReceiving(ReceiveEmailRequest request, Integer userId, Integer inboxFolderId) {
+		return Email.builder()
+			.userId(userId)
+			.folderId(inboxFolderId)
+			.messageId(request.messageId())
+			.sender(request.from())
+			.recipients(request.to())
+			.subject(request.subject())
+			.bodyText(request.text())
+			.bodyHtml(request.html())
+			.receivedDateTime(request.date())
+			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
+			.threadId(generateThreadId(request.messageId()))
+			.emailType(EmailType.RECEIVED)
+			.readStatus(false)
+			.build();
 	}
 
 }

@@ -16,6 +16,7 @@ public enum ErrorMessage {
 	DUPLICATE_ENTRY("이미 존재하는 데이터입니다"),
 	FILE_NOT_INCLUDED("파일이 포함되지 않았습니다"),
 	FILE_UPLOAD_FAIL("파일 업로드 중 오류가 발생했습니다"),
+	NO_MAIL_SELECTED("삭제할 메일을 선택해주세요"),
 
 	// 401 Unauthorized 관련 오류 (UnauthorizedException)
 	UNAUTHORIZED("인증에 실패했습니다"),
