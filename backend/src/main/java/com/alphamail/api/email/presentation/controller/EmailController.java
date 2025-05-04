@@ -19,9 +19,11 @@ import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
+import com.alphamail.api.email.application.usecase.ReceiveEmailUseCase;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.FolderResponse;
+import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,13 @@ public class EmailController {
 	private final GetEmailListUseCase getEmailListUseCase;
 	private final GetFolderUseCase getFolderUseCase;
 	private final GetEmailDetailUseCase getEmailDetailUseCase;
+	private final ReceiveEmailUseCase receiveEmailUseCase;
+
+	@PostMapping
+	public ResponseEntity<Void> receiveEmail(@RequestBody ReceiveEmailRequest receiveEmailRequest){
+		receiveEmailUseCase.excute(receiveEmailRequest);
+		return ResponseEntity.ok().build();
+	}
 
 	@PostMapping
 	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest, @AuthenticationPrincipal
