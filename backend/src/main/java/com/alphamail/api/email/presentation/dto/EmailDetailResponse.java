@@ -10,7 +10,7 @@ import com.alphamail.api.email.domain.entity.EmailAttachment;
 public record EmailDetailResponse(
 	Integer id,
 	String sender,
-	String recipients,
+	List<String> recipients,
 	String subject,
 	String bodyText,
 	String bodyHtml,

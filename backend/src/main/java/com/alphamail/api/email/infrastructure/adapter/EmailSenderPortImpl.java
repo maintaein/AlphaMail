@@ -47,7 +47,7 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			}
 
 			// 수신자 설정
-			for (String recipient : email.getRecipients().split(",")) {
+			for (String recipient : email.getRecipients()) {
 				message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient.trim()));
 			}
 
