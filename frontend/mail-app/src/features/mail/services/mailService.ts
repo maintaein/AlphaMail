@@ -29,16 +29,16 @@ export const mailService = {
     return response.data;
   },
   
-  // 메일 읽음 상태 변경
-  async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
+// 메일 읽음 상태 변경
+async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
     const data: UpdateMailRequest = {
       id,
       readStatus
     };
     
-    await api.patch(`/api/mails/${id}/read-status`, data);
+    await api.put(`/api/mails/${id}/read-status`, data);
   },
-  
+    
   // 메일 폴더 이동
   async moveMails(ids: number[], targetFolderId: number): Promise<void> {
     const data: MoveMailsRequest = {

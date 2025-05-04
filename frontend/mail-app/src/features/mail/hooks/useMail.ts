@@ -27,9 +27,14 @@ export const useMail = () => {
   const markAsRead = useMutation({
     mutationFn: (ids: string[]) => 
       Promise.all(ids.map(id => mailService.updateMailReadStatus(Number(id), true))),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       // 메일 목록 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ['mails'] });
+      
+      // 메일 상세 쿼리도 무효화 (변경된 메일만)
+      variables.forEach(id => {
+        queryClient.invalidateQueries({ queryKey: MAIL_QUERY_KEYS.mailDetail(id) });
+      });
     },
   });
   

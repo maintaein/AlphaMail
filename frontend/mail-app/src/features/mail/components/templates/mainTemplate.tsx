@@ -7,6 +7,7 @@ import { useMail } from '../../hooks/useMail';
 import { useMailStore } from '../../stores/useMailStore';
 import { Mail, MailListRow } from '../../types/mail';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
+import { useNavigate } from 'react-router-dom';
 
 const MainTemplate: React.FC = () => {
     const { 
@@ -25,7 +26,7 @@ const MainTemplate: React.FC = () => {
   const { useMailList, moveToTrash } = useMail();
   const { data, isLoading, error } = useMailList(currentFolder, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
-
+  const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
   
   useEffect(() => {
@@ -63,7 +64,7 @@ const MainTemplate: React.FC = () => {
   
   const handleMailClick = (id: string) => {
     // 메일 상세 보기 로직
-    console.log('Mail clicked:', id);
+    navigate(`/mail/${id}`)
   };
   
   const handleDelete = () => {

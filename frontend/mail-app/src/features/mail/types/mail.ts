@@ -50,6 +50,7 @@ export interface MailListRow {
     receivedDate: string;
     emailType: 'RECEIVED' | 'SENT' | 'DRAFT';
     folderId: number;
+    readStatus?: boolean;
     attachments?: Attachment[];
   }
   
