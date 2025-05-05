@@ -20,9 +20,9 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 
 	Page<EmailEntity> findByFolder_EmailFolderIdAndUser_UserId(Integer folderId, Integer userId, Pageable pageable);
 
-	int countByFolder_EmailFolderIdAndUser_UserId(Integer folderId, Integer userId);
+	Integer countByFolder_EmailFolderIdAndUser_UserId(Integer folderId, Integer userId);
 
-	int countByFolder_EmailFolderIdAndUser_UserIdAndReadStatusTrue(Integer folderId, Integer userId);
+	Integer countByFolder_EmailFolderIdAndUser_UserIdAndReadStatusTrue(Integer folderId, Integer userId);
 
 	Page<EmailEntity> findByFolder_EmailFolderIdAndUser_UserIdAndSubjectContaining(
 		Integer folderId, Integer userId, String query, Pageable pageable);
@@ -40,4 +40,6 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	void updateFolderByEmailIds(@Param("emailIds") List<Integer> emailIds, @Param("folderId") Integer folderId);
 
 	long countByEmailIdInAndUser_UserId(List<Integer> emailIds, Integer userId);
+
+	Boolean existsByEmailIdAndUser_UserId(Integer emailId, Integer userId);
 }

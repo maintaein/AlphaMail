@@ -57,7 +57,6 @@ public class EmailRepositoryImpl implements EmailRepository {
 
 	}
 
-
 	@Override
 	public void updateFolder(List<Integer> emailIds, Integer folderId) {
 		emailJpaRepository.updateFolderByEmailIds(emailIds, folderId);
@@ -68,6 +67,11 @@ public class EmailRepositoryImpl implements EmailRepository {
 	public boolean validateEmailOwnership(List<Integer> emailIds, Integer userId) {
 		long count = emailJpaRepository.countByEmailIdInAndUser_UserId(emailIds, userId);
 		return count == emailIds.size();
+	}
+
+	@Override
+	public Boolean existsByIdAndUserId(Integer emailId, Integer userId) {
+		return emailJpaRepository.existsByEmailIdAndUser_UserId(emailId, userId);
 	}
 
 	@Override
@@ -82,7 +86,7 @@ public class EmailRepositoryImpl implements EmailRepository {
 	public Page<Email> searchByFolderIdAndUserId(Integer folderId, Integer userId, String query, Pageable pageable) {
 		Page<EmailEntity> emailEntities = emailJpaRepository
 			.findByFolder_EmailFolderIdAndUser_UserIdAndSubjectContaining(
-			folderId, userId, query, pageable);
+				folderId, userId, query, pageable);
 
 		return emailEntities.map(emailMapper::toDomain);
 	}
