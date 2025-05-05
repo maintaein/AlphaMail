@@ -1,0 +1,27 @@
+@keyframes flyPaperAirplane {
+    0% {
+      opacity: 0;
+      transform: translate(-24px, 24px);
+    }
+    20% {
+      opacity: 1;
+      transform: scale(1.1) translate(0, 0);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1) translate(0, 0);
+    }
+    60% {
+      opacity: 0;
+      transform: translate(24px, -24px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-24px, 24px);
+    }
+  }
+  
+  .paper-airplane-container {
+    position: absolute;
+    animation: flyPaperAirplane 4s infinite;
+  }
