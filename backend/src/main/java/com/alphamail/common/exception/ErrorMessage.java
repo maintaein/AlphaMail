@@ -17,6 +17,7 @@ public enum ErrorMessage {
 	FILE_NOT_INCLUDED("파일이 포함되지 않았습니다"),
 	FILE_UPLOAD_FAIL("파일 업로드 중 오류가 발생했습니다"),
 	NO_MAIL_SELECTED("삭제할 메일을 선택해주세요"),
+	SCHEDULE_TIME_INVALID("종료 시간은 시작 시간 이후여야 합니다"),
 
 	// 401 Unauthorized 관련 오류 (UnauthorizedException)
 	UNAUTHORIZED("인증에 실패했습니다"),
@@ -33,6 +34,7 @@ public enum ErrorMessage {
 	// 404 Not Found 관련 오류 (NotFoundException)
 	RESOURCE_NOT_FOUND("요청한 리소스를 찾을 수 없습니다"),
 	MEMBER_NOT_FOUND("요청한 사용자를 찾을 수 없습니다"),
+	S3AMAZON_NOT_FOUND("S3에 해당 리소스를 찾을 수 없습니다."),
 
 	// 500 Internal Server Error 관련 오류
 	INTERNAL_SERVER_ERROR("서버 내부 오류가 발생했습니다"),

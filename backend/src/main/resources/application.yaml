@@ -21,6 +21,8 @@ aws:
     secret-key: ${YOUR_SECRET_KEY}
     domain: alphamail.my  # 도메인만 설정
     system-sender: "AlphaMail System <noreply@alphamail.my>"  # 시스템용 이메일
+  s3:
+    bucket-name: ${AWS_S3_BUCKET_NAME}
 
 decorator:
   datasource:

@@ -4,9 +4,15 @@ import org.springframework.stereotype.Component;
 
 import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.infrastructure.entity.EmailAttachmentEntity;
+import com.alphamail.api.email.infrastructure.entity.EmailEntity;
+import jakarta.persistence.EntityManager;
+
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class EmailAttachmentMapper {
+	private final EntityManager entityManager;
 
 	public EmailAttachment toDomain(EmailAttachmentEntity entity) {
 		if (entity == null) {
@@ -16,7 +22,7 @@ public class EmailAttachmentMapper {
 		return EmailAttachment.builder()
 			.id(entity.getEmailAttachmentId())
 			.name(entity.getName())
-			.path(entity.getPath())
+			.S3Key(entity.getS3Key())
 			.size(entity.getSize())
 			.type(entity.getType())
 			.build();
@@ -29,10 +35,9 @@ public class EmailAttachmentMapper {
 
 		return new EmailAttachmentEntity(
 			null,  // id 자동 생성
-			null,  // user
-			null,  // email
+			entityManager.getReference(EmailEntity.class, domain.getEmailId()),  // email
 			domain.getName(),
-			domain.getPath(),
+			domain.getS3Key(),
 			domain.getSize(),
 			domain.getType()
 		);

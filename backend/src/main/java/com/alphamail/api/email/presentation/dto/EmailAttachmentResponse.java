@@ -6,14 +6,14 @@ public record EmailAttachmentResponse(
 	Integer id,
 	String name,
 	String path,
-	Integer size,
+	Long size,
 	String type
 ) {
 	public static EmailAttachmentResponse from(EmailAttachment attachment) {
 		return new EmailAttachmentResponse(
 			attachment.getId(),
 			attachment.getName(),
-			attachment.getPath(),
+			attachment.getS3Key(),
 			attachment.getSize(),
 			attachment.getType()
 		);

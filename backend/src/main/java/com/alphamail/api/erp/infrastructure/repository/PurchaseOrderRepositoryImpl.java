@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,5 +39,12 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 		PurchaseOrderEntity savedOrderEntity = purchaseOrderJpaRepository.save(entity);
 
 		return purchaseOrderMapper.toDomain(savedOrderEntity);
+	}
+
+	@Override
+	public List<PurchaseOrder> findAllByIds(List<Integer> ids) {
+		return purchaseOrderJpaRepository.findAllById(ids).stream()
+			.map(purchaseOrderMapper::toDomain)
+			.collect(Collectors.toList());
 	}
 }

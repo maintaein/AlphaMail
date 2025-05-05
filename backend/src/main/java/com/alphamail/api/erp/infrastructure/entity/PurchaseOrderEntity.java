@@ -1,10 +1,7 @@
 package com.alphamail.api.erp.infrastructure.entity;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
@@ -62,6 +59,6 @@ public class PurchaseOrderEntity {
 	private String orderNo;
 
 	@Setter
-	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = false)
 	private List<PurchaseOrderProductEntity> products;
 }

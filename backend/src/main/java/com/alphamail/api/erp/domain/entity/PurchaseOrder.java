@@ -116,6 +116,10 @@ public class PurchaseOrder {
 		this.updatedAt = LocalDateTime.now();
 	}
 
+	public void softDelete() {
+		this.deletedAt = LocalDateTime.now();
+	}
+
 	private static String generateOrderNo() {
 		String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String randomPart = UUID.randomUUID().toString().substring(0, 6);

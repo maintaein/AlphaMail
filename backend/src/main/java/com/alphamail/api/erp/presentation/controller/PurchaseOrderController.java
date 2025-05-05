@@ -2,6 +2,7 @@ package com.alphamail.api.erp.presentation.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,10 +15,12 @@ import com.alphamail.api.erp.application.dto.RegistResultDto;
 import com.alphamail.api.erp.application.usecase.purchaseorder.GetPurchaseOrderUseCase;
 import com.alphamail.api.erp.application.usecase.purchaseorder.ModifyPurchaseOrderUseCase;
 import com.alphamail.api.erp.application.usecase.purchaseorder.RegistPurchaseOrderUseCase;
-import com.alphamail.api.erp.domain.entity.PurchaseOrder;
+import com.alphamail.api.erp.application.usecase.purchaseorder.RemoveAllPurchaseOrdersUseCase;
+import com.alphamail.api.erp.application.usecase.purchaseorder.RemovePurchaseOrderUseCase;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.GetPurchaseOrderResponse;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.RegistPurchaseOrderRequest;
 import com.alphamail.api.global.dto.RegistErpResponse;
+import com.alphamail.api.global.dto.RemoveAllErpRequest;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
@@ -30,11 +33,12 @@ public class PurchaseOrderController {
 	private final GetPurchaseOrderUseCase getPurchaseOrderUseCase;
 	private final RegistPurchaseOrderUseCase registPurchaseOrderUseCase;
 	private final ModifyPurchaseOrderUseCase modifyPurchaseOrderUseCase;
+	private final RemoveAllPurchaseOrdersUseCase removeAllPurchaseOrdersUseCase;
+	private final RemovePurchaseOrderUseCase removePurchaseOrderUseCase;
 
 	// 발주서 상세 조회
 	@GetMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
 	public ResponseEntity<GetPurchaseOrderResponse> get(@PathVariable Integer orderId) {
-		System.out.println("컨트롤러 실행중");
 		GetPurchaseOrderResponse response = getPurchaseOrderUseCase.execute(orderId);
 
 		if (response == null) {
@@ -76,5 +80,23 @@ public class PurchaseOrderController {
 		}
 
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
+	}
+
+	// 발주서 다중 삭제
+	@DeleteMapping(ApiPaths.ORDERS_BASE_API)
+	public ResponseEntity<Void> delete(@RequestBody RemoveAllErpRequest request) {
+		boolean deleted = removeAllPurchaseOrdersUseCase.execute(request);
+
+		return deleted ? ResponseEntity.ok().build() :
+			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+	}
+
+	// 발주서 삭제하기
+	@DeleteMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
+	public ResponseEntity<Void> remove(@PathVariable Integer orderId) {
+		boolean deleted = removePurchaseOrderUseCase.execute(orderId);
+
+		return deleted ? ResponseEntity.ok().build() :
+			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }

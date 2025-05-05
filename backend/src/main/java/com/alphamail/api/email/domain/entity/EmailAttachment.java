@@ -10,8 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class EmailAttachment {
 	private Integer id;
+	private Integer emailId;
 	private String name;
-	private String path;
-	private Integer size;
+	private String S3Key;
+	private Long size;
 	private String type;
 }

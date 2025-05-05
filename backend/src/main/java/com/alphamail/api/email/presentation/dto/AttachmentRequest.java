@@ -4,6 +4,6 @@ public record AttachmentRequest(
 	String filename,
 	String contentType,
 	Long size,
-	String contentBase64
+	String s3Key
 ) {
 }

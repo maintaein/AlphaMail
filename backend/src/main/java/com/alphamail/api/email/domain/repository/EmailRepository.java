@@ -1,6 +1,5 @@
 package com.alphamail.api.email.domain.repository;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +27,6 @@ public interface EmailRepository {
 	void updateFolder(List<Integer> integers, Integer emailFolderId);
 
 	boolean validateEmailOwnership(List<Integer> emailIds, Integer userId);
+
+	Boolean existsByIdAndUserId(Integer emailId, Integer userId);
 }

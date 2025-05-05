@@ -10,6 +10,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - YOUR_ACCESS_KEY=${YOUR_ACCESS_KEY}
       - YOUR_SECRET_KEY=${YOUR_SECRET_KEY}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
   frontend:
     build: ./frontend/mail-app
     image: alphaMail/frontend:latest
