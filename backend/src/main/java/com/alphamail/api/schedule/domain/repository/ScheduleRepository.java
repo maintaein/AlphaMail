@@ -1,6 +1,7 @@
 package com.alphamail.api.schedule.domain.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +11,5 @@ import com.alphamail.api.schedule.domain.entity.Schedule;
 public interface ScheduleRepository {
 	Schedule save(Schedule schedule);
 
+	Optional<Schedule> findById(Integer scheduleId);
 }

@@ -35,5 +35,17 @@ public class Schedule {
 			.build();
 	}
 
+	public Schedule updateIsDone(Boolean isDone) {
+		return Schedule.builder()
+			.scheduleId(this.scheduleId)
+			.userId(this.userId)
+			.name(this.name)
+			.description(this.description)
+			.startTime(this.startTime)
+			.endTime(this.endTime)
+			.isDone(isDone)
+			.build();
+	}
+
 
 }
