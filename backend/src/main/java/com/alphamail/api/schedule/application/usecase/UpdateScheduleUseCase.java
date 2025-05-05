@@ -20,12 +20,8 @@ public class UpdateScheduleUseCase {
 	private final ScheduleRepository scheduleRepository;
 
 	public UpdateScheduleResponse execute(Integer scheduleId, UpdateScheduleRequest request, Integer userId) {
-		Schedule schedule = scheduleRepository.findById(scheduleId)
+		Schedule schedule = scheduleRepository.findByIdAndUserId(scheduleId, userId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
-
-		if (!schedule.getUserId().equals(userId)) {
-			throw new ForbiddenException(ErrorMessage.FORBIDDEN);
-		}
 
 
 		Schedule updatedSchedule = schedule.update(
