@@ -164,5 +164,23 @@ const mailListData = {
         emailType: 'SENT'
         });
     }),
+
+    // 파일 첨부 API 핸들러 추가
+    http.post('/api/mails/attachment', async ({ request }) => {
+        const formData = await request.formData();
+        const file = formData.get('file') as File;
+        
+        console.log('파일 첨부 요청:', file.name, file.size, file.type);
+        
+        // 성공 응답 반환
+        return HttpResponse.json({
+        id: Math.floor(Math.random() * 1000),
+        name: file.name,
+        path: `/attachments/${file.name}`,
+        size: file.size,
+        type: file.type
+        });
+    }),
+    
   ];
   

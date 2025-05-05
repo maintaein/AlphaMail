@@ -3,11 +3,13 @@ import { MailRecipientInput } from '../molecules/mailRecipientInput';
 import { MailSubjectInput } from '../molecules/mailSubjectInput';
 import { MailAttachmentInput } from '../molecules/mailAttachmentInput';
 import { MailQuillEditor } from '../molecules/mailQuillEditor';
+import { useMail } from '../../hooks/useMail';
 
 interface Attachment {
   id: number;
   name: string;
   size: number;
+  type: string;
 }
 
 interface MailWriteFormProps {
@@ -26,13 +28,16 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   initialContent = '',
   onContentChange,
   onSubjectChange,
-  onRecipientsChange
+  onRecipientsChange,
+  onAttachmentsChange
 }) => {
+  const { uploadAttachment } = useMail();
   const [to, setTo] = useState<string[]>(initialTo);
   const [subject, setSubject] = useState<string>(initialSubject);
   const [content, setContent] = useState<string>(initialContent);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+ 
   const handleAddRecipient = (email: string) => {
     const newTo = [...to, email];
     setTo(newTo);
@@ -57,20 +62,52 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
     onContentChange(newContent);
   };
   
-  const handleAddAttachment = (files: FileList) => {
-    const newAttachments = [...attachments];
-    Array.from(files).forEach(file => {
-      newAttachments.push({
-        id: Date.now() + Math.random(),
-        name: file.name,
-        size: file.size
-      });
-    });
-    setAttachments(newAttachments);
+  const handleAddAttachment = async (files: FileList) => {
+    if (files.length === 0) return;
+    
+    setIsUploading(true);
+    
+    try {
+      const newAttachments = [...attachments];
+      
+      // 각 파일을 순차적으로 업로드
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // 파일 업로드 API 호출
+        const response = await uploadAttachment.mutateAsync(file);
+        
+        // 업로드 성공한 파일 정보 추가
+        newAttachments.push({
+          id: response.id,
+          name: response.name,
+          size: response.size,
+          type: response.type
+        });
+      }
+      
+      setAttachments(newAttachments);
+      
+      // 첨부파일 ID 목록 전달
+      if (onAttachmentsChange) {
+        onAttachmentsChange(newAttachments.map(att => ({ attachments_id: att.id })));
+      }
+    } catch (error) {
+      console.error('파일 업로드 실패:', error);
+      alert('파일 업로드에 실패했습니다.');
+    } finally {
+      setIsUploading(false);
+    }
   };
-  
+
   const handleRemoveAttachment = (id: number) => {
-    setAttachments(attachments.filter(attachment => attachment.id !== id));
+    const newAttachments = attachments.filter(attachment => attachment.id !== id);
+    setAttachments(newAttachments);
+    
+    // 첨부파일 ID 목록 전달
+    if (onAttachmentsChange) {
+      onAttachmentsChange(newAttachments.map(att => ({ attachments_id: att.id })));
+    }
   };
   
   return (
@@ -92,6 +129,7 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
           attachments={attachments}
           onAddAttachment={handleAddAttachment}
           onRemoveAttachment={handleRemoveAttachment}
+          isUploading={isUploading}
         />
       </div>
       

@@ -1,4 +1,4 @@
-import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, DeleteMailsRequest, SendMailRequest, SendMailResponse } from '../types/mail';
+import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, DeleteMailsRequest, SendMailRequest, SendMailResponse, AttachmentUploadResponse } from '../types/mail';
 import { api } from '@/shared/lib/axiosInstance';
 
 
@@ -71,5 +71,20 @@ async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
   async sendMail(mailData: SendMailRequest): Promise<SendMailResponse> {
     const response = await api.post('/api/mails', mailData);
     return response.data;
-  }
+  },
+
+    // 파일 첨부 업로드
+    async uploadAttachment(file: File): Promise<AttachmentUploadResponse> {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await api.post('/api/mails/attachment', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        
+        return response.data;
+      }
+    
 };

@@ -62,6 +62,10 @@ export interface MailListRow {
     size: number;
     type: string;
   }
+
+  export interface AttachmentUploadRequest {
+    file: File;
+  }
   
   // 메일 전송 요청 타입
   export interface SendMailRequest {

@@ -6,25 +6,29 @@ interface Attachment {
   id: number;
   name: string;
   size: number;
+  type?: string;
 }
 
 interface MailAttachmentInputProps {
   attachments: Attachment[];
   onAddAttachment: (files: FileList) => void;
   onRemoveAttachment: (id: number) => void;
+  isUploading?: boolean;
 }
 
 export const MailAttachmentInput: React.FC<MailAttachmentInputProps> = ({
   attachments,
   onAddAttachment,
-  onRemoveAttachment
+  onRemoveAttachment,
+  isUploading = false
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 파일 크기를 읽기 쉬운 형식으로 변환 (KB, MB 등)
   const formatFileSize = (bytes: number): string => {
-    if (bytes < 1024) return bytes + 'B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + 'KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + 'MB';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   return (
@@ -37,8 +41,9 @@ export const MailAttachmentInput: React.FC<MailAttachmentInputProps> = ({
           variant="secondary" 
           onClick={() => fileInputRef.current?.click()}
           className="mb-2 py-3 h-7"
+          disabled={isUploading}
         >
-          파일 선택
+          {isUploading ? '업로드 중...' : '파일 선택'}
         </Button>
         <input 
           type="file" 

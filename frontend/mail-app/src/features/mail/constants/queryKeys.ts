@@ -13,4 +13,5 @@ export const MAIL_QUERY_KEYS = {
     // 메일 통계
     stats: 'mail-stats',
     //메일 통계는 뭐지 어디서 쓰는거임?
+    attachmentUpload: 'mail-attachment-upload',
   };

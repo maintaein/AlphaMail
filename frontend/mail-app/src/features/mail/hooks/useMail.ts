@@ -87,6 +87,12 @@ export const useMail = () => {
         },
     });
     
+      // 파일 첨부 업로드 뮤테이션
+  const uploadAttachment = useMutation({
+    mutationFn: (file: File) => 
+      mailService.uploadAttachment(file),
+  });
+
   return {
     useMailList,
     useMailDetail,
@@ -96,6 +102,7 @@ export const useMail = () => {
     moveToFolder,
     permanentlyDelete,
     sendMail,
+    uploadAttachment,
   };
 
 };
