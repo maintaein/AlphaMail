@@ -12,4 +12,6 @@ public interface ScheduleRepository {
 	Schedule save(Schedule schedule);
 
 	Optional<Schedule> findById(Integer scheduleId);
+
+	void deleteById(Integer scheduleId);
 }

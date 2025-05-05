@@ -32,4 +32,9 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 			.map(scheduleMapper::toDomain);
 	}
 
+	@Override
+	public void deleteById(Integer scheduleId) {
+		jpaRepository.deleteById(scheduleId);
+	}
+
 }
