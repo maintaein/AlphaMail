@@ -1,35 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { useClient } from '../../../hooks/useClient';
+import React, { useState } from 'react';
 import { ClientTable } from '../organisms/clientTable';
 import { ClientSearchBar } from '../organisms/clientSearchBar';
 import { ClientDetailTemplate } from './clientDetailTemplate';
 import { Client } from '../../../types/clients';
+import { useClientsManagementQuery } from '../../../hooks/useClientsManagementQuery';
+import { clientService } from '../../../services/clientService';
 
 export const ClientManagementTemplate: React.FC = () => {
-  const {
-    clients,
-    totalCount,
-    pageCount,
-    currentPage,
-    pageSize,
-    selectedClientIds,
-    fetchClients,
-    setCurrentPage,
-    setPageSize,
-    toggleClientSelection,
-    setSelectedClientIds,
-    deleteClient
-  } = useClient();
-
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [selectedClientIds, setSelectedClientIds] = useState<Set<number>>(new Set());
   const [showDetail, setShowDetail] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
-  useEffect(() => {
-    fetchClients({ page: currentPage, size: pageSize });
-  }, [currentPage, pageSize, fetchClients]);
+  const { data, refetch } = useClientsManagementQuery({
+    companyId: 1,
+    query: searchKeyword,
+    page: currentPage,
+    size: pageSize,
+  });
 
   const handleSearch = (keyword: string) => {
-    fetchClients({ page: 1, size: pageSize, search: keyword });
+    setSearchKeyword(keyword);
     setCurrentPage(1);
   };
 
@@ -38,20 +31,13 @@ export const ClientManagementTemplate: React.FC = () => {
       alert('삭제할 거래처를 선택해주세요.');
       return;
     }
-
-    if (!window.confirm('선택한 거래처를 삭제하시겠습니까?')) {
-      return;
-    }
-
+    if (!window.confirm('선택한 거래처를 삭제하시겠습니까?')) return;
     try {
-      for (const id of selectedClientIds) {
-        await deleteClient(id);
-      }
+      await clientService.deleteClients(Array.from(selectedClientIds));
       setSelectedClientIds(new Set());
-      fetchClients({ page: currentPage, size: pageSize });
+      refetch();
       alert('선택한 거래처가 삭제되었습니다.');
     } catch (error) {
-      console.error('거래처 삭제 실패:', error);
       alert('거래처 삭제에 실패했습니다.');
     }
   };
@@ -72,10 +58,9 @@ export const ClientManagementTemplate: React.FC = () => {
   };
 
   const handleDetailSave = (_data: Partial<Client>) => {
-    // 저장 로직 필요 (신규/수정 분기)
     setShowDetail(false);
     setSelectedClient(null);
-    fetchClients({ page: currentPage, size: pageSize });
+    refetch();
   };
 
   if (showDetail) {
@@ -117,15 +102,22 @@ export const ClientManagementTemplate: React.FC = () => {
             </div>
           </div>
           <ClientTable
-            clients={clients}
+            clients={data?.contents || []}
             currentPage={currentPage}
             pageSize={pageSize}
             selectedClientIds={selectedClientIds}
-            onSelectClient={toggleClientSelection}
+            onSelectClient={(id) => {
+              setSelectedClientIds((prev) => {
+                const newSet = new Set(prev);
+                if (newSet.has(id)) newSet.delete(id);
+                else newSet.add(id);
+                return newSet;
+              });
+            }}
             setCurrentPage={setCurrentPage}
             setPageSize={setPageSize}
-            totalCount={totalCount}
-            pageCount={pageCount}
+            totalCount={data?.total_count || 0}
+            pageCount={data?.page_count || 0}
             onClientClick={handleClientClick}
           />
         </div>

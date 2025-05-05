@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { clientService } from '../services/clientService';
-import { Client, ClientQueryParams, CreateClientRequest, UpdateClientRequest } from '../types/clients';
+import { Client, CreateClientRequest, UpdateClientRequest } from '../types/clients';
 
 interface ClientState {
   clients: Client[];
@@ -8,34 +8,54 @@ interface ClientState {
   pageCount: number;
   isLoading: boolean;
   error: string | null;
+  keyword: string;
+  selectedClient: Client | null;
+  selectedClientIds: Set<number>;
   currentPage: number;
   pageSize: number;
-  selectedClientIds: Set<number>;
-  fetchClients: (params?: ClientQueryParams) => Promise<void>;
+  sortOption: number;
+  companyId: number;
+  fetchClients: () => Promise<void>;
+  fetchClient: (id: string) => Promise<void>;
   createClient: (data: CreateClientRequest) => Promise<void>;
-  updateClient: (data: UpdateClientRequest) => Promise<void>;
-  deleteClient: (id: number) => Promise<void>;
-  setCurrentPage: (page: number) => void;
-  setPageSize: (size: number) => void;
+  updateClient: (id: string, data: UpdateClientRequest) => Promise<void>;
+  deleteClient: (id: string) => Promise<void>;
+  setKeyword: (keyword: string) => void;
+  setSelectedClient: (client: Client | null) => void;
   setSelectedClientIds: (ids: Set<number>) => void;
   toggleClientSelection: (id: number) => void;
+  setCurrentPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  setSortOption: (option: number) => void;
+  setCompanyId: (id: number) => void;
   clearError: () => void;
 }
 
-export const useClientStore = create<ClientState>((set) => ({
+export const useClientStore = create<ClientState>((set, get) => ({
   clients: [],
   totalCount: 0,
   pageCount: 0,
   isLoading: false,
   error: null,
+  keyword: '',
+  selectedClient: null,
+  selectedClientIds: new Set(),
   currentPage: 1,
   pageSize: 10,
-  selectedClientIds: new Set(),
+  sortOption: 0,
+  companyId: 1,
 
-  fetchClients: async (params) => {
+  fetchClients: async () => {
+    const { keyword, currentPage, pageSize, sortOption, companyId } = get();
     try {
       set({ isLoading: true, error: null });
-      const response = await clientService.getClients(params);
+      const response = await clientService.getClients({
+        query: keyword,
+        page: currentPage,
+        size: pageSize,
+        sort: sortOption,
+        companyId
+      });
       set({
         clients: response.contents,
         totalCount: response.total_count,
@@ -48,14 +68,23 @@ export const useClientStore = create<ClientState>((set) => ({
     }
   },
 
+  fetchClient: async (id) => {
+    try {
+      set({ isLoading: true, error: null });
+      const client = await clientService.getClient(id);
+      set({ selectedClient: client });
+    } catch (error) {
+      set({ error: error instanceof Error ? error.message : 'Failed to fetch client' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   createClient: async (data) => {
     try {
       set({ isLoading: true, error: null });
       await clientService.createClient(data);
-      await set((state) => {
-        state.fetchClients();
-        return {};
-      });
+      await get().fetchClients();
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to create client' });
     } finally {
@@ -63,14 +92,11 @@ export const useClientStore = create<ClientState>((set) => ({
     }
   },
 
-  updateClient: async (data) => {
+  updateClient: async (id, data) => {
     try {
       set({ isLoading: true, error: null });
-      await clientService.updateClient(data);
-      await set((state) => {
-        state.fetchClients();
-        return {};
-      });
+      await clientService.updateClient(id, data);
+      await get().fetchClients();
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to update client' });
     } finally {
@@ -82,10 +108,7 @@ export const useClientStore = create<ClientState>((set) => ({
     try {
       set({ isLoading: true, error: null });
       await clientService.deleteClient(id);
-      await set((state) => {
-        state.fetchClients();
-        return {};
-      });
+      await get().fetchClients();
     } catch (error) {
       set({ error: error instanceof Error ? error.message : 'Failed to delete client' });
     } finally {
@@ -93,8 +116,8 @@ export const useClientStore = create<ClientState>((set) => ({
     }
   },
 
-  setCurrentPage: (page) => set({ currentPage: page }),
-  setPageSize: (size) => set({ pageSize: size }),
+  setKeyword: (keyword) => set({ keyword }),
+  setSelectedClient: (client) => set({ selectedClient: client }),
   setSelectedClientIds: (ids) => set({ selectedClientIds: ids }),
   toggleClientSelection: (id) =>
     set((state) => {
@@ -103,5 +126,9 @@ export const useClientStore = create<ClientState>((set) => ({
       else newSet.add(id);
       return { selectedClientIds: newSet };
     }),
+  setCurrentPage: (page) => set({ currentPage: page }),
+  setPageSize: (size) => set({ pageSize: size }),
+  setSortOption: (option) => set({ sortOption: option }),
+  setCompanyId: (id) => set({ companyId: id }),
   clearError: () => set({ error: null }),
 }));

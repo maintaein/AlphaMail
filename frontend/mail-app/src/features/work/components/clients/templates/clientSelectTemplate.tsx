@@ -2,24 +2,38 @@ import React, { useState } from 'react';
 import { Client } from '../../../types/clients';
 import { ClientSearchBar } from '../molecules/clientSearchBar';
 import { ClientSelectTable } from '../organisms/clientSelectTable';
+import { useClientsSelectQuery } from '../../../hooks/useClientsSelectQuery';
 
 interface ClientSelectTemplateProps {
   isOpen: boolean;
-  clients: Client[];
-  onSearch: (keyword: string) => void;
   onSelect: (client: Client) => void;
   onClose: () => void;
 }
 
 export const ClientSelectTemplate: React.FC<ClientSelectTemplateProps> = ({
-  isOpen, clients, onSearch, onSelect, onClose
+  isOpen, onSelect, onClose
 }) => {
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(10);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const { data } = useClientsSelectQuery({
+    companyId: 1,
+    query: searchKeyword,
+    page: currentPage,
+    size: pageSize,
+  });
 
   if (!isOpen) return null;
 
+  const handleSearch = (keyword: string) => {
+    setSearchKeyword(keyword);
+    setCurrentPage(1);
+  };
+
   const handleSelect = () => {
-    const client = clients.find((c) => c.id === selectedId);
+    const client = data?.contents.find((c) => c.id === selectedId);
     if (client) onSelect(client);
   };
 
@@ -35,10 +49,10 @@ export const ClientSelectTemplate: React.FC<ClientSelectTemplateProps> = ({
         </div>
         <div className="p-4">
           <div className="mb-2">
-            <ClientSearchBar onSearch={onSearch} />
+            <ClientSearchBar onSearch={handleSearch} />
           </div>
           <ClientSelectTable
-            clients={clients}
+            clients={data?.contents || []}
             selectedId={selectedId}
             onSelect={setSelectedId}
           />
