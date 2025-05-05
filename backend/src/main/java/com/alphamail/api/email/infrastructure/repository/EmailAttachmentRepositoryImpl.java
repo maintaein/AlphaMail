@@ -1,6 +1,7 @@
 package com.alphamail.api.email.infrastructure.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
@@ -32,4 +33,10 @@ public class EmailAttachmentRepositoryImpl implements EmailAttachmentRepository 
 			.collect(Collectors.toList());
 
 	}
+
+	@Override
+	public Optional<EmailAttachment> findById(Integer attachmentId) {
+		return emailAttachmentJpaRepository.findById(attachmentId).map(emailAttachmentMapper::toDomain);
+	}
+
 }
