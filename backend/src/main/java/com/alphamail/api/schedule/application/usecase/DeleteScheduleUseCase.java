@@ -8,6 +8,7 @@ import com.alphamail.api.schedule.domain.repository.ScheduleRepository;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.ForbiddenException;
 import com.alphamail.common.exception.NotFoundException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
