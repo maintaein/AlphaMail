@@ -7,12 +7,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.alphamail.api.erp.domain.entity.PurchaseOrder;
-import com.alphamail.api.erp.presentation.dto.purchaseorder.GetAllPurchaseOrdersResponse;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.PurchaseOrderSearchCondition;
 
 public interface PurchaseOrderRepository {
 
-	Page<GetAllPurchaseOrdersResponse> findAllByCondition(PurchaseOrderSearchCondition condition, Pageable pageable);
+	Page<PurchaseOrder> findAllByCondition(PurchaseOrderSearchCondition condition, Pageable pageable);
 
 	Optional<PurchaseOrder> findById(Integer orderId);
 

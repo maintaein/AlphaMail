@@ -21,7 +21,8 @@ public class GetAllPurchaseOrdersUseCase {
 
 	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(PurchaseOrderSearchCondition condition,
 		Pageable pageable) {
-		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(condition, pageable);
+		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(condition, pageable)
+			.map(GetAllPurchaseOrdersResponse::from);
 		return GetPageResponse.from(page);
 	}
 }

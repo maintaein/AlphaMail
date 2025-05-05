@@ -3,7 +3,6 @@ plugins {
 	id 'checkstyle'
 	id 'org.springframework.boot' version '3.4.5'
 	id 'io.spring.dependency-management' version '1.1.7'
-	id "com.ewerk.gradle.plugins.querydsl" version '1.0.10'
 }
 
 group = 'com'
@@ -56,37 +55,13 @@ dependencies {
 
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
-	// === Querydsl ===
-	implementation "com.querydsl:querydsl-jpa:5.0.0"
-	annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
-	annotationProcessor "jakarta.persistence:jakarta.persistence-api:3.1.0"
-	annotationProcessor "jakarta.annotation:jakarta.annotation-api:2.1.1"
-
 	annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
-    // === S3 라이브러리 사용 ===
-    implementation 'com.amazonaws:aws-java-sdk-s3:1.12.472'
+	// === S3 라이브러리 사용 ===
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.472'
 
 }
-
-def querydslVersion = "5.0.0"
-
-def generatedDir = "build/generated/querydsl"
-
-querydsl {
-	jpa = true
-	querydslSourcesDir = generatedDir
-}
-
-sourceSets {
-	main.java.srcDirs += [generatedDir]
-}
-
-tasks.withType(JavaCompile).configureEach {
-	options.annotationProcessorGeneratedSourcesDirectory = file(generatedDir)
-}
-
 
 tasks.named('test') {
 	useJUnitPlatform()
