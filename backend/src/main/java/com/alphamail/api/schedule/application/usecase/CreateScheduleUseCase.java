@@ -22,10 +22,6 @@ public class CreateScheduleUseCase {
 			throw new BadRequestException(ErrorMessage.SCHEDULE_TIME_INVALID);
 		}
 
-		if (scheduleRepository.existsSchedule(userId, request.startTime(), request.endTime())) {
-			throw new BadRequestException(ErrorMessage.DUPLICATE_ENTRY);
-		}
-
 		Schedule schedule = Schedule.create(request, userId);
 
 		scheduleRepository.save(schedule);

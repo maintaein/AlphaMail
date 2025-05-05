@@ -25,8 +25,4 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 		return scheduleMapper.toDomain(jpaRepository.save(entity));
 	}
 
-	@Override
-	public boolean existsSchedule(Integer userId, LocalDateTime start, LocalDateTime end) {
-		return jpaRepository.existsSchedule(userId, start, end);
-	}
 }

@@ -10,5 +10,4 @@ import com.alphamail.api.schedule.domain.entity.Schedule;
 public interface ScheduleRepository {
 	Schedule save(Schedule schedule);
 
-	boolean existsSchedule(Integer userId, LocalDateTime start, LocalDateTime end);
 }
