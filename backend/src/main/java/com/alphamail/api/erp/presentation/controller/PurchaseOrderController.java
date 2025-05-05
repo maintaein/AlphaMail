@@ -95,5 +95,8 @@ public class PurchaseOrderController {
 	@DeleteMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
 	public ResponseEntity<Void> remove(@PathVariable Integer orderId) {
 		boolean deleted = removePurchaseOrderUseCase.execute(orderId);
+
+		return deleted ? ResponseEntity.ok().build() :
+			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }
