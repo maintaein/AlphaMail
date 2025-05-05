@@ -12,7 +12,7 @@ public record ScheduleDetailResponse(
 	String description,
 	Boolean isDone,
 	LocalDateTime createdAt
-	) {
+) {
 	public static ScheduleDetailResponse from(Schedule schedule) {
 		return new ScheduleDetailResponse(schedule.getScheduleId(),
 			schedule.getName(),
