@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
 import com.alphamail.common.exception.BadRequestException;
-
 import com.alphamail.common.exception.ErrorMessage;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
