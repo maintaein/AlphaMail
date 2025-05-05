@@ -1,4 +1,4 @@
-import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, DeleteMailsRequest } from '../types/mail';
+import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, DeleteMailsRequest, SendMailRequest, SendMailResponse } from '../types/mail';
 import { api } from '@/shared/lib/axiosInstance';
 
 
@@ -38,7 +38,7 @@ async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
     
     await api.put(`/api/mails/${id}/read-status`, data);
   },
-    
+
   // 메일 폴더 이동
   async moveMails(ids: number[], targetFolderId: number): Promise<void> {
     const data: MoveMailsRequest = {
@@ -65,5 +65,11 @@ async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
     };
     
     await api.delete(`/api/mails`, { data });
+  },
+
+  // 메일 전송
+  async sendMail(mailData: SendMailRequest): Promise<SendMailResponse> {
+    const response = await api.post('/api/mails', mailData);
+    return response.data;
   }
 };

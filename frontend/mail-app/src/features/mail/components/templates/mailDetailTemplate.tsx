@@ -126,6 +126,8 @@ const MailDetailTemplate: React.FC = () => {
         sender={data.sender}
         recipients={data.recipients}
         receivedDate={data.receivedDate}
+        onAiAssistant={() => console.log('AI 어시스턴트 실행')}
+        onTranslate={() => console.log('번역 실행')}      
       />
       
       {/* 첨부 파일 목록 */}

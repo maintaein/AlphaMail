@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { mailService } from '../services/mailService';
 import { MAIL_QUERY_KEYS } from '../constants/queryKeys';
+import { SendMailRequest } from '../types/mail';
 
 export const useMail = () => {
   const queryClient = useQueryClient();
@@ -74,6 +75,18 @@ export const useMail = () => {
     },
   });
   
+    // 메일 전송 뮤테이션
+    const sendMail = useMutation({
+        mutationFn: (mailData: SendMailRequest) => 
+            mailService.sendMail(mailData),
+        onSuccess: () => {
+            // 보낸메일함(폴더 ID: 2) 쿼리 무효화
+            queryClient.invalidateQueries({ 
+            queryKey: MAIL_QUERY_KEYS.mailList(2) 
+            });
+        },
+    });
+    
   return {
     useMailList,
     useMailDetail,
@@ -82,5 +95,7 @@ export const useMail = () => {
     moveToTrash,
     moveToFolder,
     permanentlyDelete,
+    sendMail,
   };
+
 };

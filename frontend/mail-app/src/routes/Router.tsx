@@ -6,6 +6,7 @@ import  WorkPage  from '@/pages/WorkPage';
 import  GroupManagePage  from '@/pages/GroupManagePage';
 import  SearchTest  from '@/pages/SearchTest';
 import MailDetailTemplate from '@/features/mail/components/templates/mailDetailTemplate';
+import MailWriteTemplate from '@/features/mail/components/templates/mailWriteTemplate';
 
 export const Router = () => {
   return (
@@ -15,6 +16,7 @@ export const Router = () => {
         <Route path="/mail/:id" element={<MailDetailTemplate />} />
         <Route path="/mail/sent" element={<MailPage />} />
         <Route path="/mail/trash" element={<MailPage />} />
+        <Route path="/mail/write" element={<MailWriteTemplate />} />
         <Route path="/schedule" element={<SchedulePage />} />
         <Route path="/work" element={<WorkPage />} />
         <Route path="/group" element={<GroupManagePage />} />

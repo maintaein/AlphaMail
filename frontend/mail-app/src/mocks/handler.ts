@@ -149,6 +149,20 @@ const mailListData = {
         success: true,
         message: "메일이 영구 삭제되었습니다."
       });
-    })
+    }),
+
+    // 메일 전송
+    http.post('/api/mails', async ({ request }) => {
+        const data = await request.json();
+        
+        console.log('메일 전송 요청:', data);
+        
+        // 성공 응답 반환
+        return HttpResponse.json({
+        id: Math.floor(Math.random() * 1000),
+        sentDate: new Date().toISOString(),
+        emailType: 'SENT'
+        });
+    }),
   ];
   

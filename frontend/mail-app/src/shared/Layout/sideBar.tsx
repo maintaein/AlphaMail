@@ -54,6 +54,11 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
         }
       };
     
+          // 메일 작성 페이지로 이동하는 함수
+    const handleWriteClick = () => {
+      navigate('/mail/write');
+    };
+
 
     // 타입에 따라 다른 타이틀과 메뉴 아이템 표시
     const renderContent = () => {
@@ -79,7 +84,13 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                   {!isCollapsed && contentVisible && (
                     <>
                       <div className="px-4 mb-4 flex justify-center">
-                        <Button size="large" variant="primary">메일쓰기</Button>
+                        <Button 
+                          size="large" 
+                          variant="primary"
+                          onClick={handleWriteClick}
+                        >
+                          메일쓰기
+                        </Button>
                       </div>
                       
                       <div className="p-4">
