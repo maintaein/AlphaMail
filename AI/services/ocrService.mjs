@@ -7,6 +7,9 @@ dotenv.config();
 const OCR_SECRET = process.env.OCR_SECRET;
 const OCR_API_URL = process.env.OCR_API_URL;
 
+console.log('OCR_API_URL:', OCR_API_URL);
+console.log('OCR_SECRET:', OCR_SECRET);
+
 export function requestWithFile(fileStream, format, name) {
   const message = {
     images: [{ format, name }],

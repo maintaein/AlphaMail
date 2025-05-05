@@ -23,11 +23,28 @@ router.post('/', async (req, res) => {
 
     console.log(`⏱️ MCP Agent 응답 시간: ${duration}ms`);
 
-    res.json({ result: response });
-  } catch (err) {
-    console.error("MCP Agent invoke error:", err);
-    res.status(500).json({ error: "Failed to process email." });
-  }
+    const messages = response?.messages || [];
+    console.log(messages)
+
+    messages.forEach((msg, i) => {
+      console.log(`Message ${i}: ${msg?.id}`);
+      console.log('Tool calls:', msg?.tool_calls);
+    });
+
+     // 원하는 tool_calls만 추출 - 수정된 부분
+     const toolCalls = messages
+     .filter(msg => Array.isArray(msg?.tool_calls) && msg.tool_calls.length > 0)
+     .flatMap(msg => msg.tool_calls);
+   
+   console.log("************************888");
+   console.dir(toolCalls, { depth: null });
+   
+   res.json({ tool_calls: toolCalls });
+   
+ } catch (err) {
+   console.error("MCP Agent invoke error:", err);
+   res.status(500).json({ error: "Failed to process email." });
+ }
 });
 
 export default router;
