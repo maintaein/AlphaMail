@@ -23,6 +23,7 @@ public class Schedule {
 	private LocalDateTime startTime;
 	private LocalDateTime endTime;
 	private Boolean isDone;
+	private LocalDateTime createdAt;
 
 
 	public static Schedule create(CreateScheduleRequest request, Integer userId) {

@@ -5,6 +5,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alphamail.api.schedule.application.usecase.ChangeToggleUseCase;
 import com.alphamail.api.schedule.application.usecase.CreateScheduleUseCase;
 import com.alphamail.api.schedule.application.usecase.DeleteScheduleUseCase;
+import com.alphamail.api.schedule.application.usecase.GetScheduleDetailUseCase;
 import com.alphamail.api.schedule.application.usecase.UpdateScheduleUseCase;
 import com.alphamail.api.schedule.presentation.dto.ChangeScheduleToggleRequest;
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
+import com.alphamail.api.schedule.presentation.dto.ScheduleDetailResponse;
 import com.alphamail.api.schedule.presentation.dto.ToggleScheduleResponse;
 import com.alphamail.api.schedule.presentation.dto.UpdateScheduleRequest;
 import com.alphamail.api.schedule.presentation.dto.UpdateScheduleResponse;
@@ -34,6 +37,7 @@ public class ScheduleController {
 	private final ChangeToggleUseCase changeToggleUseCase;
 	private final UpdateScheduleUseCase updateScheduleUseCase;
 	private final DeleteScheduleUseCase deleteScheduleUseCase;
+	private final GetScheduleDetailUseCase getScheduleDetailUseCase;
 
 	@PostMapping
 	public ResponseEntity<?> addSchedule(@RequestBody CreateScheduleRequest request,
@@ -47,6 +51,20 @@ public class ScheduleController {
 		return ResponseEntity.ok().build();
 
 	}
+
+	@GetMapping("/{scheduleId}")
+	public ResponseEntity<ScheduleDetailResponse> getScheduleDetail(@PathVariable Integer scheduleId,
+		@AuthenticationPrincipal UserDetails userDetails) {
+
+		//임시 아이디 1
+		Integer userId = 1;
+
+		ScheduleDetailResponse response = getScheduleDetailUseCase.execute(scheduleId, userId);
+
+		return ResponseEntity.ok().body(response);
+
+	}
+
 
 	@PatchMapping("/{scheduleId}/toggles")
 	public ResponseEntity<ToggleScheduleResponse> toggleSchedule(@PathVariable Integer scheduleId,

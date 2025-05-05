@@ -26,15 +26,16 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 		return scheduleMapper.toDomain(jpaRepository.save(entity));
 	}
 
-	@Override
-	public Optional<Schedule> findById(Integer scheduleId) {
-		return jpaRepository.findById(scheduleId)
-			.map(scheduleMapper::toDomain);
-	}
 
 	@Override
 	public void deleteById(Integer scheduleId) {
 		jpaRepository.deleteById(scheduleId);
+	}
+
+	@Override
+	public Optional<Schedule> findByIdAndUserId(Integer scheduleId, Integer userId) {
+		return jpaRepository.findByIdAndUserUserId(scheduleId, userId)
+			.map(scheduleMapper::toDomain);
 	}
 
 }

@@ -11,7 +11,7 @@ import com.alphamail.api.schedule.domain.entity.Schedule;
 public interface ScheduleRepository {
 	Schedule save(Schedule schedule);
 
-	Optional<Schedule> findById(Integer scheduleId);
-
 	void deleteById(Integer scheduleId);
+
+	Optional<Schedule> findByIdAndUserId(Integer scheduleId, Integer userId);
 }
