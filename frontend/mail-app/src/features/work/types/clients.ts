@@ -6,6 +6,9 @@ export interface Client {
     contact: string;
     email: string;
     address: string;
+    item?: string;
+    type?: string;
+    address_detail?: string;
     isSelected?: boolean;
   }
   
@@ -22,6 +25,9 @@ export interface Client {
     contact: string;
     email: string;
     address: string;
+    item?: string;
+    type?: string;
+    address_detail?: string;
   }
   
   export interface UpdateClientRequest extends Partial<CreateClientRequest> {

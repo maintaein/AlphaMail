@@ -11,6 +11,7 @@ interface ClientTableProps {
   setPageSize: (size: number) => void;
   totalCount: number;
   pageCount: number;
+  onClientClick?: (client: Client) => void;
 }
 
 export const ClientTable: React.FC<ClientTableProps> = ({
@@ -23,6 +24,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
   setPageSize,
   totalCount,
   pageCount,
+  onClientClick,
 }) => {
   return (
     <div>
@@ -40,7 +42,7 @@ export const ClientTable: React.FC<ClientTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {clients.length > 0 ? (
+          {clients?.length > 0 ? (
             clients.map((client, idx) => (
               <tr key={client.id} className="border-t">
                 <td className="p-2 text-center">
@@ -51,7 +53,19 @@ export const ClientTable: React.FC<ClientTableProps> = ({
                   />
                 </td>
                 <td className="p-2 text-center">{String(idx + 1).padStart(4, '0')}</td>
-                <td className="p-2">{client.name}</td>
+                <td className="p-2">
+                  {onClientClick ? (
+                    <button
+                      type="button"
+                      className="text-left hover:text-blue-600 hover:underline"
+                      onClick={() => onClientClick(client)}
+                    >
+                      {client.name}
+                    </button>
+                  ) : (
+                    client.name
+                  )}
+                </td>
                 <td className="p-2">{client.ceo}</td>
                 <td className="p-2">{client.business_no}</td>
                 <td className="p-2">{client.contact}</td>

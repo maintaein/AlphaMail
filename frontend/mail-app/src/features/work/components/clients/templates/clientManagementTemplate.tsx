@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useClient } from '../../../hooks/useClient';
 import { ClientTable } from '../organisms/clientTable';
 import { ClientSearchBar } from '../organisms/clientSearchBar';
+import { ClientDetailTemplate } from './clientDetailTemplate';
+import { Client } from '../../../types/clients';
 
 export const ClientManagementTemplate: React.FC = () => {
   const {
@@ -18,6 +20,9 @@ export const ClientManagementTemplate: React.FC = () => {
     setSelectedClientIds,
     deleteClient
   } = useClient();
+
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     fetchClients({ page: currentPage, size: pageSize });
@@ -51,6 +56,38 @@ export const ClientManagementTemplate: React.FC = () => {
     }
   };
 
+  const handleAddClient = () => {
+    setSelectedClient(null);
+    setShowDetail(true);
+  };
+
+  const handleClientClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowDetail(true);
+  };
+
+  const handleDetailCancel = () => {
+    setShowDetail(false);
+    setSelectedClient(null);
+  };
+
+  const handleDetailSave = (_data: Partial<Client>) => {
+    // 저장 로직 필요 (신규/수정 분기)
+    setShowDetail(false);
+    setSelectedClient(null);
+    fetchClients({ page: currentPage, size: pageSize });
+  };
+
+  if (showDetail) {
+    return (
+      <ClientDetailTemplate
+        client={selectedClient || undefined}
+        onSave={handleDetailSave}
+        onCancel={handleDetailCancel}
+      />
+    );
+  }
+
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -62,6 +99,7 @@ export const ClientManagementTemplate: React.FC = () => {
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
             <button 
+              onClick={handleAddClient}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
             >
               거래처 등록
@@ -88,6 +126,7 @@ export const ClientManagementTemplate: React.FC = () => {
             setPageSize={setPageSize}
             totalCount={totalCount}
             pageCount={pageCount}
+            onClientClick={handleClientClick}
           />
         </div>
       </div>

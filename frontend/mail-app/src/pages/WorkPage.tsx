@@ -4,6 +4,7 @@ import { ProductManagementTemplate } from '@/features/work/components/products/t
 import { ProductDetailTemplate } from '@/features/work/components/products/templates/productDetailTemplate';
 import { QuoteManagementTemplate } from '@/features/work/components/quotes/templates/quoteManagementTemplate';
 import { QuoteDetailTemplate } from '@/features/work/components/quotes/templates/quoteDetailTemplate';
+import { ClientManagementTemplate } from '@/features/work/components/clients/templates/clientManagementTemplate';
 import { useState, useEffect } from 'react';
 import { Product } from '@/features/work/types/product';
 import { QuoteDetail } from '@/features/work/types/quote';
@@ -53,7 +54,7 @@ const WorkPage = () => {
   const renderTemplate = () => {
     switch (activeItem) {
       case '거래처 관리':
-        return <div className="p-4">거래처 관리 템플릿</div>;
+        return <ClientManagementTemplate />;
       case '발주서 관리':
         return <div className="p-4">발주서 관리 템플릿</div>;
       case '재고 관리':
