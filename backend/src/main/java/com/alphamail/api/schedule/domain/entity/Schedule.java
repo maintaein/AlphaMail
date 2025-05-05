@@ -1,10 +1,11 @@
 package com.alphamail.api.schedule.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
+import com.alphamail.common.exception.BadRequestException;
 
+import com.alphamail.common.exception.ErrorMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,6 +46,31 @@ public class Schedule {
 			.endTime(this.endTime)
 			.isDone(isDone)
 			.build();
+	}
+
+	public Schedule update(String name, String description, LocalDateTime startTime, LocalDateTime endTime) {
+
+		LocalDateTime newStartTime = startTime != null ? startTime : this.startTime;
+		LocalDateTime newEndTime = endTime != null ? endTime : this.endTime;
+
+		validateTime(newStartTime, newEndTime);
+
+		return Schedule.builder()
+			.scheduleId(this.scheduleId)
+			.userId(this.userId)
+			.name(name != null ? name : this.name)
+			.description(description != null ? description : this.description)
+			.startTime(newStartTime)
+			.endTime(newEndTime)
+			.isDone(this.isDone)
+			.build();
+	}
+
+	// 시간 검증
+	private static void validateTime(LocalDateTime startTime, LocalDateTime endTime) {
+		if (startTime.isAfter(endTime)) {
+			throw new BadRequestException(ErrorMessage.SCHEDULE_TIME_INVALID);
+		}
 	}
 
 
