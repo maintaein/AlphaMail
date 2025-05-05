@@ -23,7 +23,7 @@ public class ChangeToggleUseCase {
 		Schedule schedule = scheduleRepository.findById(scheduleId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
-		if(!schedule.getUserId().equals(userId)) {
+		if (!schedule.getUserId().equals(userId)) {
 			throw new ForbiddenException(ErrorMessage.FORBIDDEN);
 		}
 
