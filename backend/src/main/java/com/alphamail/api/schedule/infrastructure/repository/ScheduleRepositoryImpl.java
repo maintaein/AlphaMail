@@ -1,6 +1,7 @@
 package com.alphamail.api.schedule.infrastructure.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +24,12 @@ public class ScheduleRepositoryImpl implements ScheduleRepository {
 	public Schedule save(Schedule schedule) {
 		ScheduleEntity entity = scheduleMapper.toEntity(schedule);
 		return scheduleMapper.toDomain(jpaRepository.save(entity));
+	}
+
+	@Override
+	public Optional<Schedule> findById(Integer scheduleId) {
+		return jpaRepository.findById(scheduleId)
+			.map(scheduleMapper::toDomain);
 	}
 
 }
