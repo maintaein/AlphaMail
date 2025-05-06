@@ -18,6 +18,7 @@ public enum ErrorMessage {
 	FILE_UPLOAD_FAIL("파일 업로드 중 오류가 발생했습니다"),
 	NO_MAIL_SELECTED("삭제할 메일을 선택해주세요"),
 	SCHEDULE_TIME_INVALID("종료 시간은 시작 시간 이후여야 합니다"),
+	SCHEDULE_DATE_INVALID("시작일은 종료일보다 빠르거나 같아야 합니다"),
 	NO_FOLDER_ID("폴더 아이디가 없습니다."),
 	NO_TRASH_FOLDER("휴지통 폴더가 아닙니다."),
 
