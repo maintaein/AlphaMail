@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.domain.repository.EmailAttachmentRepository;
+import com.alphamail.api.email.infrastructure.entity.EmailAttachmentEntity;
 import com.alphamail.api.email.infrastructure.mapper.EmailAttachmentMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,21 @@ public class EmailAttachmentRepositoryImpl implements EmailAttachmentRepository 
 	@Override
 	public Optional<EmailAttachment> findById(Integer attachmentId) {
 		return emailAttachmentJpaRepository.findById(attachmentId).map(emailAttachmentMapper::toDomain);
+	}
+
+	@Override
+	public Void saveAll(List<EmailAttachment> emailAttachmentList) {
+		if (emailAttachmentList == null || emailAttachmentList.isEmpty()) {
+			return null;
+		}
+
+		List<EmailAttachmentEntity> entities = emailAttachmentList.stream()
+			.map(emailAttachmentMapper::toEntity)
+			.collect(Collectors.toList());
+
+		emailAttachmentJpaRepository.saveAll(entities);
+
+		return null;
 	}
 
 }

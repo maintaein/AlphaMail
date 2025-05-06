@@ -24,6 +24,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,8 +63,10 @@ public class EmailEntity {
 	@Column(nullable = false)
 	private String subject;
 
+	@Column(columnDefinition = "text")
 	private String bodyText;
 
+	@Column(columnDefinition = "text")
 	private String bodyHtml;
 
 	private LocalDateTime receivedDateTime;

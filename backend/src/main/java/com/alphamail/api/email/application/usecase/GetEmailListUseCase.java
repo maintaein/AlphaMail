@@ -80,6 +80,4 @@ public class GetEmailListUseCase {
 			emailPage.getNumber());
 	}
 
-
-
 }

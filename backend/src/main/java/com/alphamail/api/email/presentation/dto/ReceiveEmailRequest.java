@@ -1,6 +1,7 @@
 package com.alphamail.api.email.presentation.dto;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record ReceiveEmailRequest(

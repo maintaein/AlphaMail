@@ -32,6 +32,7 @@ public class DownloadAttachmentUseCase {
 		EmailAttachment attachment = emailAttachmentRepository.findById(attachmentId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
+		System.out.println(attachment);
 		// 2. 이메일 소유자 확인
 		if (!emailRepository.existsByIdAndUserId(emailId, userId.getValue())) {
 			throw new ForbiddenException(ErrorMessage.ACCESS_DENIED);

@@ -1,7 +1,11 @@
 package com.alphamail.api.email.application.usecase;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
+import com.alphamail.api.email.domain.entity.EmailAttachment;
+import com.alphamail.api.email.domain.repository.EmailAttachmentRepository;
 import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.user.application.usecase.port.LoadUserPort;
 import com.alphamail.api.email.domain.entity.Email;
@@ -18,6 +22,7 @@ public class ReceiveEmailUseCase {
 	private final EmailRepository emailRepository;
 	private final LoadUserPort loadUserPort;
 	private final EmailFolderRepository emailFolderRepository;
+	private final EmailAttachmentRepository emailAttachmentRepository;
 
 	public void excute(ReceiveEmailRequest request) {
 		String recipientEmail = request.actualRecipient();
@@ -28,6 +33,15 @@ public class ReceiveEmailUseCase {
 
 		Email email = Email.createForReceiving(request, userId.getValue(), folderId);
 
-		emailRepository.save(email);
+		Email savedEmail = emailRepository.save(email);
+
+		List<EmailAttachment> emailAttachmentList = EmailAttachment.createAttachments(
+			request.attachments(),
+			savedEmail.getEmailId()
+		);
+
+		if (!emailAttachmentList.isEmpty()) {
+			emailAttachmentRepository.saveAll(emailAttachmentList);
+		}
 	}
 }

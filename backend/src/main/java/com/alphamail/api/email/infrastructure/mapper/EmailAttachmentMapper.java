@@ -21,6 +21,7 @@ public class EmailAttachmentMapper {
 
 		return EmailAttachment.builder()
 			.id(entity.getEmailAttachmentId())
+			.emailId(entity.getEmail().getEmailId())
 			.name(entity.getName())
 			.S3Key(entity.getS3Key())
 			.size(entity.getSize())

@@ -59,7 +59,7 @@ public class EmailController {
 	private final EmptyMailUseCase emptyMailUseCase;
 
 	// 실제 사용자가 첨부파일을 DownLoad하는 API
-	@GetMapping("/api/emails/{emailId}/attachments/{attachmentId}")
+	@GetMapping("/{emailId}/attachments/{attachmentId}")
 	public ResponseEntity<Resource> downloadAttachment(
 		@PathVariable Integer emailId,
 		@PathVariable Integer attachmentId,
