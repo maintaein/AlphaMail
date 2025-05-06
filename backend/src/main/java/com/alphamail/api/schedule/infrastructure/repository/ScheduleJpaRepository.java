@@ -16,15 +16,17 @@ public interface ScheduleJpaRepository extends JpaRepository<ScheduleEntity, Int
 
 	Optional<ScheduleEntity> findByIdAndUserUserId(Integer scheduleId, Integer userId);
 
-	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId " +
-		"AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate) " +
-		"AND (s.name LIKE %:keyword% OR s.description LIKE %:keyword%)")
+	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId "
+		+ "AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate) "
+		+ "AND (s.name LIKE %:keyword% OR s.description LIKE %:keyword%)")
 	Page<ScheduleEntity> findByPeriodAndKeyword(@Param("startDate") LocalDate startDate,
-		@Param("endDate") LocalDate endDate, @Param("keyword") String keyword, @Param("userId") Integer userId,
-		Pageable pageable);
+												@Param("endDate") LocalDate endDate,
+												@Param("keyword") String keyword,
+												@Param("userId") Integer userId, Pageable pageable);
 
-	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId " +
-		"AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate)")
+	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId "
+		+ "AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate)")
 	Page<ScheduleEntity> findByPeriod(@Param("startDate") LocalDate startDate,
-		@Param("endDate") LocalDate endDate, @Param("userId") Integer userId, Pageable pageable);
+									@Param("endDate") LocalDate endDate,
+									@Param("userId") Integer userId, Pageable pageable);
 }
