@@ -10,6 +10,7 @@ import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.ForbiddenException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
