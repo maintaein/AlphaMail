@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { OrderDetail, OrderProduct } from '../../../types/order';
 import OrderBasicInfoForm from '../organisms/orderBasicInfoForm';
 import OrderProductTable from '../organisms/orderProductTable';
+import { orderService } from '../../../services/orderService';
 
 interface OrderDetailTemplateProps {
   order: OrderDetail | null;
@@ -91,9 +92,21 @@ const OrderDetailTemplate: React.FC<OrderDetailTemplateProps> = ({ order, onBack
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    try {
+      if (order) {
+        // 수정인 경우
+        await orderService.updateOrder(Number(order.order_no), formData);
+      } else {
+        // 등록인 경우
+        await orderService.createOrder(formData);
+      }
+      onSave(formData);
+    } catch (error) {
+      console.error('Failed to save order:', error);
+      alert('발주서 저장에 실패했습니다.');
+    }
   };
 
   return (
