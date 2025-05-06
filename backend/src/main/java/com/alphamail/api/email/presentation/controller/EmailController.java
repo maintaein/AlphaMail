@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.application.usecase.DeleteMailsUseCase;
 import com.alphamail.api.email.application.usecase.DownloadAttachmentUseCase;
+import com.alphamail.api.email.application.usecase.EmptyMailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
@@ -33,6 +35,8 @@ import com.alphamail.api.email.presentation.dto.AttachmentDownloadResponse;
 import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
+import com.alphamail.api.email.presentation.dto.EmptyTrashRequest;
+import com.alphamail.api.email.presentation.dto.EmptyTrashResponse;
 import com.alphamail.api.email.presentation.dto.FolderResponse;
 import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
@@ -52,6 +56,7 @@ public class EmailController {
 	private final DeleteMailsUseCase deleteMailsUseCase;
 	private final ReceiveEmailUseCase receiveEmailUseCase;
 	private final DownloadAttachmentUseCase downloadAttachmentUseCase;
+	private final EmptyMailUseCase emptyMailUseCase;
 
 	// 실제 사용자가 첨부파일을 DownLoad하는 API
 	@GetMapping("/api/emails/{emailId}/attachments/{attachmentId}")
@@ -145,4 +150,14 @@ public class EmailController {
 
 	}
 
+	@DeleteMapping("trash")
+	public ResponseEntity<EmptyTrashResponse> emptyTrash(@RequestBody EmptyTrashRequest request,
+		@AuthenticationPrincipal UserDetails userDetails) {
+		//임시용
+		Integer userId = 1;
+
+		Integer deletedCount = emptyMailUseCase.execute(request, userId);
+		return ResponseEntity.ok(new EmptyTrashResponse(deletedCount));
+
+	}
 }

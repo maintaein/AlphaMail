@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.alphamail.api.email.domain.entity.EmailFolder;
 import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
-import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
+import com.alphamail.api.email.presentation.dto.EmptyTrashRequest;
 import com.alphamail.common.exception.BadRequestException;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.ForbiddenException;
@@ -16,22 +16,29 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class DeleteMailsUseCase {
+public class EmptyMailUseCase {
 
 	private final EmailFolderRepository emailFolderRepository;
 	private final EmailRepository emailRepository;
 
-	public void execute(DeleteMailsRequest request, Integer userId) {
-
-		if (request.mailList() == null || request.mailList().isEmpty()) {
-			throw new BadRequestException(ErrorMessage.NO_MAIL_SELECTED);
+	public Integer execute(EmptyTrashRequest request, Integer userId) {
+		// 값 체크
+		if (request.folderId() == null) {
+			throw new BadRequestException(ErrorMessage.NO_FOLDER_ID);
 		}
 
-		if (!emailRepository.validateEmailOwnership(request.mailList(), userId)) {
-			throw new ForbiddenException(ErrorMessage.ACCESS_DENIED);
+		EmailFolder emailFolder = emailFolderRepository.findById(request.folderId());
+
+		// UserId가 똑같은지 체크
+		if (!emailFolder.getUserId().equals(userId)) {
+			throw new ForbiddenException(ErrorMessage.FORBIDDEN);
 		}
 
-		EmailFolder trashFolder = emailFolderRepository.findByUserIdAndFolderName(userId, "TRASH");
-		emailRepository.updateFolder(request.mailList(), trashFolder.getEmailFolderId());
+		if (!emailFolder.getEmailFolderName().equals("TRASH")) {
+			throw new BadRequestException(ErrorMessage.NO_TRASH_FOLDER);
+		}
+
+		return emailRepository.deleteByFolderId(request.folderId(), userId);
+
 	}
 }

@@ -42,4 +42,7 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	long countByEmailIdInAndUser_UserId(List<Integer> emailIds, Integer userId);
 
 	Boolean existsByEmailIdAndUser_UserId(Integer emailId, Integer userId);
+
+	Integer deleteByFolder_EmailFolderIdAndUser_UserId(Integer folderId, Integer userId);
+
 }

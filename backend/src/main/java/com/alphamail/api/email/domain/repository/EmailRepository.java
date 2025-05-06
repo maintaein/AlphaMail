@@ -29,4 +29,6 @@ public interface EmailRepository {
 	boolean validateEmailOwnership(List<Integer> emailIds, Integer userId);
 
 	Boolean existsByIdAndUserId(Integer emailId, Integer userId);
+
+	Integer deleteByFolderId(Integer folderId, Integer userId);
 }

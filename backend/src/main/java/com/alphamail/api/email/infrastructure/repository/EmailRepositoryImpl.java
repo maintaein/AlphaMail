@@ -75,6 +75,11 @@ public class EmailRepositoryImpl implements EmailRepository {
 	}
 
 	@Override
+	public Integer deleteByFolderId(Integer folderId, Integer userId) {
+		return emailJpaRepository.deleteByFolder_EmailFolderIdAndUser_UserId(folderId, userId);
+	}
+
+	@Override
 	public Page<Email> findByFolderIdAndUserId(Integer folderId, Integer userId, Pageable pageable) {
 		Page<EmailEntity> emailEntities = emailJpaRepository.findByFolder_EmailFolderIdAndUser_UserId(folderId, userId,
 			pageable);
