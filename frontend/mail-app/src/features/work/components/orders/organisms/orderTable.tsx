@@ -13,6 +13,7 @@ interface OrderTableProps {
   sortOption: number;
   onSortChange: (option: number) => void;
   totalCount: number;
+  onOrderClick?: (order: Order) => void;
 }
 
 const OrderTable: React.FC<OrderTableProps> = ({
@@ -26,6 +27,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
   sortOption,
   onSortChange,
   totalCount,
+  onOrderClick,
 }) => {
   return (
     <div>
@@ -78,6 +80,7 @@ const OrderTable: React.FC<OrderTableProps> = ({
                   key={order.id}
                   order={order}
                   onSelect={onSelect}
+                  onOrderClick={onOrderClick}
                 />
               ))
             ) : (

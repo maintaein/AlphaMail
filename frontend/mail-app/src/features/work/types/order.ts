@@ -26,4 +26,32 @@ export interface OrderListResponse {
   total_count: number;
   page_count: number;
   current_page: number;
+}
+
+export interface OrderDetail {
+  order_no: string;
+  date: string;
+  is_inbound: boolean;
+  manager: string;
+  client_name: string;
+  business_no: string;
+  representative: string;
+  business_type: string;
+  business_category: string;
+  client_manager: string;
+  client_contact: string;
+  payment_condition: string;
+  due_date: string;
+  address: string;
+  products: OrderProduct[];
+}
+
+export interface OrderProduct {
+  name: string;
+  standard: string;
+  quantity: number;
+  unit_price: number;
+  tax_amount: number;
+  supply_amount: number;
+  amount: number;
 } 

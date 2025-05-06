@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import OrderSearchBar from '../organisms/orderSearchBar';
 import OrderTable from '../organisms/orderTable';
 import { Order } from '../../../types/order';
+import OrderDetailTemplate from './orderDetailTemplate';
+import { OrderDetail } from '../../../types/order';
 
 const mockOrders: Order[] = [
   {
@@ -18,6 +20,36 @@ const mockOrders: Order[] = [
   // ...더미 데이터 추가 가능
 ];
 
+function orderToOrderDetail(order: Order): OrderDetail {
+  return {
+    order_no: order.order_no,
+    date: order.date,
+    is_inbound: false,
+    manager: order.manager,
+    client_name: order.client_name,
+    business_no: '',
+    representative: '',
+    business_type: '',
+    business_category: '',
+    client_manager: '',
+    client_contact: '',
+    payment_condition: '',
+    due_date: order.due_date,
+    address: '',
+    products: [
+      {
+        name: order.item,
+        standard: '',
+        quantity: 1,
+        unit_price: order.amount,
+        tax_amount: 0,
+        supply_amount: 0,
+        amount: order.amount,
+      },
+    ],
+  };
+}
+
 const OrderManagementTemplate: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [selectedOrderIds, setSelectedOrderIds] = useState<Set<number>>(new Set());
@@ -25,6 +57,8 @@ const OrderManagementTemplate: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [sortOption, setSortOption] = useState(0);
+  const [showOrderDetail, setShowOrderDetail] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
 
   const handleSelect = (id: number, checked: boolean) => {
     setOrders(orders =>
@@ -47,8 +81,8 @@ const OrderManagementTemplate: React.FC = () => {
   };
 
   const handleAddOrder = () => {
-    // TODO: 발주서 추가 로직 구현
-    console.log('Add order');
+    setSelectedOrder(null);
+    setShowOrderDetail(true);
   };
 
   const handleDelete = () => {
@@ -77,6 +111,28 @@ const OrderManagementTemplate: React.FC = () => {
     setSortOption(option);
     // TODO: 정렬 옵션 변경 시 데이터 로드
   };
+
+  const handleOrderClick = (order: Order) => {
+    setSelectedOrder(orderToOrderDetail(order));
+    setShowOrderDetail(true);
+  };
+
+  const handleBack = () => {
+    setShowOrderDetail(false);
+    setSelectedOrder(null);
+  };
+
+  const handleSave = () => {
+    setShowOrderDetail(false);
+    setSelectedOrder(null);
+    // TODO: 저장 후 목록 갱신
+  };
+
+  if (showOrderDetail) {
+    return (
+      <OrderDetailTemplate order={selectedOrder as any} onBack={handleBack} onSave={handleSave} />
+    );
+  }
 
   return (
     <div className="p-4">
@@ -115,6 +171,7 @@ const OrderManagementTemplate: React.FC = () => {
             sortOption={sortOption}
             onSortChange={handleSortChange}
             totalCount={orders.length}
+            onOrderClick={handleOrderClick}
           />
         </div>
       </div>
