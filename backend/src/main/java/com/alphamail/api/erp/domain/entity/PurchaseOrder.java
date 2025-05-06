@@ -12,6 +12,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.alphamail.api.erp.presentation.dto.purchaseorder.RegistPurchaseOrderRequest;
+import com.alphamail.api.organization.domain.entity.Client;
+import com.alphamail.api.organization.domain.entity.Company;
+import com.alphamail.api.organization.domain.entity.Group;
 import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.api.user.domain.valueobject.UserId;
 
@@ -26,8 +29,9 @@ import lombok.Getter;
 public class PurchaseOrder {
 	private Integer purchaseOrderId;
 	private User user;
-	private Integer groupId;
-	private Integer clientId;
+	private Company company;
+	private Group group;
+	private Client client;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime deletedAt;
@@ -35,39 +39,49 @@ public class PurchaseOrder {
 	private String orderNo;
 	private List<PurchaseOrderProduct> purchaseOrderProducts;
 
-	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user) {
-		return PurchaseOrder.builder()
+	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user, Company company, Group group, Client client) {
+		PurchaseOrder order = PurchaseOrder.builder()
 			.user(user)
-			.groupId(request.groupId())
-			.clientId(request.clientId())
+			.company(company)
+			.group(group)
+			.client(client)
 			.orderNo(
 				request.orderNo() != null ? request.orderNo() : generateOrderNo()
 			)
 			.deliverAt(request.deliverAt())
 			.createdAt(LocalDateTime.now())
-			.purchaseOrderProducts(
-				request.products().stream()
-					.map(p -> PurchaseOrderProduct.builder()
+			.purchaseOrderProducts(new ArrayList<>())
+			.build();
+
+		List<PurchaseOrderProduct> products = request.products().stream()
+			.map(p -> {
+				PurchaseOrderProduct product = PurchaseOrderProduct.builder()
 						.product(Product.of(p.productId()))
 						.count(p.count())
 						.price(p.price())
-						.build())
-					.toList()
-			)
-			.build();
+						.build();
+				product.setPurchaseOrder(order);
+				return product;
+				})
+			.toList();
+
+		order.getPurchaseOrderProducts().addAll(products);
+		return order;
 	}
 
 	public void updateUser(User user) {
 		this.user = user;
 	}
 
+	public void updateGroup(Group group) {
+		this.group = group;
+	}
+
+	public void updateClient(Client client) {
+		this.client = client;
+	}
+
 	public void update(RegistPurchaseOrderRequest request) {
-		if (request.groupId() != null) {
-			this.groupId = request.groupId();
-		}
-		if (request.clientId() != null) {
-			this.clientId = request.clientId();
-		}
 		if (request.orderNo() != null) {
 			this.orderNo = request.orderNo();
 		}

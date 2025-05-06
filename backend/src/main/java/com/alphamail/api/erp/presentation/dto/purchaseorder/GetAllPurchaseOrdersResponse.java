@@ -24,7 +24,7 @@ public record GetAllPurchaseOrdersResponse(
 			purchaseOrder.getOrderNo(),
 			purchaseOrder.getCreatedAt(),
 			purchaseOrder.getUser().getName(),
-			"클라이언트명",
+			purchaseOrder.getClient().getCorpName(),
 			purchaseOrder.getDeliverAt(),
 			purchaseOrder.getPurchaseOrderProducts().size(),
 			purchaseOrder.getPurchaseOrderProducts().get(0).getProduct().getName(),

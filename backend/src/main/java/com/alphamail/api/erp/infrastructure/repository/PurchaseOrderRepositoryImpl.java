@@ -15,6 +15,9 @@ import com.alphamail.api.erp.infrastructure.entity.PurchaseOrderEntity;
 import com.alphamail.api.erp.infrastructure.mapping.PurchaseOrderMapper;
 import com.alphamail.api.erp.infrastructure.specification.PurchaseOrderSpecification;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.PurchaseOrderSearchCondition;
+import com.alphamail.api.organization.domain.entity.Company;
+import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
+import com.alphamail.api.organization.infrastructure.mapping.CompanyMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,17 +27,22 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 
 	private final PurchaseOrderJpaRepository purchaseOrderJpaRepository;
 	private final PurchaseOrderMapper purchaseOrderMapper;
+	private final CompanyMapper companyMapper;
 
 	@Override
-	public Page<PurchaseOrder> findAllByCondition(PurchaseOrderSearchCondition condition, Pageable pageable) {
+	public Page<PurchaseOrder> findAllByCondition(Company company, PurchaseOrderSearchCondition condition,
+		Pageable pageable) {
+		CompanyEntity companyEntity = companyMapper.toEntity(company);
+
 		Specification<PurchaseOrderEntity> spec = Specification
 			.where(PurchaseOrderSpecification.notDeleted())
-			.and(PurchaseOrderSpecification.hasCompanyId(condition.companyId()))
 			.and(PurchaseOrderSpecification.hasClientName(condition.clientName()))
 			.and(PurchaseOrderSpecification.hasUserName(condition.userName()))
 			.and(PurchaseOrderSpecification.hasOrderNo(condition.orderNo()))
 			.and(PurchaseOrderSpecification.hasProductName(condition.productName()))
 			.and(PurchaseOrderSpecification.betweenDates(condition.startDate(), condition.endDate()));
+
+		spec = spec.and((root, query, cb) -> cb.equal(root.get("companyEntity"), companyEntity));
 
 		return purchaseOrderJpaRepository.findAll(spec, pageable)
 			.map(purchaseOrderMapper::toDomain);

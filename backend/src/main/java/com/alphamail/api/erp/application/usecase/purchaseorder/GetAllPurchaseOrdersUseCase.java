@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.erp.domain.repository.PurchaseOrderRepository;
+import com.alphamail.api.erp.domain.service.CompanyReader;
+import com.alphamail.api.erp.domain.service.GroupReader;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.GetAllPurchaseOrdersResponse;
 import com.alphamail.api.erp.presentation.dto.purchaseorder.PurchaseOrderSearchCondition;
 import com.alphamail.api.global.dto.GetPageResponse;
+import com.alphamail.api.organization.domain.entity.Company;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,10 +21,13 @@ import lombok.RequiredArgsConstructor;
 public class GetAllPurchaseOrdersUseCase {
 
 	private final PurchaseOrderRepository purchaseOrderRepository;
+	private final CompanyReader companyReader;
 
-	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(PurchaseOrderSearchCondition condition,
+	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(Integer companyId, PurchaseOrderSearchCondition condition,
 		Pageable pageable) {
-		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(condition, pageable)
+		Company company = companyReader.findById(companyId);
+
+		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(company, condition, pageable)
 			.map(GetAllPurchaseOrdersResponse::from);
 		return GetPageResponse.from(page);
 	}

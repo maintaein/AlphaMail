@@ -10,11 +10,6 @@ import jakarta.persistence.criteria.JoinType;
 
 public class PurchaseOrderSpecification {
 
-	public static Specification<PurchaseOrderEntity> hasCompanyId(Integer companyId) {
-		return (root, query, cb) -> companyId == null ? null :
-			cb.equal(root.get("clientEntity").get("companyId"), companyId);
-	}
-
 	public static Specification<PurchaseOrderEntity> hasClientName(String clientName) {
 		return (root, query, cb) -> clientName == null ? null :
 			cb.like(cb.lower(root.get("clientEntity").get("name")), "%" + clientName.toLowerCase() + "%");

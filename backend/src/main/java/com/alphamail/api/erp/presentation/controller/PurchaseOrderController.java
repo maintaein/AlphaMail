@@ -62,10 +62,10 @@ public class PurchaseOrderController {
 		@RequestParam(defaultValue = "10") int size
 	) {
 		PurchaseOrderSearchCondition condition = new PurchaseOrderSearchCondition(
-			companyId, clientName, orderNo, userName, productName, startDate, endDate);
+			clientName, orderNo, userName, productName, startDate, endDate);
 		Pageable pageable = PageRequest.of(page, size);
 
-		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(condition,
+		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(companyId, condition,
 			pageable);
 
 		return ResponseEntity.ok(response);
