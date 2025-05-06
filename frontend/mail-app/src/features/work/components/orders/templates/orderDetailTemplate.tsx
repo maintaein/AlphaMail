@@ -4,9 +4,9 @@ import OrderBasicInfoForm from '../organisms/orderBasicInfoForm';
 import OrderProductTable from '../organisms/orderProductTable';
 
 interface OrderDetailTemplateProps {
-  order?: OrderDetail;
+  order: OrderDetail | null;
   onBack: () => void;
-  onSave: () => void;
+  onSave: (orderData: OrderDetail) => void;
 }
 
 const OrderDetailTemplate: React.FC<OrderDetailTemplateProps> = ({ order, onBack, onSave }) => {
@@ -93,8 +93,7 @@ const OrderDetailTemplate: React.FC<OrderDetailTemplateProps> = ({ order, onBack
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: 저장 로직 구현
-    onSave();
+    onSave(formData);
   };
 
   return (

@@ -1,24 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import OrderSearchBar from '../organisms/orderSearchBar';
 import OrderTable from '../organisms/orderTable';
 import { Order } from '../../../types/order';
 import OrderDetailTemplate from './orderDetailTemplate';
 import { OrderDetail } from '../../../types/order';
-
-const mockOrders: Order[] = [
-  {
-    id: 1,
-    order_no: '123-456',
-    date: '25/04/23',
-    manager: '박도아',
-    client_name: 'SSAFY',
-    due_date: '25/06/23',
-    item: '도기묘 및 3개',
-    amount: 990000,
-    isSelected: false,
-  },
-  // ...더미 데이터 추가 가능
-];
+import { useOrderStore } from '../../../store/orderStore';
+import { useOrderManagement } from '../../../hooks/useOrderManagement';
 
 function orderToOrderDetail(order: Order): OrderDetail {
   return {
@@ -51,33 +38,33 @@ function orderToOrderDetail(order: Order): OrderDetail {
 }
 
 const OrderManagementTemplate: React.FC = () => {
-  const [orders, setOrders] = useState<Order[]>(mockOrders);
-  const [selectedOrderIds, setSelectedOrderIds] = useState<Set<number>>(new Set());
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortOption, setSortOption] = useState(0);
-  const [showOrderDetail, setShowOrderDetail] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderDetail | null>(null);
+  const {
+    orders,
+    selectedOrderIds,
+    currentPage,
+    totalPages,
+    pageSize,
+    sortOption,
+    showOrderDetail,
+    selectedOrder,
+    isLoading,
+    error,
+    setCurrentPage,
+    setPageSize,
+    setSortOption,
+    setShowOrderDetail,
+    setSelectedOrder,
+    toggleOrderSelection,
+  } = useOrderStore();
 
-  const handleSelect = (id: number, checked: boolean) => {
-    setOrders(orders =>
-      orders.map(order =>
-        order.id === id ? { ...order, isSelected: checked } : order
-      )
-    );
-    const newSelectedIds = new Set(selectedOrderIds);
-    if (checked) {
-      newSelectedIds.add(id);
-    } else {
-      newSelectedIds.delete(id);
-    }
-    setSelectedOrderIds(newSelectedIds);
-  };
+  const { fetchOrders, handleDeleteOrders, handleSaveOrder } = useOrderManagement();
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders, currentPage, pageSize, sortOption]);
 
   const handleSearch = (params: any) => {
-    // TODO: 검색 로직 구현
-    console.log(params);
+    fetchOrders(params);
   };
 
   const handleAddOrder = () => {
@@ -91,25 +78,20 @@ const OrderManagementTemplate: React.FC = () => {
       return;
     }
     if (window.confirm('선택한 발주서를 삭제하시겠습니까?')) {
-      // TODO: 삭제 로직 구현
-      console.log('Delete orders:', selectedOrderIds);
+      handleDeleteOrders();
     }
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    // TODO: 페이지 변경 시 데이터 로드
-    setTotalPages(Math.ceil(mockOrders.length / pageSize));
   };
 
   const handleSizeChange = (size: number) => {
     setPageSize(size);
-    // TODO: 페이지 크기 변경 시 데이터 로드
   };
 
   const handleSortChange = (option: number) => {
     setSortOption(option);
-    // TODO: 정렬 옵션 변경 시 데이터 로드
   };
 
   const handleOrderClick = (order: Order) => {
@@ -122,16 +104,24 @@ const OrderManagementTemplate: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  const handleSave = () => {
+  const handleSave = (orderData: OrderDetail) => {
+    handleSaveOrder(orderData);
     setShowOrderDetail(false);
     setSelectedOrder(null);
-    // TODO: 저장 후 목록 갱신
   };
 
   if (showOrderDetail) {
     return (
-      <OrderDetailTemplate order={selectedOrder as any} onBack={handleBack} onSave={handleSave} />
+      <OrderDetailTemplate
+        order={selectedOrder}
+        onBack={handleBack}
+        onSave={handleSave}
+      />
     );
+  }
+
+  if (error) {
+    return <div className="p-4 text-red-500">{error}</div>;
   }
 
   return (
@@ -145,16 +135,21 @@ const OrderManagementTemplate: React.FC = () => {
             <button
               onClick={handleAddOrder}
               className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              disabled={isLoading}
             >
               발주서 등록
             </button>
             <div className="space-x-2">
-              <button className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50">
+              <button
+                className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
+                disabled={isLoading}
+              >
                 출력
               </button>
               <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
+                disabled={isLoading}
               >
                 삭제
               </button>
@@ -162,7 +157,7 @@ const OrderManagementTemplate: React.FC = () => {
           </div>
           <OrderTable
             orders={orders}
-            onSelect={handleSelect}
+            onSelect={toggleOrderSelection}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
@@ -172,6 +167,7 @@ const OrderManagementTemplate: React.FC = () => {
             onSortChange={handleSortChange}
             totalCount={orders.length}
             onOrderClick={handleOrderClick}
+            isLoading={isLoading}
           />
         </div>
       </div>
