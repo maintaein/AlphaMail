@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.alphamail.api.erp.infrastructure.entity.PurchaseOrderEntity;
+
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 
@@ -12,7 +13,7 @@ public class PurchaseOrderSpecification {
 
 	public static Specification<PurchaseOrderEntity> hasClientName(String clientName) {
 		return (root, query, cb) -> clientName == null ? null :
-			cb.like(cb.lower(root.get("clientEntity").get("name")), "%" + clientName.toLowerCase() + "%");
+			cb.like(cb.lower(root.get("clientEntity").get("corpName")), "%" + clientName.toLowerCase() + "%");
 	}
 
 	public static Specification<PurchaseOrderEntity> hasOrderNo(String orderNo) {
@@ -27,7 +28,9 @@ public class PurchaseOrderSpecification {
 
 	public static Specification<PurchaseOrderEntity> hasProductName(String productName) {
 		return (root, query, cb) -> {
-			if (productName == null) return null;
+			if (productName == null) {
+				return null;
+			}
 			Join<Object, Object> products = root.join("products", JoinType.LEFT);
 			Join<Object, Object> product = products.join("productEntity", JoinType.LEFT);
 			query.distinct(true);

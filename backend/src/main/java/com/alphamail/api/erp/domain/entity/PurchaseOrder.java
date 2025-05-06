@@ -39,7 +39,8 @@ public class PurchaseOrder {
 	private String orderNo;
 	private List<PurchaseOrderProduct> purchaseOrderProducts;
 
-	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user, Company company, Group group, Client client) {
+	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user, Company company, Group group,
+		Client client) {
 		PurchaseOrder order = PurchaseOrder.builder()
 			.user(user)
 			.company(company)
@@ -56,13 +57,13 @@ public class PurchaseOrder {
 		List<PurchaseOrderProduct> products = request.products().stream()
 			.map(p -> {
 				PurchaseOrderProduct product = PurchaseOrderProduct.builder()
-						.product(Product.of(p.productId()))
-						.count(p.count())
-						.price(p.price())
-						.build();
+					.product(Product.of(p.productId()))
+					.count(p.count())
+					.price(p.price())
+					.build();
 				product.setPurchaseOrder(order);
 				return product;
-				})
+			})
 			.toList();
 
 		order.getPurchaseOrderProducts().addAll(products);

@@ -23,11 +23,13 @@ public class GetAllPurchaseOrdersUseCase {
 	private final PurchaseOrderRepository purchaseOrderRepository;
 	private final CompanyReader companyReader;
 
-	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(Integer companyId, PurchaseOrderSearchCondition condition,
+	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(Integer companyId,
+		PurchaseOrderSearchCondition condition,
 		Pageable pageable) {
 		Company company = companyReader.findById(companyId);
 
-		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(company, condition, pageable)
+		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(company, condition,
+				pageable)
 			.map(GetAllPurchaseOrdersResponse::from);
 		return GetPageResponse.from(page);
 	}
