@@ -16,5 +16,6 @@ public record RegistQuoteRequest(
 		Integer productId,
 		Integer count,
 		Long price
-	) {}
+	) {
+	}
 }
