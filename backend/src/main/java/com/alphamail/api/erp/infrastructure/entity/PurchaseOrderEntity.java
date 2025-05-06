@@ -3,6 +3,9 @@ package com.alphamail.api.erp.infrastructure.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.alphamail.api.organization.infrastructure.entity.ClientEntity;
+import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
+import com.alphamail.api.organization.infrastructure.entity.GroupEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
 import jakarta.persistence.CascadeType;
@@ -37,11 +40,17 @@ public class PurchaseOrderEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity userEntity;
 
-	@Column(name = "group_id", nullable = false)
-	private Integer groupId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "company_id", nullable = false)
+	private CompanyEntity companyEntity;
 
-	@Column(name = "client_id", nullable = false)
-	private Integer clientId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id", nullable = false)
+	private GroupEntity groupEntity;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "client_id", nullable = false)
+	private ClientEntity clientEntity;
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;

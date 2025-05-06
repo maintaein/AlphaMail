@@ -32,7 +32,7 @@ public class GetEmailDetailUseCase {
 		List<EmailAttachment> attachments = emailAttachmentRepository.findAllByEmailId(emailId);
 
 		// 읽음 표시가 필요한 경우에만 업데이트
-		if (!email.getReadStatus()) {
+		if (email.getReadStatus() == null || !email.getReadStatus()) {
 			email = emailRepository.save(email.markAsRead());
 		}
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 public record RegistPurchaseOrderRequest(
 	Integer userId,
+	Integer companyId,
 	Integer groupId,
 	Integer clientId,
 	String orderNo,
