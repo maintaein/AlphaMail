@@ -8,6 +8,7 @@ import { ClientManagementTemplate } from '@/features/work/components/clients/tem
 import { useState, useEffect } from 'react';
 import { Product } from '@/features/work/types/product';
 import { QuoteDetail } from '@/features/work/types/quote';
+import OrderManagementTemplate from '@/features/work/components/orders/templates/orderManagementTemplate';
 
 const WorkPage = () => {
   const { activeItem } = useSidebarStore();
@@ -56,7 +57,7 @@ const WorkPage = () => {
       case '거래처 관리':
         return <ClientManagementTemplate />;
       case '발주서 관리':
-        return <div className="p-4">발주서 관리 템플릿</div>;
+        return <OrderManagementTemplate />;
       case '재고 관리':
         return showProductDetail ? (
           <ProductDetailTemplate 
