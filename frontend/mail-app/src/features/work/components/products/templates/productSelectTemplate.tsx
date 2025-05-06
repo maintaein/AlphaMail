@@ -1,41 +1,53 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Product } from '../../../types/product';
 import ProductSearchBar from '../molecules/productSearchBar';
 import ProductSelectTable from '../organisms/productSelectTable';
+import { useProductSelect } from '../../../hooks/useProductSelect';
 
 interface ProductSelectTemplateProps {
   isOpen: boolean;
   onSelect: (product: Product) => void;
   onClose: () => void;
-  products: Product[]; // 외부에서 데이터 주입 (API 연동 시 커스텀 hook으로 대체 가능)
 }
 
 const ProductSelectTemplate: React.FC<ProductSelectTemplateProps> = ({
-  isOpen, onSelect, onClose, products
+  isOpen, onSelect, onClose
 }) => {
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-
-  const filteredProducts = products.filter((p) =>
-    p.name.includes(searchKeyword)
-  );
+  const {
+    products,
+    searchKeyword,
+    selectedId,
+    isLoading,
+    error,
+    handleSearch,
+    handleSelect,
+    getSelectedProduct,
+  } = useProductSelect();
 
   if (!isOpen) return null;
 
-  const handleSearch = (keyword: string) => {
-    setSearchKeyword(keyword);
-  };
-
-  const handleSelect = () => {
-    const product = filteredProducts.find((p) => p.id === selectedId);
+  const handleConfirm = () => {
+    const product = getSelectedProduct();
     if (product) onSelect(product);
   };
 
+  if (error) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-500 opacity-50" onClick={onClose}></div>
+        <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4 p-4">
+          <div className="text-red-500">{error}</div>
+          <button onClick={onClose} className="mt-4 px-4 py-2 bg-gray-200 rounded">
+            닫기
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* 오버레이 */}
       <div className="fixed inset-0 bg-gray-500 opacity-50" onClick={onClose}></div>
-      {/* 모달 */}
       <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4">
         <div className="flex justify-between items-center p-4 border-b">
           <h2 className="font-bold">품목 추가</h2>
@@ -45,16 +57,17 @@ const ProductSelectTemplate: React.FC<ProductSelectTemplateProps> = ({
           <ProductSearchBar keyword={searchKeyword} onSearch={handleSearch} />
           <div className="overflow-x-auto">
             <ProductSelectTable
-              products={filteredProducts}
+              products={products}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={handleSelect}
+              isLoading={isLoading}
             />
           </div>
           <div className="flex justify-end mt-4">
             <button
-              className="bg-blue-500 text-white px-6 py-2 rounded"
-              disabled={selectedId === null}
-              onClick={handleSelect}
+              className="bg-blue-500 text-white px-6 py-2 rounded disabled:opacity-50"
+              disabled={selectedId === null || isLoading}
+              onClick={handleConfirm}
             >
               선택
             </button>

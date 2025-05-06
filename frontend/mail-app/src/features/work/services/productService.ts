@@ -56,5 +56,13 @@ export const productService = {
       console.error('선택된 상품 삭제 실패:', error);
       throw error;
     }
+  },
+
+  // 검색어로 상품 조회
+  searchProducts: async (companyId: number, query?: string) => {
+    const response = await api.get<ProductResponse>(`/api/erp/companies/${companyId}/products`, {
+      params: { query }
+    });
+    return response.data;
   }
 };
