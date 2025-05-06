@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.email.application.service.EmailService;
+import com.alphamail.api.email.application.usecase.DeleteDetailUseCase;
 import com.alphamail.api.email.application.usecase.DeleteMailsUseCase;
 import com.alphamail.api.email.application.usecase.DownloadAttachmentUseCase;
 import com.alphamail.api.email.application.usecase.EmptyMailUseCase;
@@ -54,6 +55,7 @@ public class EmailController {
 	private final GetFolderUseCase getFolderUseCase;
 	private final GetEmailDetailUseCase getEmailDetailUseCase;
 	private final DeleteMailsUseCase deleteMailsUseCase;
+	private final DeleteDetailUseCase deleteDetailUseCase;
 	private final ReceiveEmailUseCase receiveEmailUseCase;
 	private final DownloadAttachmentUseCase downloadAttachmentUseCase;
 	private final EmptyMailUseCase emptyMailUseCase;
@@ -134,6 +136,19 @@ public class EmailController {
 		return ResponseEntity.ok(emailDetail);
 	}
 
+	@PatchMapping("/{mailId}/trash")
+	public ResponseEntity<Void> moveMailToTrash(@PathVariable Integer mailId,
+		@AuthenticationPrincipal UserDetails userDetails) {
+
+		//임시용
+		Integer userId = 1;
+
+		deleteDetailUseCase.execute(mailId, userId);
+
+		return ResponseEntity.ok().build();
+	}
+
+
 	@PatchMapping("/trash")
 	public ResponseEntity<Void> moveMailsToTrash(@RequestBody DeleteMailsRequest request,
 		@AuthenticationPrincipal UserDetails userDetails) {
@@ -146,7 +161,7 @@ public class EmailController {
 
 	}
 
-	@DeleteMapping("trash")
+	@DeleteMapping("/trash")
 	public ResponseEntity<EmptyTrashResponse> emptyTrash(@RequestBody EmptyTrashRequest request,
 		@AuthenticationPrincipal UserDetails userDetails) {
 		//임시용
