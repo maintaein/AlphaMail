@@ -5,29 +5,26 @@ interface ProductSearchBarProps {
   onSearch: (keyword: string) => void;
 }
 
-export const ProductSearchBar: React.FC<ProductSearchBarProps> = ({ keyword, onSearch }) => {
-  const [searchKeyword, setSearchKeyword] = useState(keyword);
+const ProductSearchBar: React.FC<ProductSearchBarProps> = ({ keyword, onSearch }) => {
+  const [input, setInput] = useState(keyword);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(searchKeyword);
+    onSearch(input);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-center space-x-2">
+    <form className="flex items-center mb-2" onSubmit={handleSubmit}>
+      <label className="mr-2 text-sm text-gray-700">품목</label>
       <input
-        type="text"
-        value={searchKeyword}
-        onChange={(e) => setSearchKeyword(e.target.value)}
-        placeholder="품목명으로 검색"
-        className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="border p-2 rounded mr-2"
+        placeholder="품목명"
+        value={input}
+        onChange={e => setInput(e.target.value)}
       />
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        검색
-      </button>
+      <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">검색</button>
     </form>
   );
-}; 
+};
+
+export default ProductSearchBar; 
