@@ -17,17 +17,26 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class GetEmailDetailUseCase {
 	private final EmailRepository emailRepository;
 	private final EmailAttachmentRepository emailAttachmentRepository;
 
 	public EmailDetailResponse execute(Integer emailId, Integer userId) {
+
+		// email 가져오기
 		Email email = emailRepository.findByIdAndUserId(emailId, userId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
+		// email 상세보기 가져오기
 		List<EmailAttachment> attachments = emailAttachmentRepository.findAllByEmailId(emailId);
 
+		// 읽음 표시가 필요한 경우에만 업데이트
+		if (!email.getReadStatus()) {
+			email = emailRepository.save(email.markAsRead());
+		}
+
 		return EmailDetailResponse.from(email, attachments);
+
 	}
 }

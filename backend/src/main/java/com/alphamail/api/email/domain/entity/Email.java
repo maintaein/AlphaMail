@@ -11,10 +11,12 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
-@Builder
+@Builder(toBuilder = true)  // toBuilder=true 추가
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
 public class Email {
 	private Integer emailId;
 	private Integer folderId;
@@ -91,4 +93,10 @@ public class Email {
 			.build();
 	}
 
+	// 읽음 처리 메서드
+	public Email markAsRead() {
+		return this.toBuilder()
+			.readStatus(true)
+			.build();
+	}
 }

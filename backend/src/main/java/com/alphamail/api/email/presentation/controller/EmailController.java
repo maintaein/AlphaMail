@@ -121,11 +121,8 @@ public class EmailController {
 	@GetMapping("/folders")
 	public ResponseEntity<List<FolderResponse>> getUserFolders(@AuthenticationPrincipal UserDetails userDetails) {
 		Integer userId = 1;
-
 		List<FolderResponse> folders = getFolderUseCase.execute(userId);
-
 		return ResponseEntity.ok(folders);
-
 	}
 
 	@GetMapping("/{mailId}")
@@ -134,7 +131,6 @@ public class EmailController {
 		//임시용
 		Integer userId = 1;
 		EmailDetailResponse emailDetail = getEmailDetailUseCase.execute(mailId, userId);
-
 		return ResponseEntity.ok(emailDetail);
 	}
 

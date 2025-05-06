@@ -5,7 +5,6 @@ import com.alphamail.api.email.domain.entity.EmailAttachment;
 public record EmailAttachmentResponse(
 	Integer id,
 	String name,
-	String path,
 	Long size,
 	String type
 ) {
@@ -13,7 +12,6 @@ public record EmailAttachmentResponse(
 		return new EmailAttachmentResponse(
 			attachment.getId(),
 			attachment.getName(),
-			attachment.getS3Key(),
 			attachment.getSize(),
 			attachment.getType()
 		);
