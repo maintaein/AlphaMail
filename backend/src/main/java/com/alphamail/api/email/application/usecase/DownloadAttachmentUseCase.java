@@ -16,9 +16,11 @@ import com.alphamail.common.exception.ForbiddenException;
 import com.alphamail.common.exception.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DownloadAttachmentUseCase {
 
 	private final EmailAttachmentRepository emailAttachmentRepository;
@@ -29,11 +31,13 @@ public class DownloadAttachmentUseCase {
 	public AttachmentDownloadResponse execute(Integer emailId, Integer attachmentId, UserId userId) {
 
 		// 1. 첨부파일 조회
+		log.info("첨부파일 조회 시작: attachmentId={}", attachmentId);
 		EmailAttachment attachment = emailAttachmentRepository.findById(attachmentId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
-		System.out.println(attachment);
+		log.debug("조회된 첨부파일: {}", attachment);
 		// 2. 이메일 소유자 확인
+		log.info("이메일 소유자 확인: emailId={}, userId={}", emailId, userId.getValue());
 		if (!emailRepository.existsByIdAndUserId(emailId, userId.getValue())) {
 			throw new ForbiddenException(ErrorMessage.ACCESS_DENIED);
 		}
@@ -45,6 +49,7 @@ public class DownloadAttachmentUseCase {
 
 		// 4. S3에서 파일 다운로드
 		InputStream inputStream = s3Service.downloadFile(attachment.getS3Key());
+		log.debug("S3에서 파일 다운로드 완료: 파일명={}, 크기={}", attachment.getName(), attachment.getSize());
 
 		return AttachmentDownloadResponse.builder()
 			.inputStream(inputStream)
