@@ -41,11 +41,11 @@ public class PurchaseOrderSpecification {
 	public static Specification<PurchaseOrderEntity> betweenDates(LocalDateTime start, LocalDateTime end) {
 		return (root, query, cb) -> {
 			if (start != null && end != null) {
-				return cb.between(root.get("createdAt"), start, end);
+				return cb.between(root.get("deliverAt"), start, end);
 			} else if (start != null) {
-				return cb.greaterThanOrEqualTo(root.get("createdAt"), start);
+				return cb.greaterThanOrEqualTo(root.get("deliverAt"), start);
 			} else if (end != null) {
-				return cb.lessThanOrEqualTo(root.get("createdAt"), end);
+				return cb.lessThanOrEqualTo(root.get("deliverAt"), end);
 			}
 			return null;
 		};
