@@ -36,7 +36,7 @@ const MailPage: React.FC = () => {
   }, [path, setActiveItem, setCurrentFolder, setTitle]);
 
   return (
-    <div className="p-6">
+    <div>
       <MainTemplate />
     </div>
   );

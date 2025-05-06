@@ -5,14 +5,12 @@ import { ButtonGroup } from '../molecules/buttonGroup';
 interface MailDetailHeaderProps {
   onBack: () => void;
   onReply: () => void;
-  onForward: () => void;
   onDelete: () => void;
 }
 
 export const MailDetailHeader: React.FC<MailDetailHeaderProps> = ({
   onBack,
   onReply,
-  onForward,
   onDelete
 }) => {
   return (
@@ -29,11 +27,6 @@ export const MailDetailHeader: React.FC<MailDetailHeaderProps> = ({
           {
             label: '답장',
             onClick: onReply,
-            variant: 'text'
-          },
-          {
-            label: '전달',
-            onClick: onForward,
             variant: 'text'
           },
           {

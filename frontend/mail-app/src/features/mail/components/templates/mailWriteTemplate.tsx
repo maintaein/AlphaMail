@@ -5,11 +5,13 @@ import { MailWriteForm } from '../organisms/mailWriteForm';
 import { useMail } from '../../hooks/useMail';
 import { SendMailRequest } from '../../types/mail';
 import { Spinner } from '@/shared/components/atoms/spinner';
+import { mailService } from '../../services/mailService';
+import { useQuery } from '@tanstack/react-query';
 
 const MailWriteTemplate: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { useMailDetail, sendMail } = useMail();
+  const { sendMail } = useMail();
   
   const [to, setTo] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>('');
@@ -21,9 +23,14 @@ const MailWriteTemplate: React.FC = () => {
   const queryParams = new URLSearchParams(location.search);
   const replyToId = queryParams.get('reply');
   const forwardId = queryParams.get('forward');
-  
-  // 답장 또는 전달 메일 정보 가져오기
-  const { data: originalMail } = useMailDetail(replyToId || forwardId || '');
+  const mailId = replyToId || forwardId;
+
+  // 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
+  const { data: originalMail } = useQuery({
+    queryKey: ['mail', mailId],
+    queryFn: () => mailService.getMailDetail(mailId!),
+    enabled: !!mailId // mailId가 있을 때만 쿼리 활성화
+  });
   
   useEffect(() => {
     if (originalMail) {

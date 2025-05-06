@@ -1,4 +1,4 @@
-import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, DeleteMailsRequest, SendMailRequest, SendMailResponse, AttachmentUploadResponse } from '../types/mail';
+import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, SendMailRequest, SendMailResponse, AttachmentUploadResponse } from '../types/mail';
 import { api } from '@/shared/lib/axiosInstance';
 
 
@@ -51,21 +51,40 @@ async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
   
   // 메일 삭제 (휴지통으로 이동)
   async deleteMails(ids: number[]): Promise<void> {
-    const data: DeleteMailsRequest = {
-      ids
+    const data = {
+      mail_list: ids
     };
     
-    await api.post(`/api/mails/delete`, data);
+    await api.patch(`/api/mails/trash`, data);
   },
   
-  // 메일 영구 삭제
-  async permanentlyDeleteMails(ids: number[]): Promise<void> {
-    const data: DeleteMailsRequest = {
-      ids
+  // 메일 상세에서 삭제 (휴지통으로 이동)
+  async deleteMailById(mailId: number, folderId: number = 3): Promise<void> {
+    const data = {
+      folder_id: folderId
     };
     
-    await api.delete(`/api/mails`, { data });
+    await api.patch(`/api/mails/${mailId}/trash`, data);
   },
+
+    // 메일 영구 삭제 (휴지통 비우기)
+  async emptyTrash(folderId: number = 3): Promise<{ deletedCount: number }> {
+    const data = {
+      folder_id: folderId
+    };
+    
+    const response = await api.delete(`/api/mails/trash`, { data });
+    return response.data;
+  },
+
+  // // 메일 영구 삭제
+  // async permanentlyDeleteMails(ids: number[]): Promise<void> {
+  //   const data: DeleteMailsRequest = {
+  //     ids
+  //   };
+    
+  //   await api.delete(`/api/mails`, { data });
+  // },
 
   // 메일 전송
   async sendMail(mailData: SendMailRequest): Promise<SendMailResponse> {

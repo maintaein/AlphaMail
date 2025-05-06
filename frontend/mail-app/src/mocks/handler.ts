@@ -42,41 +42,61 @@ const mailListData = {
       const folderId = url.searchParams.get('folderId');
       const content = url.searchParams.get('content');
       
-
-      // 페이지네이션 처리
-      const startIndex = page * size;
-      const endIndex = startIndex + size;
-      const paginatedList = mailListData.mailList.slice(startIndex, endIndex);
+      // 전체 메일 목록에서 폴더 필터링 (페이지네이션 전)
+      let allFilteredMails = [...mailListData.mailList];
       
-      // 폴더 필터링 (실제로는 더 복잡한 로직이 필요할 수 있음)
-      let filteredList = paginatedList;
+      // 폴더 필터링
       if (folderId) {
-        // 폴더 ID에 따른 필터링 로직
-        // 예: 받은 메일함(1), 보낸 메일함(2) 등
+        const folderIdNum = Number(folderId);
+        
+        // 폴더 ID에 따라 다른 데이터 필터링
+        if (folderIdNum === 1) {
+          // 받은 메일함 데이터
+          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 0);
+        } else if (folderIdNum === 2) {
+          // 보낸 메일함 데이터
+          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 1);
+        } else if (folderIdNum === 3) {
+          // 휴지통 데이터
+          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 2);
+        }
       }
       
-      // 검색어 필터링
+      // 검색어 필터링 (전체 데이터에서)
       if (content) {
-        filteredList = filteredList.filter(mail => 
+        allFilteredMails = allFilteredMails.filter(mail => 
           mail.subject.includes(content) || mail.sender.includes(content)
         );
       }
       
+      // 전체 메일 수와 읽지 않은 메일 수 계산 (페이지네이션 전)
+      const totalCount = allFilteredMails.length;
+      const readCount = allFilteredMails.filter(mail => mail.readStatus).length;
+      
       // 정렬
       if (sort === 1) { // 오래된 순
-        filteredList.sort((a, b) => new Date(a.receivedDate).getTime() - new Date(b.receivedDate).getTime());
+        allFilteredMails.sort((a, b) => new Date(a.receivedDate).getTime() - new Date(b.receivedDate).getTime());
       } else { // 최신순 (기본)
-        filteredList.sort((a, b) => new Date(b.receivedDate).getTime() - new Date(a.receivedDate).getTime());
+        allFilteredMails.sort((a, b) => new Date(b.receivedDate).getTime() - new Date(a.receivedDate).getTime());
       }
       
+      // 페이지네이션 처리
+      const startIndex = page * size;
+      const endIndex = startIndex + size;
+      const paginatedList = allFilteredMails.slice(startIndex, endIndex);
+      
+      // 페이지 수 계산
+      const pageCount = Math.ceil(totalCount / size);
+      
       return HttpResponse.json({
-        mailList: filteredList,
-        totalCount: mailListData.totalCount,
-        pageCount: mailListData.pageCount,
+        mailList: paginatedList,
+        total_count: totalCount,  // total_count로 변경
+        readCount: readCount,     // readCount 추가
+        pageCount: pageCount,
         currentPage: page
       });
     }),
-    
+
     // 메일 상세 조회
     http.get('/api/mails/:id', ({ params }) => {
       
@@ -127,42 +147,98 @@ const mailListData = {
       });
     }),
     
-    // 메일 삭제 (휴지통으로 이동)
-    http.post('/api/mails/delete', async ({ request }) => {
-      const data = await request.json() as { ids: number[] };
+  // 메일 삭제 (휴지통으로 이동)
+  http.patch('/api/mails/trash', async ({ request }) => {
+    const data = await request.json() as { mail_list: (number | string)[] };
+    console.log(`메일 ${data.mail_list.join(', ')}를 휴지통으로 이동`);
+    
+    // ID 형식 통일 (문자열 -> 숫자)
+    const mailIds = data.mail_list.map(id => typeof id === 'string' ? parseInt(id) : id);
+    
+    // 각 메일의 폴더 ID 변경
+    let movedCount = 0;
+    
+    mailIds.forEach(mailId => {
+      const mailIndex = mailListData.mailList.findIndex(mail => mail.id === mailId);
+      if (mailIndex !== -1) {
+        // 타입 단언으로 속성 추가
+        (mailListData.mailList[mailIndex] as any).folderId = 3; // 휴지통 폴더 ID
+        movedCount++;
+        console.log(`메일 ID ${mailId}를 휴지통으로 이동 완료`);
+      }
+    });
+    
+    console.log(`총 ${movedCount}개 메일이 휴지통으로 이동됨`);
+    
+    return HttpResponse.json({
+      success: true,
+      message: `${movedCount}개의 메일이 휴지통으로 이동되었습니다.`
+    });
+  }),
+
+        // 메일 상세에서 삭제 (휴지통으로 이동)
+    http.patch('/api/mails/:id/trash', async ({ params, request }) => {
+      const { id } = params;
+      const mailId = Number(id);
+      const data = await request.json() as { folder_id: number };
       
-      console.log(`메일 ${data.ids.join(', ')}를 휴지통으로 이동`);
+      console.log(`메일 ${mailId}를 폴더 ${data.folder_id}(휴지통)으로 이동`);
       
       return HttpResponse.json({
         success: true,
         message: "메일이 휴지통으로 이동되었습니다."
       });
     }),
-    
-    // 메일 영구 삭제
-    http.delete('/api/mails', async ({ request }) => {
-      const data = await request.json() as { ids: number[] };
+
+    // 휴지통 비우기 (영구 삭제)
+    http.delete('/api/mails/trash', async ({ request }) => {
+      const data = await request.json() as { folder_id: number };
+      const trashMails = mailListData.mailList.filter(mail => mail.id % 3 === 2);
+      const deletedCount = trashMails.length;
       
-      console.log(`메일 ${data.ids.join(', ')}를 영구 삭제`);
+      // 실제로 메일 삭제
+      mailListData.mailList = mailListData.mailList.filter(mail => mail.id % 3 !== 2);
+
+      console.log(`휴지통(폴더 ID: ${data.folder_id})의 모든 메일 ${deletedCount}개를 영구 삭제`);
       
       return HttpResponse.json({
-        success: true,
-        message: "메일이 영구 삭제되었습니다."
+        deletedCount: deletedCount,
+        message: "휴지통이 비워졌습니다."
       });
     }),
 
     // 메일 전송
     http.post('/api/mails', async ({ request }) => {
-        const data = await request.json();
-        
-        console.log('메일 전송 요청:', data);
-        
-        // 성공 응답 반환
-        return HttpResponse.json({
-        id: Math.floor(Math.random() * 1000),
+      const data = await request.json() as { 
+        sender: string; 
+        subject: string; 
+        attachments?: {attachment_id: number, name: string, size: number, type: string}[]
+      };
+      
+      // 새 메일 ID 생성
+      const newMailId = Math.floor(Math.random() * 1000) + 100;
+      
+      // 보낸 메일함에 추가 (folderId = 2로 명시)
+      const newMail = {
+        id: newMailId,
+        sender: data.sender || 'unknown@example.com',
+        subject: data.subject || '(제목 없음)',
+        receivedDate: new Date().toISOString(),
+        size: data.attachments?.length ? 1024 : 0,
+        readStatus: true,
+        folderId: 2 // 보낸 메일함
+      };
+      
+      // 타입 단언으로 추가
+      mailListData.mailList.push(newMail as any);
+      
+      console.log('새 메일 추가됨:', newMail);
+      
+      return HttpResponse.json({
+        id: newMailId,
         sentDate: new Date().toISOString(),
         emailType: 'SENT'
-        });
+      });
     }),
 
     // 파일 첨부 API 핸들러 추가

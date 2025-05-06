@@ -31,7 +31,7 @@ const MailResultTemplate: React.FC = () => {
   };
   
   const handleNewMail = () => {
-    navigate('/mail/compose');
+    navigate('/mail/write');
   };
   
   return (

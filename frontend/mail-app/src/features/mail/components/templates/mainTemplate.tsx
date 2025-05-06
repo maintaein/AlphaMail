@@ -10,21 +10,26 @@ import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 import { useNavigate } from 'react-router-dom';
 
 const MainTemplate: React.FC = () => {
-    const { 
-        currentFolder, 
-        currentPage, 
-        sortOrder,
-        searchKeyword,
-        selectedMails, 
-        setCurrentPage, 
-        selectMail, 
-        unselectMail, 
-        selectAllMails, 
-        clearSelection 
-        } = useMailStore();
-    
+  const { 
+    currentPage, 
+    sortOrder,
+    searchKeyword,
+    selectedMails, 
+    setCurrentPage, 
+    selectMail, 
+    unselectMail, 
+    selectAllMails, 
+    clearSelection,
+    setCurrentFolder
+  } = useMailStore();
+  
+  // 컴포넌트 마운트 시 현재 폴더를 받은 메일함(1)으로 설정
+  useEffect(() => {
+    setCurrentFolder(1);
+  }, [setCurrentFolder]);
+  
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error } = useMailList(currentFolder, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error } = useMailList(1, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -33,11 +38,9 @@ const MainTemplate: React.FC = () => {
     if (data) {
       const totalCount = data.total_count || 0;
       const unreadCount = totalCount - data.readCount || 0;
-      
       setMailStats(totalCount, unreadCount);
     }
   }, [data, setMailStats]);
-
 
   useEffect(() => {
     // 페이지 변경 시 선택 초기화
@@ -46,7 +49,6 @@ const MainTemplate: React.FC = () => {
   
   const handleSelectAll = (selected: boolean) => {
     if (selected) {
-      // API 응답 구조에 맞게 수정: mailList 배열에서 id 추출
       selectAllMails(data?.mailList.map((mail: MailListRow) => mail.id.toString()) || []);
     } else {
       clearSelection();
@@ -63,20 +65,18 @@ const MainTemplate: React.FC = () => {
   };
   
   const handleMailClick = (id: string) => {
-    // 메일 상세 보기 로직
-    navigate(`/mail/${id}`)
+    navigate(`/mail/${id}`);
   };
   
   const handleDelete = () => {
     if (selectedMails.length > 0) {
-        moveToTrash.mutate(selectedMails);
+      moveToTrash.mutate(selectedMails);
     }
   };
   
   const handleReply = () => {
     if (selectedMails.length === 1) {
-      // 답장 로직
-      console.log('Reply to:', selectedMails[0]);
+      navigate(`/mail/write?reply=${selectedMails[0]}`);
     }
   };
   
@@ -90,24 +90,23 @@ const MainTemplate: React.FC = () => {
       id: mail.id.toString(),
       subject: mail.subject,
       sender: {
-        name: mail.sender.split('@')[0], // 이메일에서 사용자 이름 추출
+        name: mail.sender.split('@')[0],
         email: mail.sender
       },
       receivedAt: mail.receivedDate,
       isRead: mail.readStatus,
-      hasAttachment: mail.size > 0, // 크기가 0보다 크면 첨부파일이 있다고 가정
+      hasAttachment: mail.size > 0,
       attachmentSize: mail.size
     }));
   };
   
   return (
-    <div className="mail-main-container">
-      
+    <div className="mail-main-container">      
       <MailListHeader
         allSelected={allSelected}
         onSelectAll={handleSelectAll}
         onReply={handleReply}
-        onDelete={handleDelete}
+        onMoveToTrash={handleDelete}
         selectedCount={selectedMails.length}
       />
       

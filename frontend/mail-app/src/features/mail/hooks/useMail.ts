@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { mailService } from '../services/mailService';
 import { MAIL_QUERY_KEYS } from '../constants/queryKeys';
 import { SendMailRequest } from '../types/mail';
+import { toast } from 'react-toastify';
 
 export const useMail = () => {
   const queryClient = useQueryClient();
@@ -50,13 +51,39 @@ export const useMail = () => {
   
   // 메일 휴지통으로 이동 뮤테이션
   const moveToTrash = useMutation({
-    mutationFn: (ids: string[]) => 
-      mailService.moveMails(ids.map(Number), 4), // 4는 휴지통 폴더 ID로 가정
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+    mutationFn: async (mailIds: string[]) => {
+      // 문자열 ID를 숫자로 변환
+      const numericIds = mailIds.map(id => parseInt(id, 10));
+      // 수정된 API 명세에 맞게 서비스 호출
+      return mailService.deleteMails(numericIds);
     },
+    onSuccess: () => {
+      // 성공 시 메일 목록 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['mailList'] });
+      toast.success('메일이 휴지통으로 이동되었습니다.');
+    },
+    onError: (error) => {
+      console.error('메일 삭제 오류:', error);
+      toast.error('메일을 휴지통으로 이동하는 중 오류가 발생했습니다.');
+    }
   });
-  
+
+    // 메일 상세에서 휴지통으로 이동 뮤테이션
+  const moveMailToTrash = useMutation({
+    mutationFn: ({ mailId, folderId = 3 }: { mailId: string, folderId?: number }) => 
+      mailService.deleteMailById(Number(mailId), folderId),
+    onSuccess: () => {
+      // 성공 시 메일 목록 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      toast.success('메일이 휴지통으로 이동되었습니다.');
+    },
+    onError: (error) => {
+      console.error('메일 삭제 오류:', error);
+      toast.error('메일을 휴지통으로 이동하는 중 오류가 발생했습니다.');
+    }
+  });
+
+    
   // 메일 폴더 이동 뮤테이션
   const moveToFolder = useMutation({
     mutationFn: ({ ids, targetFolderId }: { ids: string[], targetFolderId: number }) => 
@@ -66,14 +93,29 @@ export const useMail = () => {
     },
   });
   
-  // 메일 영구 삭제 뮤테이션
-  const permanentlyDelete = useMutation({
-    mutationFn: (ids: string[]) => 
-      mailService.permanentlyDeleteMails(ids.map(Number)),
-    onSuccess: () => {
+    // 휴지통 비우기 뮤테이션 추가
+  const emptyTrash = useMutation({
+    mutationFn: (folderId: number = 3) => 
+      mailService.emptyTrash(folderId),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['mails'] });
+      toast.success(`${data.deletedCount}개의 메일이 영구 삭제되었습니다.`);
     },
+    onError: (error) => {
+      console.error('휴지통 비우기 오류:', error);
+      toast.error('휴지통을 비우는 중 오류가 발생했습니다.');
+    }
   });
+
+
+  // // 메일 영구 삭제 뮤테이션
+  // const permanentlyDelete = useMutation({
+  //   mutationFn: (ids: string[]) => 
+  //     mailService.permanentlyDeleteMails(ids.map(Number)),
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ['mails'] });
+  //   },
+  // });
   
     // 메일 전송 뮤테이션
     const sendMail = useMutation({
@@ -100,9 +142,10 @@ export const useMail = () => {
     markAsUnread,
     moveToTrash,
     moveToFolder,
-    permanentlyDelete,
     sendMail,
     uploadAttachment,
+    moveMailToTrash,
+    emptyTrash,
   };
 
 };

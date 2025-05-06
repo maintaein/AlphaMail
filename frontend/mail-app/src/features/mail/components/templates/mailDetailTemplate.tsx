@@ -6,15 +6,13 @@ import { MailMetadata } from '../organisms/mailMetadata';
 import { AttachmentList } from '../organisms/attachmentList';
 import { MailContent } from '../organisms/mailContent';
 import { useMail } from '../../hooks/useMail';
-import { useMailStore } from '../../stores/useMailStore';
 import { Spinner } from '@/shared/components/atoms/spinner';
 import { Typography } from '@/shared/components/atoms/Typography';
 
 const MailDetailTemplate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { useMailDetail, moveToTrash } = useMail();
-  const { currentFolder } = useMailStore();
+  const { useMailDetail, moveMailToTrash } = useMail();
 //   const {markAsRead} = useMail();
 
   // 메일 상세 정보 조회
@@ -35,23 +33,17 @@ const MailDetailTemplate: React.FC = () => {
   // 답장 처리
   const handleReply = () => {
     if (id) {
-      navigate(`/mail/compose?reply=${id}`);
+      navigate(`/mail/write?reply=${id}`);
     }
   };
-  
-  // 전달 처리
-  const handleForward = () => {
-    if (id) {
-      navigate(`/mail/compose?forward=${id}`);
-    }
-  };
-  
-  // 삭제 처리
+    
   const handleDelete = () => {
     if (id) {
-      moveToTrash.mutate([id], {
+      moveMailToTrash.mutate({ 
+        mailId: id 
+      }, {
         onSuccess: () => {
-          navigate(`/mail/folder/${currentFolder || 1}`);
+          navigate(`/mail`);
         }
       });
     }
@@ -116,7 +108,6 @@ const MailDetailTemplate: React.FC = () => {
       <MailDetailHeader
         onBack={handleBack}
         onReply={handleReply}
-        onForward={handleForward}
         onDelete={handleDelete}
       />
       

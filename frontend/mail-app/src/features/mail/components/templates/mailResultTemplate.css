@@ -1,7 +1,7 @@
 @keyframes flyPaperAirplane {
     0% {
       opacity: 0;
-      transform: translate(-24px, 24px);
+      transform: translate(-30px, 30px);
     }
     20% {
       opacity: 1;
@@ -13,11 +13,11 @@
     }
     60% {
       opacity: 0;
-      transform: translate(24px, -24px);
+      transform: translate(27px, -27px);
     }
     100% {
       opacity: 0;
-      transform: translate(-24px, 24px);
+      transform: translate(-27px, 27px);
     }
   }
   

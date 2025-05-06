@@ -16,13 +16,30 @@ export const HeaderContent: React.FC = () => {
       </Typography>
     );
   } else if (path.startsWith('/mail')) {
+    // 메일 경로에 따라 다른 헤더 타이틀과 통계 표시
+    let mailTitle = "메일";
+    let showMailStats = false;
+    
+    if (path === '/mail') {
+      mailTitle = "받은 메일함";
+      showMailStats = true;
+    } else if (path === '/mail/sent') {
+      mailTitle = "보낸 메일함";
+    } else if (path === '/mail/trash') {
+      mailTitle = "휴지통";
+    } else {
+      mailTitle = title || "메일";
+      showMailStats = path === '/mail';
+    }
+    
     return (
-        <div className="flex items-center">
+      <div className="flex items-center">
         <Typography variant="titleLarge">
-          {title || "메일"}
+          {mailTitle}
         </Typography>
         
-        {mailStats.totalCount >= 0 && (
+        {/* 받은 메일함에서만 메일 통계 표시 */}
+        {showMailStats && mailStats.totalCount >= 0 && (
           <Typography variant="body" className="text-gray-600 ml-4">
             전체메일 {mailStats.totalCount} / 안읽은메일 {mailStats.unreadCount}
           </Typography>

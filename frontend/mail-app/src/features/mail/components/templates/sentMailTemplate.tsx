@@ -1,0 +1,135 @@
+import React, { useState, useEffect } from 'react';
+import { MailList } from '../organisms/mailList';
+import { MailListHeader } from '../organisms/mailListHeader';
+import { Pagination } from '../organisms/pagination';
+import { Typography } from '@/shared/components/atoms/Typography';
+import { useMail } from '../../hooks/useMail';
+import { useMailStore } from '../../stores/useMailStore';
+import { Mail, MailListRow } from '../../types/mail';
+import { useHeaderStore } from '@/shared/stores/useHeaderStore';
+import { useNavigate } from 'react-router-dom';
+
+const SentMailTemplate: React.FC = () => {
+  // 보낸 메일함은 folderId가 2
+  const { 
+    currentPage, 
+    sortOrder,
+    searchKeyword,
+    selectedMails, 
+    setCurrentPage, 
+    selectMail, 
+    unselectMail, 
+    selectAllMails, 
+    clearSelection,
+    setCurrentFolder
+  } = useMailStore();
+  
+  // 컴포넌트 마운트 시 현재 폴더를 보낸 메일함(2)으로 설정
+  useEffect(() => {
+    setCurrentFolder(2);
+  }, [setCurrentFolder]);
+  
+  const { useMailList, moveToTrash } = useMail();
+  const { data, isLoading, error } = useMailList(2, currentPage, sortOrder, searchKeyword);
+  const { setMailStats } = useHeaderStore();
+  const navigate = useNavigate();
+  const [allSelected, setAllSelected] = useState(false);
+  
+  useEffect(() => {
+    if (data) {
+      const totalCount = data.total_count || 0;
+      setMailStats(totalCount, 0);
+    }
+  }, [data, setMailStats]);
+
+  useEffect(() => {
+    // 페이지 변경 시 선택 초기화
+    clearSelection();
+  }, [currentPage, clearSelection]);
+  
+  const handleSelectAll = (selected: boolean) => {
+    if (selected) {
+      selectAllMails(data?.mailList.map((mail: MailListRow) => mail.id.toString()) || []);
+    } else {
+      clearSelection();
+    }
+    setAllSelected(selected);
+  };
+  
+  const handleSelectMail = (id: string, selected: boolean) => {
+    if (selected) {
+      selectMail(id);
+    } else {
+      unselectMail(id);
+    }
+  };
+  
+  const handleMailClick = (id: string) => {
+    navigate(`/mail/${id}`);
+  };
+  
+  const handleDelete = () => {
+    if (selectedMails.length > 0) {
+      moveToTrash.mutate(selectedMails);
+    }
+  };
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+  
+  // API 응답 구조에 맞게 메일 데이터 변환
+  const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
+    return mailList.map(mail => ({
+      id: mail.id.toString(),
+      subject: mail.subject,
+      sender: {
+        name: mail.sender.split('@')[0],
+        email: mail.sender
+      },
+      receivedAt: mail.receivedDate,
+      isRead: true, // 보낸 메일은 항상 읽음 상태
+      hasAttachment: mail.size > 0,
+      attachmentSize: mail.size
+    }));
+  };
+  
+  return (
+    <div className="mail-main-container">      
+      <MailListHeader
+        allSelected={allSelected}
+        onSelectAll={handleSelectAll}
+        onMoveToTrash={handleDelete}
+        selectedCount={selectedMails.length}
+        folderType="sent"
+      />
+      
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[200px]">
+          <Typography variant="body">로딩 중...</Typography>
+        </div>
+      ) : error ? (
+        <div className="flex justify-center items-center h-[200px]">
+          <Typography variant="body" color="text-red-500">에러가 발생했습니다.</Typography>
+        </div>
+      ) : (
+        <>
+          <MailList
+            mails={transformMailsData(data?.mailList)}
+            selectedMailIds={selectedMails}
+            onSelectMail={handleSelectMail}
+            onMailClick={handleMailClick}
+          />
+          
+          <Pagination
+            currentPage={data?.currentPage || 1}
+            totalPages={data?.pageCount || 1}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
+    </div>
+  );
+};
+
+export default SentMailTemplate;

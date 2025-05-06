@@ -8,6 +8,8 @@ import  SearchTest  from '@/pages/SearchTest';
 import MailDetailTemplate from '@/features/mail/components/templates/mailDetailTemplate';
 import MailWriteTemplate from '@/features/mail/components/templates/mailWriteTemplate';
 import MailResultTemplate from '@/features/mail/components/templates/mailResultTemplate';
+import MailTrashTemplate from '@/features/mail/components/templates/mailTrashTemplate';
+import SentMailTemplate from '@/features/mail/components/templates/sentMailTemplate';
 
 export const Router = () => {
   return (
@@ -15,8 +17,8 @@ export const Router = () => {
         <Route path="/" element={<HomePage />} />
         <Route path="/mail" element={<MailPage />} />
         <Route path="/mail/:id" element={<MailDetailTemplate />} />
-        <Route path="/mail/sent" element={<MailPage />} />
-        <Route path="/mail/trash" element={<MailPage />} />
+        <Route path="/mail/sent" element={<SentMailTemplate />} />
+        <Route path="/mail/trash" element={<MailTrashTemplate />} />
         <Route path="/mail/write" element={<MailWriteTemplate />} />
         <Route path="/mail/result" element={<MailResultTemplate />} />
         <Route path="/schedule" element={<SchedulePage />} />
