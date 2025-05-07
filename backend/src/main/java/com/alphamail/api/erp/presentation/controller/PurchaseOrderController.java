@@ -66,8 +66,7 @@ public class PurchaseOrderController {
 		Pageable pageable = PageRequest.of(page, size);
 
 		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(companyId,
-			condition,
-			pageable);
+			condition, pageable);
 
 		return ResponseEntity.ok(response);
 	}
