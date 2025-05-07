@@ -1,9 +1,20 @@
-import axios from 'axios';
 import { OrderDetail } from '../types/order';
+import { api } from '../../../shared/lib/axiosInstance';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:8080';
+interface OrderService {
+  getOrders: (params: {
+    page: number;
+    size: number;
+    sort?: string;
+    search?: string;
+  }) => Promise<any>;
+  getOrderDetail: (orderId: number) => Promise<any>;
+  createOrder: (orderData: OrderDetail) => Promise<any>;
+  updateOrder: (orderId: number, orderData: OrderDetail) => Promise<any>;
+  deleteOrders: (orderIds: number[]) => Promise<any>;
+}
 
-export const orderService = {
+export const orderService: OrderService = {
   // Get orders with pagination and filters
   getOrders: async (params: {
     page: number;
@@ -11,31 +22,31 @@ export const orderService = {
     sort?: string;
     search?: string;
   }) => {
-    const response = await axios.get(`${API_BASE_URL}/api/orders`, { params });
+    const response = await api.get('/api/orders', { params });
     return response.data;
   },
 
   // Get single order detail
   getOrderDetail: async (orderId: number) => {
-    const response = await axios.get(`${API_BASE_URL}/api/orders/${orderId}`);
+    const response = await api.get(`/api/orders/${orderId}`);
     return response.data;
   },
 
   // Create new order
   createOrder: async (orderData: OrderDetail) => {
-    const response = await axios.post(`${API_BASE_URL}/api/orders`, orderData);
+    const response = await api.post('/api/orders', orderData);
     return response.data;
   },
 
   // Update existing order
   updateOrder: async (orderId: number, orderData: OrderDetail) => {
-    const response = await axios.put(`${API_BASE_URL}/api/orders/${orderId}`, orderData);
+    const response = await api.put(`/api/orders/${orderId}`, orderData);
     return response.data;
   },
 
   // Delete order(s)
   deleteOrders: async (orderIds: number[]) => {
-    const response = await axios.delete(`${API_BASE_URL}/api/orders`, {
+    const response = await api.delete('/api/orders', {
       data: { orderIds },
     });
     return response.data;
