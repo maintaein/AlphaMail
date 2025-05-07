@@ -4,7 +4,6 @@ import { App } from './App';
 import '@/shared/styles/tailwind.css';
 
 async function main() {
-  // 개발 환경에서만 MSW 활성화
   if (process.env.NODE_ENV === 'development') {
     const { worker } = await import('./mocks/browser');
     await worker.start({

@@ -6,13 +6,38 @@ interface MailDetailHeaderProps {
   onBack: () => void;
   onReply: () => void;
   onDelete: () => void;
+  source?: 'inbox' | 'sent' | 'trash';
 }
 
 export const MailDetailHeader: React.FC<MailDetailHeaderProps> = ({
   onBack,
   onReply,
-  onDelete
+  onDelete,
+  source = 'inbox'
 }) => {
+    // 출처에 따라 버튼 구성 결정
+    const getButtons = () => {
+      const buttons = [];
+      
+      if (source !== 'trash' && onReply) {
+        buttons.push({
+          label: '답장',
+          onClick: onReply,
+          variant: 'text' as const
+        });
+      }
+      
+      if (source !== 'trash' && onDelete) {
+        buttons.push({
+          label: '삭제',
+          onClick: onDelete,
+          variant: 'text' as const
+        });
+      }
+      
+      return buttons;
+    };
+  
   return (
     <div className="flex justify-between mb-6 p-4 bg-gray-50">
       <Button variant="ghost" onClick={onBack} className="flex items-center gap-1">
@@ -22,20 +47,10 @@ export const MailDetailHeader: React.FC<MailDetailHeaderProps> = ({
         뒤로
       </Button>
       
-      <ButtonGroup
-        buttons={[
-          {
-            label: '답장',
-            onClick: onReply,
-            variant: 'text'
-          },
-          {
-            label: '삭제',
-            onClick: onDelete,
-            variant: 'text'
-          }
-        ]}
-      />
+      {/* 버튼 그룹 - 출처에 따라 다르게 표시 */}
+      {getButtons().length > 0 && (
+        <ButtonGroup buttons={getButtons()} />
+      )}
     </div>
   );
 };

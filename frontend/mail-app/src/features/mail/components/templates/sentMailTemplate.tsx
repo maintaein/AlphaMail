@@ -65,7 +65,7 @@ const SentMailTemplate: React.FC = () => {
   };
   
   const handleMailClick = (id: string) => {
-    navigate(`/mail/${id}`);
+    navigate(`/mail/sent/${id}`); // 보낸 메일함 상세 페이지로 이동
   };
   
   const handleDelete = () => {
@@ -88,12 +88,11 @@ const SentMailTemplate: React.FC = () => {
         email: mail.sender
       },
       receivedAt: mail.receivedDate,
-      isRead: true, // 보낸 메일은 항상 읽음 상태
-      hasAttachment: mail.size > 0,
-      attachmentSize: mail.size
+      isRead: true,
+      attachmentSize: mail.attachments && mail.attachments.length > 0 ? mail.size : 0
     }));
   };
-  
+
   return (
     <div className="mail-main-container">      
       <MailListHeader

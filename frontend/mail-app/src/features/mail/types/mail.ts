@@ -9,17 +9,17 @@ export interface Mail {
     };
     receivedAt: string;
     isRead: boolean;
-    hasAttachment?: boolean;
     attachmentSize?: number;
   }
 
-export interface MailListRow {
+  export interface MailListRow {
     id: number;
-    sender: string;
     subject: string;
+    sender: string;
     receivedDate: string;
-    size: number;
     readStatus: boolean;
+    size: number;
+    attachments?: Attachment[];
   }
   
   // 메일 목록 조회 응답 타입

@@ -65,7 +65,7 @@ const MailTrashTemplate: React.FC = () => {
   };
   
   const handleMailClick = (id: string) => {
-    navigate(`/mail/${id}`);
+    navigate(`/mail/trash/${id}`);
   };
   
   // 휴지통 비우기 (모든 메일 영구 삭제)
@@ -87,22 +87,21 @@ const MailTrashTemplate: React.FC = () => {
     setCurrentPage(page);
   };
   
-  // API 응답 구조에 맞게 메일 데이터 변환
-  const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
-    return mailList.map(mail => ({
-      id: mail.id.toString(),
-      subject: mail.subject,
-      sender: {
-        name: mail.sender.split('@')[0],
-        email: mail.sender
-      },
-      receivedAt: mail.receivedDate,
-      isRead: mail.readStatus,
-      hasAttachment: mail.size > 0,
-      attachmentSize: mail.size
-    }));
-  };
-  
+// API 응답 구조에 맞게 메일 데이터 변환
+const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
+  return mailList.map(mail => ({
+    id: mail.id.toString(),
+    subject: mail.subject,
+    sender: {
+      name: mail.sender.split('@')[0],
+      email: mail.sender
+    },
+    receivedAt: mail.receivedDate,
+    isRead: true,
+    attachmentSize: mail.attachments && mail.attachments.length > 0 ? mail.size : 0
+  }));
+};
+
   return (
     <div className="mail-main-container">      
       <div className="flex justify-between items-center mb-4">

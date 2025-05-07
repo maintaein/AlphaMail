@@ -13,7 +13,10 @@ export const useMail = () => {
       queryKey: MAIL_QUERY_KEYS.mailList(folderId, page, sort, content),
       queryFn: () => mailService.getMailList(folderId, page, 15, sort, content),
       placeholderData: keepPreviousData,
-    });
+      staleTime: 0, // 항상 "stale" 상태로 설정
+      refetchOnMount: 'always', // 컴포넌트가 마운트될 때마다 새로 요청
+      refetchOnWindowFocus: true, // 창이 포커스를 받을 때마다 새로 요청
+      });
   };
   
   // useQuery 직접 호출
@@ -31,7 +34,7 @@ export const useMail = () => {
       Promise.all(ids.map(id => mailService.updateMailReadStatus(Number(id), true))),
     onSuccess: (_, variables) => {
       // 메일 목록 쿼리 무효화
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
       
       // 메일 상세 쿼리도 무효화 (변경된 메일만)
       variables.forEach(id => {
@@ -45,7 +48,7 @@ export const useMail = () => {
     mutationFn: (ids: string[]) => 
       Promise.all(ids.map(id => mailService.updateMailReadStatus(Number(id), false))),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
     },
   });
   
@@ -58,8 +61,8 @@ export const useMail = () => {
       return mailService.deleteMails(numericIds);
     },
     onSuccess: () => {
-      // 성공 시 메일 목록 쿼리 무효화
-      queryClient.invalidateQueries({ queryKey: ['mailList'] });
+      // 성공 시 메일 목록 쿼리 무효화 (모든 폴더)
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
       toast.success('메일이 휴지통으로 이동되었습니다.');
     },
     onError: (error) => {
@@ -74,7 +77,7 @@ export const useMail = () => {
       mailService.deleteMailById(Number(mailId), folderId),
     onSuccess: () => {
       // 성공 시 메일 목록 쿼리 무효화
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
       toast.success('메일이 휴지통으로 이동되었습니다.');
     },
     onError: (error) => {
@@ -89,7 +92,7 @@ export const useMail = () => {
     mutationFn: ({ ids, targetFolderId }: { ids: string[], targetFolderId: number }) => 
       mailService.moveMails(ids.map(Number), targetFolderId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
     },
   });
   
@@ -98,7 +101,7 @@ export const useMail = () => {
     mutationFn: (folderId: number = 3) => 
       mailService.emptyTrash(folderId),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['mails'] });
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
       toast.success(`${data.deletedCount}개의 메일이 영구 삭제되었습니다.`);
     },
     onError: (error) => {
@@ -124,7 +127,8 @@ export const useMail = () => {
         onSuccess: () => {
             // 보낸메일함(폴더 ID: 2) 쿼리 무효화
             queryClient.invalidateQueries({ 
-            queryKey: MAIL_QUERY_KEYS.mailList(2) 
+            queryKey: MAIL_QUERY_KEYS.mailList(2),  
+            refetchType: 'all'
             });
         },
     });

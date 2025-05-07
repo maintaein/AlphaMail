@@ -8,7 +8,8 @@ const mailListData = {
       subject: `테스트 메일 제목 ${i + 1}`,
       receivedDate: new Date(2023, 0, i + 1).toISOString(),
       size: Math.floor(Math.random() * 1024),
-      readStatus: Math.random() > 0.5
+      readStatus: Math.random() > 0.5,
+      folderId: i % 3 + 1 // 1: 받은메일함, 2: 보낸메일함, 3: 휴지통
     })),
     totalCount: 20,
     pageCount: 2,
@@ -48,20 +49,9 @@ const mailListData = {
       // 폴더 필터링
       if (folderId) {
         const folderIdNum = Number(folderId);
-        
-        // 폴더 ID에 따라 다른 데이터 필터링
-        if (folderIdNum === 1) {
-          // 받은 메일함 데이터
-          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 0);
-        } else if (folderIdNum === 2) {
-          // 보낸 메일함 데이터
-          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 1);
-        } else if (folderIdNum === 3) {
-          // 휴지통 데이터
-          allFilteredMails = allFilteredMails.filter(mail => mail.id % 3 === 2);
-        }
+        allFilteredMails = allFilteredMails.filter(mail => mail.folderId === folderIdNum);
       }
-      
+
       // 검색어 필터링 (전체 데이터에서)
       if (content) {
         allFilteredMails = allFilteredMails.filter(mail => 
@@ -103,7 +93,25 @@ const mailListData = {
       const { id } = params;
       const mailId = Number(id);
       const isRead = mailReadStatus.get(mailId) || false;
-
+      const mail = mailListData.mailList.find(m => m.id === mailId);
+      const folderId = mail?.folderId;
+    
+      if (mail) {
+        // 목록에서 찾은 메일 정보 반환
+        return HttpResponse.json({
+          id: mail.id,
+          sender: mail.sender,
+          recipients: ["recipient1@example.com", "recipient2@example.com"],
+          subject: mail.subject,
+          bodyText: (mail as any).bodyText || `테스트 메일 본문 내용 ${mailId}...`,
+          receivedDate: mail.receivedDate,
+          emailType: mail.folderId === 2 ? "SENT" : "RECEIVED",
+          folderId: mail.folderId,
+          readStatus: mail.readStatus,
+          attachments: (mail as any).attachments || []
+        });
+      }
+    
       // 메일 ID에 따라 다른 내용 반환 (실제로는 DB 조회 등의 로직)
       return HttpResponse.json({
         id: mailId,
@@ -113,7 +121,7 @@ const mailListData = {
         bodyText: `테스트 메일 본문 내용 ${mailId}...`,
         receivedDate: new Date(2023, 0, mailId).toISOString(),
         emailType: "RECEIVED",
-        folderId: 1,
+        folderId: folderId,
         readStatus: isRead,
         attachments: mailId % 2 === 0 ? attachments : [] // 짝수 ID만 첨부파일 있음
       });
@@ -176,28 +184,44 @@ const mailListData = {
     });
   }),
 
-        // 메일 상세에서 삭제 (휴지통으로 이동)
-    http.patch('/api/mails/:id/trash', async ({ params, request }) => {
+    // 메일 상세에서 삭제 (휴지통으로 이동)
+    http.patch('/api/mails/:id/trash', async ({ params }) => {
       const { id } = params;
       const mailId = Number(id);
-      const data = await request.json() as { folder_id: number };
       
-      console.log(`메일 ${mailId}를 폴더 ${data.folder_id}(휴지통)으로 이동`);
+      console.log(`메일 ${mailId}를 휴지통으로 이동`);
       
-      return HttpResponse.json({
-        success: true,
-        message: "메일이 휴지통으로 이동되었습니다."
-      });
+      // 메일 찾기
+      const mailIndex = mailListData.mailList.findIndex(mail => mail.id === mailId);
+      
+      if (mailIndex !== -1) {
+        // 메일을 휴지통으로 이동 (folderId를 3으로 변경)
+        (mailListData.mailList[mailIndex] as any).folderId = 3; // 휴지통 폴더 ID
+        console.log(`메일 ID ${mailId}를 휴지통으로 이동 완료`);
+        
+        return HttpResponse.json({
+          success: true,
+          message: "메일이 휴지통으로 이동되었습니다."
+        });
+      } else {
+        // 메일을 찾지 못한 경우
+        return new HttpResponse(null, {
+          status: 404,
+          statusText: "메일을 찾을 수 없습니다."
+        });
+      }
     }),
 
     // 휴지통 비우기 (영구 삭제)
     http.delete('/api/mails/trash', async ({ request }) => {
       const data = await request.json() as { folder_id: number };
-      const trashMails = mailListData.mailList.filter(mail => mail.id % 3 === 2);
+      
+      // 휴지통에 있는 메일만 필터링 (folderId가 3인 메일)
+      const trashMails = mailListData.mailList.filter(mail => mail.folderId === 3);
       const deletedCount = trashMails.length;
       
-      // 실제로 메일 삭제
-      mailListData.mailList = mailListData.mailList.filter(mail => mail.id % 3 !== 2);
+      // 휴지통에 있는 메일만 삭제
+      mailListData.mailList = mailListData.mailList.filter(mail => mail.folderId !== 3);
 
       console.log(`휴지통(폴더 ID: ${data.folder_id})의 모든 메일 ${deletedCount}개를 영구 삭제`);
       
@@ -212,9 +236,11 @@ const mailListData = {
       const data = await request.json() as { 
         sender: string; 
         subject: string; 
+        recipients?: string[];  // recipients 타입 추가
+        bodyText?: string;      // bodyText 타입 추가
         attachments?: {attachment_id: number, name: string, size: number, type: string}[]
       };
-      
+          
       // 새 메일 ID 생성
       const newMailId = Math.floor(Math.random() * 1000) + 100;
       
@@ -222,11 +248,14 @@ const mailListData = {
       const newMail = {
         id: newMailId,
         sender: data.sender || 'unknown@example.com',
+        recipients: data.recipients || [],
         subject: data.subject || '(제목 없음)',
+        bodyText: data.bodyText || '',
         receivedDate: new Date().toISOString(),
         size: data.attachments?.length ? 1024 : 0,
         readStatus: true,
-        folderId: 2 // 보낸 메일함
+        folderId: 2, // 보낸 메일함
+        attachments: data.attachments || []
       };
       
       // 타입 단언으로 추가

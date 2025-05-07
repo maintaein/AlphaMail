@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { toast } from 'react-toastify';
+import { validateEmail } from '@/shared/utils/validation';
 
 interface MailRecipientInputProps {
   label: string;
@@ -14,18 +16,51 @@ export const MailRecipientInput: React.FC<MailRecipientInputProps> = ({
   onAddRecipient,
   onRemoveRecipient
 }) => {
+
   const [inputValue, setInputValue] = useState('');
+  const lastToastIdRef = useRef<string | number | null>(null);
+
+  const showToast = (message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
+    // 이전 토스트가 있으면 닫기
+    if (lastToastIdRef.current) {
+      toast.dismiss(lastToastIdRef.current);
+    }
+    
+    // 새 토스트 표시 및 ID 저장
+    const toastId = toast[type](message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    
+    lastToastIdRef.current = toastId;
+  };
+
+  const validateAndAddRecipient = (email: string) => {
+    if (!email.trim()) return;
+    
+    // 이메일 유효성 검사
+    const validation = validateEmail(email.trim());
+    if (!validation.isValid) {
+      showToast(`이메일 오류: ${validation.message}`, 'error');
+      return;
+    }
+    
+    onAddRecipient(email.trim());
+    setInputValue('');
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && inputValue.trim()) {
-      onAddRecipient(inputValue.trim());
-      setInputValue('');
+    if (e.key === 'Enter') {
+      validateAndAddRecipient(inputValue);
       e.preventDefault();
-    } else if (e.key === ';' || e.key === ',') {
-      // 세미콜론이나 쉼표로도 이메일 추가 가능
+    } else if (e.key === ';' || e.key === ',' || e.key === ' ') {
+      // 세미콜론, 쉼표, 스페이스바로도 이메일 추가 가능
       if (inputValue.trim()) {
-        onAddRecipient(inputValue.trim());
-        setInputValue('');
+        validateAndAddRecipient(inputValue);
         e.preventDefault();
       }
     }
@@ -37,8 +72,7 @@ export const MailRecipientInput: React.FC<MailRecipientInputProps> = ({
 
   const handleBlur = () => {
     if (inputValue.trim()) {
-      onAddRecipient(inputValue.trim());
-      setInputValue('');
+      validateAndAddRecipient(inputValue);
     }
   };
 

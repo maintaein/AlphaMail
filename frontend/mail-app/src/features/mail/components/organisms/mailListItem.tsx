@@ -43,7 +43,6 @@ export const MailListItem: React.FC<MailListItemProps> = ({
       <div className="mr-3">
         <MailIcon 
           isRead={mail.isRead} 
-          hasAttachment={mail.hasAttachment}
         />
       </div>
       
@@ -55,7 +54,7 @@ export const MailListItem: React.FC<MailListItemProps> = ({
         />
       </div>
       
-      <div className="flex-1 mr-4">
+      <div className="flex-1 mr-4 truncate">
         <MailSubject 
           subject={mail.subject} 
           isRead={mail.isRead}

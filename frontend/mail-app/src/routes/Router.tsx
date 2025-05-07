@@ -16,9 +16,11 @@ export const Router = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/mail" element={<MailPage />} />
-        <Route path="/mail/:id" element={<MailDetailTemplate />} />
+        <Route path="/mail/:id" element={<MailDetailTemplate source="inbox" />} />
         <Route path="/mail/sent" element={<SentMailTemplate />} />
-        <Route path="/mail/trash" element={<MailTrashTemplate />} />
+        <Route path="/mail/sent/:id" element={<MailDetailTemplate source="sent" />} />
+        <Route path="/mail/trash" element={<MailTrashTemplate />} /> 
+        <Route path="/mail/trash/:id" element={<MailDetailTemplate source="trash" />} />
         <Route path="/mail/write" element={<MailWriteTemplate />} />
         <Route path="/mail/result" element={<MailResultTemplate />} />
         <Route path="/schedule" element={<SchedulePage />} />

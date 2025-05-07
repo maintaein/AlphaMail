@@ -1,6 +1,5 @@
-import React from 'react';
-// import { useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { MailDetailHeader } from '../organisms/mailDetailHeader';
 import { MailMetadata } from '../organisms/mailMetadata';
 import { AttachmentList } from '../organisms/attachmentList';
@@ -8,26 +7,63 @@ import { MailContent } from '../organisms/mailContent';
 import { useMail } from '../../hooks/useMail';
 import { Spinner } from '@/shared/components/atoms/spinner';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 
-const MailDetailTemplate: React.FC = () => {
+interface MailDetailTemplateProps {
+  source?: 'inbox' | 'sent' | 'trash';
+}
+
+const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const { useMailDetail, moveMailToTrash } = useMail();
-//   const {markAsRead} = useMail();
+  const { setTitle } = useHeaderStore();
 
+  // URL 경로에서 source 결정 (props가 없는 경우)
+  const determineSource = (): 'inbox' | 'sent' | 'trash' => {
+    if (source) return source;
+    if (location.pathname.includes('/mail/sent/')) return 'sent';
+    if (location.pathname.includes('/mail/trash/')) return 'trash';
+    return 'inbox';
+  };
+
+  const currentSource = determineSource();
+
+    // 출처에 따라 헤더 타이틀 설정
+    useEffect(() => {
+      switch (currentSource) {
+        case 'sent':
+          setTitle('보낸 메일함');
+          break;
+        case 'trash':
+          setTitle('휴지통');
+          break;
+        default:
+          setTitle('받은 메일함');
+      }
+      
+      // 컴포넌트 언마운트 시 타이틀 초기화 (선택사항)
+      return () => {
+        setTitle('');
+      };
+    }, [currentSource, setTitle]);
+  
   // 메일 상세 정보 조회
   const { data, isLoading, isError, error } = useMailDetail(id || '');
   
-// //   메일을 읽음 상태로 변경
-//   useEffect(() => {
-//     if (id && data && !data.readStatus) {
-//       markAsRead.mutate([id]);
-//     }
-//   }, [id, data, markAsRead]);
-  
-  // 뒤로 가기 처리
+  // 뒤로 가기 처리 - 출처에 따라 다른 경로로 이동
   const handleBack = () => {
-    navigate(-1);
+    switch (currentSource) {
+      case 'sent':
+        navigate('/mail/sent');
+        break;
+      case 'trash':
+        navigate('/mail/trash');
+        break;
+      default:
+        navigate('/mail');
+    }
   };
   
   // 답장 처리
@@ -43,7 +79,17 @@ const MailDetailTemplate: React.FC = () => {
         mailId: id 
       }, {
         onSuccess: () => {
-          navigate(`/mail`);
+          // 출처에 따라 다른 경로로 이동
+          switch (currentSource) {
+            case 'sent':
+              navigate('/mail/sent');
+              break;
+            case 'trash':
+              navigate('/mail/trash');
+              break;
+            default:
+              navigate('/mail');
+          }
         }
       });
     }
@@ -51,12 +97,7 @@ const MailDetailTemplate: React.FC = () => {
   
   // 첨부 파일 다운로드 처리
   const handleDownload = (attachmentId: number, fileName: string) => {
-    // 첨부 파일 다운로드 로직
-    // 실제 구현에서는 API 호출하여 파일 다운로드
     console.log(`Downloading attachment: ${fileName} (ID: ${attachmentId})`);
-    
-    // 예시: 다운로드 API 호출
-    // window.open(`/api/mails/${id}/attachments/${attachmentId}/download`, '_blank');
   };
   
   if (isLoading) {
@@ -109,6 +150,7 @@ const MailDetailTemplate: React.FC = () => {
         onBack={handleBack}
         onReply={handleReply}
         onDelete={handleDelete}
+        source={currentSource}
       />
       
       {/* 메일 메타데이터 (제목, 발신자, 수신자, 날짜) */}
