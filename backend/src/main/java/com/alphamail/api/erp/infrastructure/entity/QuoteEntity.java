@@ -8,6 +8,7 @@ import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
 import com.alphamail.api.organization.infrastructure.entity.GroupEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
+import com.alphamail.common.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,7 +32,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class QuoteEntity {
+public class QuoteEntity extends BaseTimeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,12 +56,6 @@ public class QuoteEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "client_id", nullable = false)
 	private ClientEntity clientEntity;
-
-	@Column(name = "created_at", nullable = false)
-	private LocalDateTime createdAt;
-
-	@Column(name = "updated_at")
-	private LocalDateTime updatedAt;
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
