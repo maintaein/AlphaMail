@@ -2,6 +2,7 @@ package com.alphamail.api.erp.presentation.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.erp.application.dto.RegistResultDto;
+import com.alphamail.api.erp.application.usecase.quote.GetQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.ModifyQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.RegistQuoteUseCase;
+import com.alphamail.api.erp.presentation.dto.quote.GetQuoteResponse;
 import com.alphamail.api.erp.presentation.dto.quote.RegistQuoteRequest;
 import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.common.constants.ApiPaths;
@@ -23,8 +26,20 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(ApiPaths.ERP_BASE_API)
 public class QuoteController {
 
+	private final GetQuoteUseCase getQuoteUseCase;
 	private final RegistQuoteUseCase registQuoteUseCase;
 	private final ModifyQuoteUseCase modifyQuoteUseCase;
+
+	@GetMapping(ApiPaths.QUOTES_BASE_API + "/{quoteId}")
+	public ResponseEntity<GetQuoteResponse> getQuote(@PathVariable Integer quoteId) {
+		GetQuoteResponse response = getQuoteUseCase.execute(quoteId);
+
+		if (response == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+
+		return ResponseEntity.ok(response);
+	}
 
 	// 견적서 등록하기
 	@PostMapping(ApiPaths.QUOTES_BASE_API)
@@ -42,7 +57,6 @@ public class QuoteController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.id()));
 	}
 
-	// 견적서 수정하기
 	@PutMapping(ApiPaths.QUOTES_BASE_API + "/{quoteId}")
 	public ResponseEntity<?> modify(@PathVariable Integer quoteId, @RequestBody RegistQuoteRequest request) {
 		RegistResultDto result = modifyQuoteUseCase.execute(quoteId, request);
