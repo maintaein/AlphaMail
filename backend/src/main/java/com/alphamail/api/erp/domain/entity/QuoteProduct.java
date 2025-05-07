@@ -17,4 +17,10 @@ public class QuoteProduct {
 
 	@Setter
 	private Quote quote;
+
+	public void update(Integer count, Long price, Product product) {
+		this.count = count;
+		this.price = price;
+		this.product = product;
+	}
 }

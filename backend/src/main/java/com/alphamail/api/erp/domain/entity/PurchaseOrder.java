@@ -111,19 +111,10 @@ public class PurchaseOrder {
 					.count(info.count())
 					.price(info.price())
 					.build();
+				newProduct.setPurchaseOrder(this);
 				updatedProducts.add(newProduct);
 			}
 		}
-
-		Set<Integer> requestIds = request.products().stream()
-			.map(RegistPurchaseOrderRequest.PurchaseOrderProductDto::purchaseOrderProductId)
-			.filter(Objects::nonNull)
-			.collect(Collectors.toSet());
-
-		// 삭제할 품목 제거
-		this.purchaseOrderProducts.removeIf(p ->
-			p.getPurchaseOrderProductId() != null && !requestIds.contains(p.getPurchaseOrderProductId())
-		);
 
 		this.purchaseOrderProducts.clear();
 		this.purchaseOrderProducts.addAll(updatedProducts);
