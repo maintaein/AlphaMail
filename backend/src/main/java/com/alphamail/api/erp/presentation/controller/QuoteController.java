@@ -2,6 +2,7 @@ package com.alphamail.api.erp.presentation.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +15,7 @@ import com.alphamail.api.erp.application.dto.RegistResultDto;
 import com.alphamail.api.erp.application.usecase.quote.GetQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.ModifyQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.RegistQuoteUseCase;
+import com.alphamail.api.erp.application.usecase.quote.RemoveQuoteUseCase;
 import com.alphamail.api.erp.presentation.dto.quote.GetQuoteResponse;
 import com.alphamail.api.erp.presentation.dto.quote.RegistQuoteRequest;
 import com.alphamail.api.global.dto.RegistErpResponse;
@@ -29,6 +31,7 @@ public class QuoteController {
 	private final GetQuoteUseCase getQuoteUseCase;
 	private final RegistQuoteUseCase registQuoteUseCase;
 	private final ModifyQuoteUseCase modifyQuoteUseCase;
+	private final RemoveQuoteUseCase removeQuoteUseCase;
 
 	@GetMapping(ApiPaths.QUOTES_BASE_API + "/{quoteId}")
 	public ResponseEntity<GetQuoteResponse> getQuote(@PathVariable Integer quoteId) {
@@ -71,5 +74,13 @@ public class QuoteController {
 		}
 
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
+	}
+
+	@DeleteMapping(ApiPaths.QUOTES_BASE_API + "/{quoteId}")
+	public ResponseEntity<Void> remove(@PathVariable Integer quoteId) {
+		boolean deleted = removeQuoteUseCase.execute(quoteId);
+
+		return deleted ? ResponseEntity.ok().build() :
+			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }
