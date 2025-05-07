@@ -41,7 +41,6 @@ public class QuoteController {
 		return ResponseEntity.ok(response);
 	}
 
-	// 견적서 등록하기
 	@PostMapping(ApiPaths.QUOTES_BASE_API)
 	public ResponseEntity<?> regist(@RequestBody RegistQuoteRequest request) {
 		RegistResultDto result = registQuoteUseCase.execute(request);
