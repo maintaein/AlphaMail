@@ -27,6 +27,10 @@ public class GetAllPurchaseOrdersUseCase {
 		PurchaseOrderSearchCondition condition, Pageable pageable) {
 		Company company = companyReader.findById(companyId);
 
+		if (company == null) {
+			return null;
+		}
+
 		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(company, condition,
 				pageable)
 			.map(GetAllPurchaseOrdersResponse::from);

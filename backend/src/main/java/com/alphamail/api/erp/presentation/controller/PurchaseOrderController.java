@@ -68,6 +68,10 @@ public class PurchaseOrderController {
 		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(companyId,
 			condition, pageable);
 
+		if (response == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+
 		return ResponseEntity.ok(response);
 	}
 
