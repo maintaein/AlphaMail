@@ -26,12 +26,7 @@ const MailPage: React.FC = () => {
     } else if (path === '/mail/trash') {
       setActiveItem("휴지통");
       setTitle("휴지통");
-      setCurrentFolder(4);
-    } else {
-      // 기본값: 받은 메일함
-      setActiveItem("받은 메일함");
-      setTitle("받은 메일함");
-      setCurrentFolder(1);
+      setCurrentFolder(3);
     }
   }, [path, setActiveItem, setCurrentFolder, setTitle]);
 

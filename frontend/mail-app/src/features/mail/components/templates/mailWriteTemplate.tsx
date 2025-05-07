@@ -12,8 +12,8 @@ import { toast } from 'react-toastify';
 const MailWriteTemplate: React.FC = () => {
 
   const MAX_EMAIL_LENGTH = 254; // RFC 5321 기준
-  const MAX_SUBJECT_LENGTH = 100; // 제목 최대 길이
-  const MAX_CONTENT_LENGTH = 100000; // 내용 최대 길이 (약 100KB)
+  const MAX_SUBJECT_LENGTH = 120; // 제목 최대 길이
+  const MAX_CONTENT_LENGTH = 50000; // 내용 최대 길이 (약 100KB)
 
   const navigate = useNavigate();
   const location = useLocation();

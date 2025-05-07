@@ -28,7 +28,7 @@ export const HeaderContent: React.FC = () => {
     } else if (path === '/mail/trash') {
       mailTitle = "휴지통";
     } else {
-      mailTitle = title || "메일";
+      mailTitle = title 
       showMailStats = path === '/mail';
     }
     

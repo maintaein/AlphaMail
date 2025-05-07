@@ -36,12 +36,40 @@ interface MailQuillEditorProps {
   onChange: (content: string) => void;
 }
 
+interface QuillLinkBlot {
+  create: (value: string) => HTMLElement;
+  // 필요한 다른 속성들...
+}
+
 export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
   content,
   onChange
 }) => {
   const quillRef = useRef<ReactQuill>(null);
 
+    // 링크 삽입 핸들러 커스터마이징
+    useEffect(() => {
+      if (quillRef.current) {
+        const editor = quillRef.current.getEditor();
+        
+        // 기본 링크 포맷터 가져오기
+        const LinkBlot = editor.scroll.query('link') as unknown as QuillLinkBlot;
+        
+        // 링크 포맷터 재정의
+        if (LinkBlot) {
+          const originalCreate = LinkBlot.create;
+          LinkBlot.create = function(value: string) {
+            // 상대 URL이 아닌 경우에만 처리
+            if (value && !/^(https?:\/\/|mailto:|tel:|ftp:|#)/.test(value)) {
+              // http:// 접두사 추가
+              value = 'http://' + value;
+            }
+            return originalCreate.call(this, value);
+          };
+        }
+      }
+    }, []);
+  
   // 한글 입력 최적화를 위한 설정
   useEffect(() => {
     if (quillRef.current) {

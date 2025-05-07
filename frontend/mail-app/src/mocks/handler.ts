@@ -104,6 +104,7 @@ const mailListData = {
           recipients: ["recipient1@example.com", "recipient2@example.com"],
           subject: mail.subject,
           bodyText: (mail as any).bodyText || `테스트 메일 본문 내용 ${mailId}...`,
+          bodyHtml: (mail as any).bodyHtml || `테스트 메일 본문 내용 ${mailId}...`,
           receivedDate: mail.receivedDate,
           emailType: mail.folderId === 2 ? "SENT" : "RECEIVED",
           folderId: mail.folderId,
@@ -119,6 +120,7 @@ const mailListData = {
         recipients: ["recipient1@example.com", "recipient2@example.com"],
         subject: `테스트 메일 제목 ${mailId}`,
         bodyText: `테스트 메일 본문 내용 ${mailId}...`,
+        bodyHtml: `테스트 메일 본문 내용 ${mailId}...`,
         receivedDate: new Date(2023, 0, mailId).toISOString(),
         emailType: "RECEIVED",
         folderId: folderId,
@@ -236,8 +238,9 @@ const mailListData = {
       const data = await request.json() as { 
         sender: string; 
         subject: string; 
-        recipients?: string[];  // recipients 타입 추가
-        bodyText?: string;      // bodyText 타입 추가
+        recipients?: string[]; 
+        bodyText?: string;      
+        bodyHtml?: string;      
         attachments?: {attachment_id: number, name: string, size: number, type: string}[]
       };
           
@@ -251,6 +254,7 @@ const mailListData = {
         recipients: data.recipients || [],
         subject: data.subject || '(제목 없음)',
         bodyText: data.bodyText || '',
+        bodyHtml: data.bodyHtml || '',
         receivedDate: new Date().toISOString(),
         size: data.attachments?.length ? 1024 : 0,
         readStatus: true,
