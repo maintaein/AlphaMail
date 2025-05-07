@@ -1,3 +1,4 @@
+import React from 'react';
 import { Order } from '../../../types/order';
 import OrderTableRow from '../molecules/orderTableRow';
 import Pagination from '../molecules/pagination';
@@ -14,6 +15,7 @@ interface OrderTableProps {
   onSortChange: (option: number) => void;
   totalCount: number;
   onOrderClick?: (order: Order) => void;
+  isLoading: boolean;
 }
 
 const OrderTable: React.FC<OrderTableProps> = ({
@@ -28,9 +30,15 @@ const OrderTable: React.FC<OrderTableProps> = ({
   onSortChange,
   totalCount,
   onOrderClick,
+  isLoading,
 }) => {
   return (
-    <div>
+    <div className="relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      )}
       <div className="mb-4 flex justify-between items-center">
         <div className="flex items-center space-x-2">
           <select

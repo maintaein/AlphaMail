@@ -10,9 +10,9 @@ public record RegistPurchaseOrderRequest(
 	Integer clientId,
 	String orderNo,
 	LocalDateTime deliverAt,
-	List<ProductInfo> products
+	List<PurchaseOrderProductDto> products
 ) {
-	public record ProductInfo(
+	public record PurchaseOrderProductDto(
 		Integer purchaseOrderProductId,
 		Integer productId,
 		Integer count,

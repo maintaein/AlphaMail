@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.infrastructure.entity.EmailAttachmentEntity;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
-import jakarta.persistence.EntityManager;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Component

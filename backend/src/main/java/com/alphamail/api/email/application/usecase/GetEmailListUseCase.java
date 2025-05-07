@@ -31,7 +31,7 @@ public class GetEmailListUseCase {
 	public EmailListResponse execute(Integer folderId, Integer userId, String query, String sort, Pageable pageable) {
 
 		String folderName = emailFolderRepository.getFolderNameById(folderId);
-		boolean isTrashFolder = "trash".equals(folderName);
+		boolean isTrashFolder = "trash".equalsIgnoreCase(folderName);
 		//폴더 이름(ex.보낸메일함, 받은메일함) 따라서 갖고오는 field 다름
 		String sortField;
 		if ("sent".equalsIgnoreCase(folderName)) {

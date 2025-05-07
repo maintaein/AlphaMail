@@ -98,7 +98,7 @@ public class PurchaseOrder {
 		List<PurchaseOrderProduct> updatedProducts = new ArrayList<>();
 
 		// 수정/추가
-		for (RegistPurchaseOrderRequest.ProductInfo info : request.products()) {
+		for (RegistPurchaseOrderRequest.PurchaseOrderProductDto info : request.products()) {
 
 			if (info.purchaseOrderProductId() != null && existingMap.containsKey(info.purchaseOrderProductId())) {
 				PurchaseOrderProduct existing = existingMap.get(info.purchaseOrderProductId());
@@ -116,7 +116,7 @@ public class PurchaseOrder {
 		}
 
 		Set<Integer> requestIds = request.products().stream()
-			.map(RegistPurchaseOrderRequest.ProductInfo::purchaseOrderProductId)
+			.map(RegistPurchaseOrderRequest.PurchaseOrderProductDto::purchaseOrderProductId)
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
 
@@ -138,6 +138,6 @@ public class PurchaseOrder {
 	private static String generateOrderNo() {
 		String datePart = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		String randomPart = UUID.randomUUID().toString().substring(0, 6);
-		return datePart + "-" + randomPart;
+		return "PO-" + datePart + "-" + randomPart;
 	}
 }
