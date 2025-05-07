@@ -66,6 +66,6 @@ public class QuoteEntity {
 	private LocalDateTime deletedAt;
 
 	@Setter
-	@OneToMany(mappedBy = "quoteEntity", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "quoteEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<QuoteProductEntity> quoteProducts;
 }

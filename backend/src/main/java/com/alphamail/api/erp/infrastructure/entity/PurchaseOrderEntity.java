@@ -68,6 +68,6 @@ public class PurchaseOrderEntity {
 	private String orderNo;
 
 	@Setter
-	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = false)
+	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PurchaseOrderProductEntity> products;
 }
