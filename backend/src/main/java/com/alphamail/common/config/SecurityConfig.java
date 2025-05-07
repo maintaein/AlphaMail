@@ -31,7 +31,7 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		CorsConfiguration corsConfiguration = configuration.setAllowedOriginPatterns(
 			Arrays.asList("http://localhost:5173", "https://alphamail.my"));
-		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH"));
 		configuration.setAllowedHeaders(Arrays.asList("*"));
 		configuration.setAllowCredentials(true);
 		configuration.setMaxAge(3600L);
