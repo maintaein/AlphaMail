@@ -2,6 +2,7 @@ package com.alphamail.api.schedule.infrastructure.repository;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -17,17 +18,17 @@ public interface ScheduleJpaRepository extends JpaRepository<ScheduleEntity, Int
 	Optional<ScheduleEntity> findByIdAndUserUserId(Integer scheduleId, Integer userId);
 
 	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId "
-		+ "AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate) "
+		+ "AND NOT (s.endTime < :startTime OR s.startTime > :endTime) "
 		+ "AND s.name LIKE %:keyword%")
-	Page<ScheduleEntity> findByPeriodAndKeyword(@Param("startDate") LocalDate startDate,
-												@Param("endDate") LocalDate endDate,
+	Page<ScheduleEntity> findByPeriodAndKeyword(@Param("startTime") LocalDateTime startTime,
+												@Param("endTime") LocalDateTime endTime,
 												@Param("keyword") String keyword,
 												@Param("userId") Integer userId, Pageable pageable);
 
 	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId "
-		+ "AND NOT (DATE(s.endTime) < :startDate OR DATE(s.startTime) > :endDate)")
-	Page<ScheduleEntity> findByPeriod(@Param("startDate") LocalDate startDate,
-									@Param("endDate") LocalDate endDate,
+		+ "AND NOT (s.endTime < :startTime OR s.startTime > :endTime)")
+	Page<ScheduleEntity> findByPeriod(@Param("startTime") LocalDateTime startTime,
+									@Param("endTime") LocalDateTime endTime,
 									@Param("userId") Integer userId, Pageable pageable);
 
 	@Query("SELECT s FROM ScheduleEntity s WHERE s.user.userId = :userId "

@@ -1,6 +1,7 @@
 package com.alphamail.api.schedule.application.usecase;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,16 +24,16 @@ public class GetAllSchedulesUseCase {
 
 	private final ScheduleRepository scheduleRepository;
 
-	public ScheduleListResponse execute(LocalDate startDate, LocalDate endDate,
+	public ScheduleListResponse execute(LocalDateTime startTime, LocalDateTime endTime,
 		String keyword, Pageable pageable, Integer userId) {
 
 		boolean isSearchMode = keyword != null && !keyword.isEmpty();
 
-		if ((startDate == null && endDate != null) || (startDate != null && endDate == null)) {
+		if ((startTime == null && endTime != null) || (startTime != null && endTime == null)) {
 			throw new BadRequestException(ErrorMessage.SCHEDULE_DATE_PAIR_REQUIRED);
 		}
 
-		if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
+		if (startTime != null && endTime != null && startTime.isAfter(endTime)) {
 			throw new BadRequestException(ErrorMessage.SCHEDULE_DATE_INVALID);
 		}
 
@@ -42,14 +43,14 @@ public class GetAllSchedulesUseCase {
 		Page<Schedule> schedulePage;
 
 		if (isSearchMode) {
-			if (startDate == null || endDate == null) {
+			if (startTime == null || endTime == null) {
 				schedulePage = scheduleRepository.findByKeyword(keyword, userId, effectivePageable);
 			} else {
 				schedulePage = scheduleRepository.findByPeriodAndKeyword(
-					startDate, endDate, keyword, userId, effectivePageable);
+					startTime, endTime, keyword, userId, effectivePageable);
 			}
 		} else {
-			schedulePage = scheduleRepository.findByPeriod(startDate, endDate, userId, effectivePageable);
+			schedulePage = scheduleRepository.findByPeriod(startTime, endTime, userId, effectivePageable);
 		}
 
 		return ScheduleListResponse.from(schedulePage);

@@ -18,10 +18,10 @@ public interface ScheduleRepository {
 
 	Optional<Schedule> findByIdAndUserId(Integer scheduleId, Integer userId);
 
-	Page<Schedule> findByPeriodAndKeyword(LocalDate startDate, LocalDate endDate,
+	Page<Schedule> findByPeriodAndKeyword(LocalDateTime starTime, LocalDateTime endTime,
 		String keyword, Integer userId, Pageable pageable);
 
-	Page<Schedule> findByPeriod(LocalDate startDate, LocalDate endDate, Integer userId,
+	Page<Schedule> findByPeriod(LocalDateTime starTime, LocalDateTime endTime, Integer userId,
 		Pageable pageable);
 
 	Page<Schedule> findByKeyword(String keyword, Integer userId, Pageable effectivePageable);
