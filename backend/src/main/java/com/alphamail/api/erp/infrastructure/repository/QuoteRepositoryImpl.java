@@ -1,11 +1,13 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.erp.domain.entity.Quote;
@@ -65,5 +67,10 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 		QuoteEntity saved = quoteJpaRepository.save(entity);
 
 		return quoteMapper.toDomain(saved);
+	}
+
+	@Override
+	public void deleteAllByIds(@Param("ids") List<Integer> ids) {
+		quoteJpaRepository.deleteAllByIds(ids);
 	}
 }

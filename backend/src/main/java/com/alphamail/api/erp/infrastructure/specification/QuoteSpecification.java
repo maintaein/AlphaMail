@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.alphamail.api.erp.infrastructure.entity.QuoteEntity;
+
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 

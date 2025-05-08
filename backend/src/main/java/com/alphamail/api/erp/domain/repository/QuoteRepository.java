@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,4 +17,6 @@ public interface QuoteRepository {
 	Optional<Quote> findById(Integer quoteId);
 
 	Quote save(Quote quote);
+
+	void deleteAllByIds(List<Integer> quoteIds);
 }

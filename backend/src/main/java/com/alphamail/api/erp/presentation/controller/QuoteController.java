@@ -22,6 +22,7 @@ import com.alphamail.api.erp.application.usecase.quote.GetAllQuotesUseCase;
 import com.alphamail.api.erp.application.usecase.quote.GetQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.ModifyQuoteUseCase;
 import com.alphamail.api.erp.application.usecase.quote.RegistQuoteUseCase;
+import com.alphamail.api.erp.application.usecase.quote.RemoveAllQuotesUseCase;
 import com.alphamail.api.erp.application.usecase.quote.RemoveQuoteUseCase;
 import com.alphamail.api.erp.presentation.dto.quote.GetAllQuotesResponse;
 import com.alphamail.api.erp.presentation.dto.quote.GetQuoteResponse;
@@ -29,6 +30,7 @@ import com.alphamail.api.erp.presentation.dto.quote.QuoteSearchCondition;
 import com.alphamail.api.erp.presentation.dto.quote.RegistQuoteRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.api.global.dto.RegistErpResponse;
+import com.alphamail.api.global.dto.RemoveAllErpRequest;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +44,7 @@ public class QuoteController {
 	private final GetQuoteUseCase getQuoteUseCase;
 	private final RegistQuoteUseCase registQuoteUseCase;
 	private final ModifyQuoteUseCase modifyQuoteUseCase;
+	private final RemoveAllQuotesUseCase removeAllQuotesUseCase;
 	private final RemoveQuoteUseCase removeQuoteUseCase;
 
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.QUOTES_BASE_API)
@@ -112,6 +115,14 @@ public class QuoteController {
 		}
 
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
+	}
+
+	@PostMapping(ApiPaths.QUOTES_BASE_API + "/delete")
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest request) {
+		boolean deleted = removeAllQuotesUseCase.execute(request.ids());
+
+		return deleted ? ResponseEntity.noContent().build() :
+			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
 	@DeleteMapping(ApiPaths.QUOTES_BASE_API + "/{quoteId}")
