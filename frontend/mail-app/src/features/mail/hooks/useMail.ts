@@ -133,11 +133,6 @@ export const useMail = () => {
         },
     });
     
-      // 파일 첨부 업로드 뮤테이션
-  const uploadAttachment = useMutation({
-    mutationFn: (file: File) => 
-      mailService.uploadAttachment(file),
-  });
 
   return {
     useMailList,
@@ -147,7 +142,6 @@ export const useMail = () => {
     moveToTrash,
     moveToFolder,
     sendMail,
-    uploadAttachment,
     moveMailToTrash,
     emptyTrash,
   };

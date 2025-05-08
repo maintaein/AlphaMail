@@ -8,6 +8,7 @@ import { Spinner } from '@/shared/components/atoms/spinner';
 import { mailService } from '../../services/mailService';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useMailStore } from '../../stores/useMailStore';
 
 const MailWriteTemplate: React.FC = () => {
 
@@ -18,12 +19,12 @@ const MailWriteTemplate: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { sendMail } = useMail();
+  const { attachments, clearAttachments } = useMailStore();
   const lastToastIdRef = useRef<string | number | null>(null);
 
   const [to, setTo] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>('');
   const [content, setContent] = useState<string>('');
-  const [attachments, setAttachments] = useState<Array<{attachments_id: number}>>([]);
   const [showLoading, setShowLoading] = useState(false);
 
   // URL 쿼리 파라미터 파싱
@@ -96,6 +97,13 @@ const MailWriteTemplate: React.FC = () => {
     }
     }, [sendMail.isPending, showLoading]);
 
+    // 컴포넌트 언마운트 시 첨부파일 상태 초기화
+    useEffect(() => {
+      return () => {
+        clearAttachments();
+      };
+    }, [clearAttachments]);
+
   const handleSend = () => {
     // 유효성 검사
     if (to.length === 0) {
@@ -114,6 +122,14 @@ const MailWriteTemplate: React.FC = () => {
       return;
     }
 
+    // 첨부파일 정보 변환 (File 객체를 서버에 전송할 수 있는 형태로)
+    const attachmentData = attachments.map(attachment => ({
+      attachments_id: parseInt(attachment.id.split('-')[0]), // 임시로 ID의 타임스탬프 부분을 숫자로 변환
+      name: attachment.name,
+      size: attachment.size,
+      type: attachment.type
+    }));
+    
     // 메일 전송 데이터 준비
     const mailData: SendMailRequest = {
         sender: 'current-user@example.com', // 실제 구현에서는 현재 사용자 이메일을 가져와야 함
@@ -121,10 +137,13 @@ const MailWriteTemplate: React.FC = () => {
         subject,
         bodyText: content.replace(/<[^>]*>/g, ''), // HTML 태그 제거한 텍스트 버전
         bodyHtml: content,
-        attachments: attachments.length > 0 ? attachments : undefined,
+        attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachments_id: att.attachments_id })) : undefined,
         inReplyTo: replyToId ? Number(replyToId) : undefined,
         references: []
       };
+  
+    console.log('Sending mail with recipients:', to);
+    console.log('Attachments:', attachmentData);
   
     // 메일 전송 API 호출
     sendMail.mutate(mailData, {
@@ -151,10 +170,6 @@ const MailWriteTemplate: React.FC = () => {
         });
     };
   
-    const handleAttachmentsChange = (newAttachments: Array<{attachments_id: number}>) => {
-        setAttachments(newAttachments);
-      };
-
   
   const handleCancel = () => {
     // 작성 취소 및 이전 페이지로 이동
@@ -212,7 +227,6 @@ const MailWriteTemplate: React.FC = () => {
         onContentChange={handleContentChange}
         onSubjectChange={handleSubjectChange}
         onRecipientsChange={handleRecipientsChange}
-        onAttachmentsChange={handleAttachmentsChange}
       />
 
         {/* 로딩 오버레이 */}

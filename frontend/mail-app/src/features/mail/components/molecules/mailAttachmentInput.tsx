@@ -1,18 +1,12 @@
 import React, { useRef } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { Button } from '@/shared/components/atoms/button';
-
-interface Attachment {
-  id: number;
-  name: string;
-  size: number;
-  type?: string;
-}
+import { MailAttachment } from '../../stores/useMailStore';
 
 interface MailAttachmentInputProps {
-  attachments: Attachment[];
+  attachments: MailAttachment[];
   onAddAttachment: (files: FileList) => void;
-  onRemoveAttachment: (id: number) => void;
+  onRemoveAttachment: (id: string) => void;
   isUploading?: boolean;
 }
 
@@ -64,7 +58,7 @@ export const MailAttachmentInput: React.FC<MailAttachmentInputProps> = ({
                   <span className="text-xs">{attachment.name}</span>
                   <span className="ml-2 text-xs text-gray-500">({formatFileSize(attachment.size)})</span>
                 </div>
-                <button 
+                <button
                   onClick={() => onRemoveAttachment(attachment.id)}
                   className="text-gray-500 hover:text-gray-700"
                 >

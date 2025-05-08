@@ -1,22 +1,21 @@
 import { create } from 'zustand';
 
+export interface MailAttachment {
+  id: string; 
+  file: File;
+  name: string;
+  size: number;
+  type: string;
+}
+
 interface MailState {
-  // 현재 선택된 폴더 ID (1: 받은메일함, 2: 보낸메일함, 3: 임시보관함, 4: 휴지통 등)
   currentFolder?: number;
-  
-  // 현재 페이지
   currentPage: number;
-  
-  // 정렬 방식 (0: 최신순, 1: 오래된순)
   sortOrder: number;
-  
-  // 검색어
   searchKeyword: string;
-  
-  // 선택된 메일 ID 목록
   selectedMails: string[];
+    attachments: MailAttachment[];
   
-  // 액션
   setCurrentFolder: (folderId?: number) => void;
   setCurrentPage: (page: number) => void;
   setSortOrder: (order: number) => void;
@@ -25,33 +24,35 @@ interface MailState {
   unselectMail: (id: string) => void;
   selectAllMails: (ids: string[]) => void;
   clearSelection: () => void;
+  addAttachment: (file: File) => void;
+  removeAttachment: (id: string) => void;
+  clearAttachments: () => void;
 }
 
 export const useMailStore = create<MailState>((set) => ({
-  // 초기 상태
-  currentFolder: 1, // 기본값: 받은메일함
+  currentFolder: 1,
   currentPage: 1,
-  sortOrder: 0, // 기본값: 최신순
+  sortOrder: 0,
   searchKeyword: '',
   selectedMails: [],
+  attachments: [],
   
-  // 액션
   setCurrentFolder: (folderId) => set({ 
     currentFolder: folderId,
-    currentPage: 1, // 폴더 변경 시 페이지 초기화
-    selectedMails: [] // 선택 초기화
+    currentPage: 1,
+    selectedMails: []
   }),
   
   setCurrentPage: (page) => set({ currentPage: page }),
   
   setSortOrder: (order) => set({ 
     sortOrder: order,
-    currentPage: 1 // 정렬 변경 시 페이지 초기화
+    currentPage: 1
   }),
   
   setSearchKeyword: (keyword) => set({ 
     searchKeyword: keyword,
-    currentPage: 1 // 검색어 변경 시 페이지 초기화
+    currentPage: 1
   }),
   
   selectMail: (id) => set((state) => ({
@@ -68,5 +69,27 @@ export const useMailStore = create<MailState>((set) => ({
   
   clearSelection: () => set({
     selectedMails: []
-  })
+  }),
+  
+  addAttachment: (file) => set((state) => {
+    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    
+    const newAttachment: MailAttachment = {
+      id,
+      file,
+      name: file.name,
+      size: file.size,
+      type: file.type
+    };
+    
+    return {
+      attachments: [...state.attachments, newAttachment]
+    };
+  }),
+  
+  removeAttachment: (id) => set((state) => ({
+    attachments: state.attachments.filter(attachment => attachment.id !== id)
+  })),
+  
+  clearAttachments: () => set({ attachments: [] })
 }));

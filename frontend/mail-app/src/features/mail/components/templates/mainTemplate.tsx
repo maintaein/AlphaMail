@@ -95,7 +95,7 @@ const MainTemplate: React.FC = () => {
       },
       receivedAt: mail.receivedDate,
       isRead: mail.readStatus,
-      attachmentSize: mail.attachments && mail.attachments.length > 0 ? mail.size : 0
+      attachmentSize: mail.size > 0 ? mail.size : 0
     }));
   };
 

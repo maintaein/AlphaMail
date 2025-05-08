@@ -1,18 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { MailRecipientInput } from '../molecules/mailRecipientInput';
 import { MailSubjectInput } from '../molecules/mailSubjectInput';
 import { MailAttachmentInput } from '../molecules/mailAttachmentInput';
 import { MailQuillEditor } from '../molecules/mailQuillEditor';
-import { useMail } from '../../hooks/useMail';
 import { toast } from 'react-toastify';
-import { useRef } from 'react';
+import { useMailStore } from '../../stores/useMailStore';
 
-interface Attachment {
-  id: number;
-  name: string;
-  size: number;
-  type: string;
-}
 
 interface MailWriteFormProps {
   initialTo?: string[];
@@ -21,7 +14,6 @@ interface MailWriteFormProps {
   onContentChange: (content: string) => void;
   onSubjectChange: (subject: string) => void;
   onRecipientsChange: (recipients: string[]) => void;
-  onAttachmentsChange?: (attachments: Array<{attachments_id: number}>) => void;
 }
 
 export const MailWriteForm: React.FC<MailWriteFormProps> = ({
@@ -31,16 +23,14 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   onContentChange,
   onSubjectChange,
   onRecipientsChange,
-  onAttachmentsChange
 }) => {
-  const { uploadAttachment } = useMail();
+  const { attachments, addAttachment, removeAttachment } = useMailStore();
   const [to, setTo] = useState<string[]>(initialTo);
   const [subject, setSubject] = useState<string>(initialSubject);
   const [content, setContent] = useState<string>(initialContent);
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024; // 10MB
-  const MAX_TOTAL_ATTACHMENTS_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_ATTACHMENT_SIZE = 10 * 1024 * 1024;
+  const MAX_TOTAL_ATTACHMENTS_SIZE = 10 * 1024 * 1024;
   const lastToastIdRef = useRef<string | number | null>(null);
 
   const showToast = (message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
@@ -87,10 +77,9 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   };
   
   const handleAddAttachment = async (files: FileList) => {
-
     // 현재 첨부파일의 총 크기 계산
     const currentTotalSize = attachments.reduce((total, attachment) => {
-      return total + (attachment.size || 0);
+      return total + attachment.size;
     }, 0);
 
     // 새 파일들 처리
@@ -107,41 +96,24 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
         break;
       }
       
-      // 파일 업로드 처리
+      // 파일 추가 (API 호출 대신 스토어에 직접 추가)
       setIsUploading(true);
       
-      // 파일 업로드 API 호출
-      uploadAttachment.mutate(file, {
-        onSuccess: (response) => {
-          const newAttachment = {
-            id: response.id,
-            name: file.name,
-            size: file.size,
-            type: file.type
-          };
-      
-          const updatedAttachments = [...attachments, newAttachment];
-          setAttachments(updatedAttachments);
-        },
-        onError: (error) => {
-          showToast(`파일 업로드 실패: ${error.message}`, 'error');
-        },
-        onSettled: () => {
+      try {
+        // 약간의 지연 시간을 주어 업로드 중인 느낌을 줌
+        setTimeout(() => {
+          addAttachment(file);
           setIsUploading(false);
-        }
-      });
+        }, 500);
+      } catch (error) {
+        showToast(`파일 처리 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`, 'error');
+        setIsUploading(false);
+      }
     }
-
   };
 
-  const handleRemoveAttachment = (id: number) => {
-    const newAttachments = attachments.filter(attachment => attachment.id !== id);
-    setAttachments(newAttachments);
-    
-    // 첨부파일 ID 목록 전달
-    if (onAttachmentsChange) {
-      onAttachmentsChange(newAttachments.map(att => ({ attachments_id: att.id })));
-    }
+  const handleRemoveAttachment = (id: string) => {
+    removeAttachment(id);
   };
   
   return (

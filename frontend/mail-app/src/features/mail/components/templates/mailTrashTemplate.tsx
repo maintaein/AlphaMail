@@ -98,8 +98,7 @@ const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
     },
     receivedAt: mail.receivedDate,
     isRead: true,
-    attachmentSize: mail.attachments && mail.attachments.length > 0 ? mail.size : 0
-  }));
+    attachmentSize: mail.size > 0 ? mail.size : 0  }));
 };
 
   return (
