@@ -143,6 +143,8 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
     );
   }
   
+  const displayDate = data.emailType === 'SENT' ? data.sentDateTime : data.receivedDateTime;
+
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow">
       {/* 메일 상세 헤더 */}
@@ -158,7 +160,7 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
         subject={data.subject}
         sender={data.sender}
         recipients={data.recipients}
-        receivedDate={data.receivedDate}
+        receivedDateTime={displayDate}
         onAiAssistant={() => console.log('AI 어시스턴트 실행')}
         onTranslate={() => console.log('번역 실행')}      
       />

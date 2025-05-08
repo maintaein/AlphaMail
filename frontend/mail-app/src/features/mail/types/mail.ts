@@ -16,16 +16,16 @@ export interface Mail {
     id: number;
     subject: string;
     sender: string;
-    receivedDate: string;
+    receivedDateTime: string;
+    sentDateTime: string;
     readStatus: boolean;
     size: number;
-    attachments?: Attachment[];
   }
   
   // 메일 목록 조회 응답 타입
   export interface MailListResponse {
-    mailList: MailListRow[];
-    total_count: number;
+    emails: MailListRow[];
+    totalCount: number;
     readCount: number;
     pageCount: number;
     currentPage: number;
@@ -47,13 +47,17 @@ export interface Mail {
     subject: string;
     bodyText: string;
     bodyHtml: string;
-    receivedDate: string;
-    emailType: 'RECEIVED' | 'SENT' | 'DRAFT';
-    folderId: number;
-    readStatus?: boolean;
+    receivedDateTime: string; 
+    sentDateTime: string; 
+    emailType: 'RECEIVED' | 'SENT';
+    folderId?: number; 
+    readStatus: boolean; 
+    hasAttachments: boolean; 
+    inReplyTo?: string;
+    threadId?: string;
     attachments?: Attachment[];
   }
-  
+
   // 파일 첨부 응답 타입
   export interface AttachmentUploadResponse {
     id: number;
@@ -77,8 +81,9 @@ export interface Mail {
     attachments?: Array<{
       attachments_id: number;
     }>;
+    threadId?: string;
     inReplyTo?: number | null;
-    references?: number[];
+    references?: string[];
   }
   
   // 메일 전송 응답 타입
@@ -102,6 +107,7 @@ export interface Mail {
   // 메일 업데이트 요청 타입 (읽음 상태 변경 등)
   export interface UpdateMailRequest {
     id: number;
+    userId: number;
     readStatus?: boolean;
     folderId?: number;
   }
@@ -110,11 +116,13 @@ export interface Mail {
   export interface MoveMailsRequest {
     ids: number[];
     targetFolderId: number;
+    userId: number;
   }
   
   // 메일 삭제 요청 타입
   export interface DeleteMailsRequest {
     ids: number[];
+    userId: number;
   }
   
   // 메일 폴더 타입 (UI에서 사용)
@@ -123,4 +131,9 @@ export interface Mail {
     name: string;
     count: number;
     unreadCount?: number;
+  }
+
+  export interface FolderResponse {
+    id: number;
+    folderName: string;
   }

@@ -5,13 +5,15 @@ import { cn } from '../utils/cn';
 import { Button } from '@/shared/components/atoms/button';
 import { useNavigate } from 'react-router-dom';
 import { useMailStore } from '@/features/mail/stores/useMailStore';
+import { FolderResponse } from '@/features/mail/types/mail';
 
 interface SideBarProps {
   type: 'mail' | 'work';
+  userId?: number;
 }
 
 
-export const SideBar: React.FC<SideBarProps> = ({ type }) => {
+export const SideBar: React.FC<SideBarProps> = ({ type}) => {
     const navigate = useNavigate();
     const { 
         activeItem, 
@@ -19,10 +21,21 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
         isCollapsed, 
         toggleCollapse,
         contentVisible,
-        setContentVisible
+        setContentVisible,
+        folders,
+        isLoadingFolders
       } = useSidebarStore();
     
     const { setCurrentFolder } = useMailStore();
+  
+    const getFolderDisplayName = (folderName: string) => {
+      switch(folderName) {
+        case 'INBOX': return '받은 메일함';
+        case 'SENT': return '보낸 메일함';
+        case 'TRASH': return '휴지통';
+        default: return folderName;
+      }
+    };
 
     // isCollapsed 상태가 변경될 때 콘텐츠 가시성 관리
     useEffect(() => {
@@ -36,25 +49,25 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
         }
     }, [isCollapsed, setContentVisible]);
     
-    // 메뉴 아이템 클릭 핸들러
-    const handleMenuItemClick = (itemName: string) => {
-        setActiveItem(itemName);
-        // 메일 메뉴 아이템에 따라 라우팅 및 폴더 설정
-        if (type === 'mail') {
-          if (itemName === "받은 메일함") {
-            setCurrentFolder(1);
-            navigate('/mail');
-          } else if (itemName === "보낸 메일함") {
-            setCurrentFolder(2);
-            navigate('/mail/sent');
-          } else if (itemName === "휴지통") {
-            setCurrentFolder(4);
-            navigate('/mail/trash');
-          }
-        }
-      };
     
-          // 메일 작성 페이지로 이동하는 함수
+    // 메뉴 아이템 클릭 핸들러
+    const handleMenuItemClick = (itemName: string, folderId: number) => {
+      setActiveItem(itemName);
+      // 메일 메뉴 아이템에 따라 라우팅 및 폴더 설정
+      if (type === 'mail') {
+        setCurrentFolder(folderId);
+        
+        if (itemName === "받은 메일함") {
+          navigate('/mail');
+        } else if (itemName === "보낸 메일함") {
+          navigate('/mail/sent');
+        } else if (itemName === "휴지통") {
+          navigate('/mail/trash');
+        }
+      }
+    };
+  
+    // 메일 작성 페이지로 이동하는 함수
     const handleWriteClick = () => {
       navigate('/mail/write');
     };
@@ -95,48 +108,30 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                       
                       <div className="p-4">
                         <ul className="space-y-2">
-                          <li>
-                            <button 
-                              className="w-full text-left py-1 px-2 rounded transition-colors"
-                              onClick={() => handleMenuItemClick("받은 메일함")}
-                            >
-                              <Typography 
-                                variant="titleSmall" 
-                                color={activeItem === "받은 메일함" ? "text-[#66BAE4]" : ""}
-                                bold={activeItem === "받은 메일함"}
-                              >
-                                받은 메일함
-                              </Typography>
-                            </button>
-                          </li>
-                          <li>
-                            <button 
-                              className="w-full text-left py-1 px-2 rounded transition-colors"
-                              onClick={() => handleMenuItemClick("보낸 메일함")}
-                            >
-                              <Typography 
-                                variant="titleSmall"
-                                color={activeItem === "보낸 메일함" ? "text-[#66BAE4]" : ""}
-                                bold={activeItem === "보낸 메일함"}
-                              >
-                                보낸 메일함
-                              </Typography>
-                            </button>
-                          </li>
-                          <li>
-                            <button 
-                              className="w-full text-left py-1 px-2 rounded transition-colors"
-                              onClick={() => handleMenuItemClick("휴지통")}
-                            >
-                              <Typography 
-                                variant="titleSmall"
-                                color={activeItem === "휴지통" ? "text-[#66BAE4]" : ""}
-                                bold={activeItem === "휴지통"}
-                              >
-                                휴지통
-                              </Typography>
-                            </button>
-                          </li>
+                        {isLoadingFolders ? (
+                            <li>
+                              <Typography variant="caption">폴더 로딩 중...</Typography>
+                            </li>
+                          ) : (
+                            folders?.map((folder: FolderResponse) => {
+                              return (
+                                <li key={folder.id}>
+                                  <button 
+                                    className="w-full text-left py-1 px-2 rounded transition-colors"
+                                    onClick={() => handleMenuItemClick(getFolderDisplayName(folder.folderName), folder.id)}
+                                  >
+                                    <Typography 
+                                      variant="titleSmall" 
+                                      color={activeItem === getFolderDisplayName(folder.folderName) ? "text-[#66BAE4]" : ""}
+                                      bold={activeItem === getFolderDisplayName(folder.folderName)}
+                                    >
+                                      {getFolderDisplayName(folder.folderName)}
+                                    </Typography>
+                                  </button>
+                                </li>
+                              );
+                            })
+                          )}
                         </ul>
                       </div>
                     </>
@@ -168,7 +163,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                         <li>
                           <button 
                             className="w-full text-left py-1 px-2 rounded transition-colors"
-                            onClick={() => handleMenuItemClick("거래처 관리")}
+                            onClick={() => handleMenuItemClick("거래처 관리", 0)}
                           >
                             <Typography 
                               variant="titleSmall"
@@ -182,7 +177,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                         <li>
                           <button 
                             className="w-full text-left py-1 px-2 rounded transition-colors"
-                            onClick={() => handleMenuItemClick("발주서 관리")}
+                            onClick={() => handleMenuItemClick("발주서 관리", 0)}
                           >
                             <Typography 
                               variant="titleSmall"
@@ -196,7 +191,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                         <li>
                           <button 
                             className="w-full text-left py-1 px-2 rounded transition-colors"
-                            onClick={() => handleMenuItemClick("재고 관리")}
+                            onClick={() => handleMenuItemClick("재고 관리", 0)}
                           >
                             <Typography 
                               variant="titleSmall"
@@ -210,7 +205,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type }) => {
                         <li>
                           <button 
                             className="w-full text-left py-1 px-2 rounded transition-colors"
-                            onClick={() => handleMenuItemClick("견적서 관리")}
+                            onClick={() => handleMenuItemClick("견적서 관리", 0)}
                           >
                             <Typography 
                               variant="titleSmall"

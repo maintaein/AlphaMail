@@ -30,14 +30,14 @@ const SentMailTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error } = useMailList(2, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error } = useMailList(1, 2, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
   
   useEffect(() => {
     if (data) {
-      const totalCount = data.total_count || 0;
+      const totalCount = data.totalCount || 0;
       setMailStats(totalCount, 0);
     }
   }, [data, setMailStats]);
@@ -49,7 +49,7 @@ const SentMailTemplate: React.FC = () => {
   
   const handleSelectAll = (selected: boolean) => {
     if (selected) {
-      selectAllMails(data?.mailList.map((mail: MailListRow) => mail.id.toString()) || []);
+      selectAllMails(data?.emails.map((mail: MailListRow) => mail.id.toString()) || []);
     } else {
       clearSelection();
     }
@@ -70,7 +70,7 @@ const SentMailTemplate: React.FC = () => {
   
   const handleDelete = () => {
     if (selectedMails.length > 0) {
-      moveToTrash.mutate(selectedMails);
+      moveToTrash.mutate({ mailIds: selectedMails, userId: 2 });
     }
   };
   
@@ -79,16 +79,16 @@ const SentMailTemplate: React.FC = () => {
   };
   
   // API 응답 구조에 맞게 메일 데이터 변환
-  const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
-    return mailList.map(mail => ({
+  const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
+    return emails.map(mail => ({
       id: mail.id.toString(),
       subject: mail.subject,
       sender: {
         name: mail.sender.split('@')[0],
         email: mail.sender
       },
-      receivedAt: mail.receivedDate,
-      isRead: true,
+      receivedAt: mail.receivedDateTime || mail.sentDateTime,
+      isRead: mail.readStatus === undefined ? true : mail.readStatus,
       attachmentSize: mail.size > 0 ? mail.size : 0
     }));
   };
@@ -114,7 +114,7 @@ const SentMailTemplate: React.FC = () => {
       ) : (
         <>
           <MailList
-            mails={transformMailsData(data?.mailList)}
+            mails={transformMailsData(data?.emails)}
             selectedMailIds={selectedMails}
             onSelectMail={handleSelectMail}
             onMailClick={handleMailClick}

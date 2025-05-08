@@ -19,7 +19,7 @@ export const MailDetailHeader: React.FC<MailDetailHeaderProps> = ({
     const getButtons = () => {
       const buttons = [];
       
-      if (source !== 'trash' && onReply) {
+      if (source !== 'trash' && source !== 'sent' && onReply) {
         buttons.push({
           label: '답장',
           onClick: onReply,

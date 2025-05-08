@@ -7,7 +7,7 @@ interface MailMetadataProps {
   subject?: string;
   sender?: string;
   recipients?: string[];
-  receivedDate?: string;
+  receivedDateTime?: string;
   onAiAssistant?: () => void;
   onTranslate?: () => void;
 }
@@ -16,7 +16,7 @@ export const MailMetadata: React.FC<MailMetadataProps> = ({
   subject,
   sender,
   recipients,
-  receivedDate,
+  receivedDateTime,
   onAiAssistant = () => console.log('AI 어시스턴트 클릭'),
   onTranslate = () => console.log('번역 클릭')
 
@@ -78,7 +78,7 @@ export const MailMetadata: React.FC<MailMetadataProps> = ({
             <span>보낸 날짜:</span>
           </Typography>
           <Typography variant="body">
-            {receivedDate ? new Date(receivedDate).toLocaleString('ko-KR') : ''}
+            {receivedDateTime ? new Date(receivedDateTime).toLocaleString('ko-KR') : ''}
           </Typography>
         </div>
       </div>

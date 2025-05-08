@@ -1,3 +1,4 @@
+import { FolderResponse } from '@/features/mail/types/mail';
 import { create } from 'zustand';
 
 interface SidebarState {
@@ -7,6 +8,10 @@ interface SidebarState {
   toggleCollapse: () => void;
   contentVisible: boolean;
   setContentVisible: (visible: boolean) => void;
+  folders: FolderResponse[];
+  setFolders: (folders: FolderResponse[]) => void;
+  isLoadingFolders: boolean;
+  setLoadingFolders: (isLoading: boolean) => void;
 }
 
 export const useSidebarStore = create<SidebarState>((set) => ({
@@ -20,4 +25,8 @@ export const useSidebarStore = create<SidebarState>((set) => ({
   })),
   contentVisible: true,
   setContentVisible: (visible) => set({ contentVisible: visible }),
+  folders: [],
+  setFolders: (folders) => set({ folders }),
+  isLoadingFolders: false,
+  setLoadingFolders: (isLoading) => set({ isLoadingFolders: isLoading }),
 }));

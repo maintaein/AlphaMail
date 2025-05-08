@@ -29,19 +29,19 @@ const MainTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error } = useMailList(1, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error } = useMailList(1, 1, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
   
   useEffect(() => {
     if (data) {
-      const totalCount = data.total_count || 0;
-      const unreadCount = totalCount - data.readCount || 0;
+      const totalCount = data.totalCount || 0;
+      const unreadCount = totalCount - (data.readCount || 0);
       setMailStats(totalCount, unreadCount);
     }
   }, [data, setMailStats]);
-
+  
   useEffect(() => {
     // 페이지 변경 시 선택 초기화
     clearSelection();
@@ -49,7 +49,7 @@ const MainTemplate: React.FC = () => {
   
   const handleSelectAll = (selected: boolean) => {
     if (selected) {
-      selectAllMails(data?.mailList.map((mail: MailListRow) => mail.id.toString()) || []);
+      selectAllMails(data?.emails.map((mail: MailListRow) => mail.id.toString()) || []);
     } else {
       clearSelection();
     }
@@ -70,7 +70,7 @@ const MainTemplate: React.FC = () => {
   
   const handleDelete = () => {
     if (selectedMails.length > 0) {
-      moveToTrash.mutate(selectedMails);
+      moveToTrash.mutate({ mailIds: selectedMails, userId: 1 });
     }
   };
   
@@ -85,20 +85,20 @@ const MainTemplate: React.FC = () => {
   };
   
   // API 응답 구조에 맞게 메일 데이터 변환
-  const transformMailsData = (mailList: MailListRow[] = []): Mail[] => {
-    return mailList.map(mail => ({
+  const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
+    return emails.map(mail => ({
       id: mail.id.toString(),
       subject: mail.subject,
       sender: {
         name: mail.sender.split('@')[0],
         email: mail.sender
       },
-      receivedAt: mail.receivedDate,
-      isRead: mail.readStatus,
+      receivedAt: mail.receivedDateTime || mail.sentDateTime,
+      isRead: mail.readStatus === undefined ? true : mail.readStatus,
       attachmentSize: mail.size > 0 ? mail.size : 0
     }));
   };
-
+  
   return (
     <div className="mail-main-container">      
       <MailListHeader
@@ -121,14 +121,14 @@ const MainTemplate: React.FC = () => {
       ) : (
         <>
           <MailList
-            mails={transformMailsData(data?.mailList)}
+            mails={transformMailsData(data?.emails)}
             selectedMailIds={selectedMails}
             onSelectMail={handleSelectMail}
             onMailClick={handleMailClick}
           />
           
           <Pagination
-            currentPage={data?.currentPage || 1}
+            currentPage={(data?.currentPage || 0) + 1}
             totalPages={data?.pageCount || 1}
             onPageChange={handlePageChange}
           />

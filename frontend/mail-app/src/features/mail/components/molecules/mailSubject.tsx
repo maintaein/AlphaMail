@@ -13,7 +13,7 @@ export const MailSubject: React.FC<MailSubjectProps> = ({
   variant = 'list' // 기본값은 list
 }) => {
   // variant에 따라 다른 Typography variant 사용
-  const typographyVariant = variant === 'detail' ? 'titleMedium' : 'body';
+  const typographyVariant = variant === 'detail' ? 'titleLarge' : 'body';
   
   return (
     <div className="flex flex-col flex-1 min-w-0">

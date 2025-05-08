@@ -26,6 +26,8 @@ const MailWriteTemplate: React.FC = () => {
   const [subject, setSubject] = useState<string>('');
   const [content, setContent] = useState<string>('');
   const [showLoading, setShowLoading] = useState(false);
+  const [threadId, setThreadId] = useState<string | null>(null);
+  const [inReplyTo, setInReplyTo] = useState<number | null>(null);
 
   // URL 쿼리 파라미터 파싱
   const queryParams = new URLSearchParams(location.search);
@@ -36,7 +38,7 @@ const MailWriteTemplate: React.FC = () => {
   // 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
   const { data: originalMail } = useQuery({
     queryKey: ['mail', mailId],
-    queryFn: () => mailService.getMailDetail(mailId!),
+    queryFn: () => mailService.getMailDetail(1, mailId!),
     enabled: !!mailId // mailId가 있을 때만 쿼리 활성화
   });
   
@@ -67,18 +69,25 @@ const MailWriteTemplate: React.FC = () => {
         setTo([originalMail.sender]);
         setSubject(`RE: ${originalMail.subject}`);
         
+        const displayDate = originalMail.emailType === 'SENT' 
+        ? originalMail.sentDateTime 
+        : originalMail.receivedDateTime;
+
         // HTML 형식으로 원본 메일 내용 추가
         const replyContent = `
           <p></p>
           <p></p>
           <p>---------- 원본 메일 ----------</p>
           <p><strong>보낸 사람:</strong> ${originalMail.sender}</p>
-          <p><strong>날짜:</strong> ${new Date(originalMail.receivedDate).toLocaleString()}</p>
+          <p><strong>날짜:</strong> ${new Date(displayDate).toLocaleString()}</p>
           <p><strong>제목:</strong> ${originalMail.subject}</p>
           <p></p>
           ${originalMail.bodyHtml || `<p>${originalMail.bodyText}</p>`}
         `;
         setContent(replyContent);
+
+        setInReplyTo(originalMail.id);
+        setThreadId(originalMail.threadId || String(originalMail.id));
       }
     }
   }, [originalMail, replyToId, forwardId]);
@@ -130,23 +139,24 @@ const MailWriteTemplate: React.FC = () => {
       type: attachment.type
     }));
     
-    // 메일 전송 데이터 준비
+    // 메일 전송 데이터 준비 
     const mailData: SendMailRequest = {
-        sender: 'current-user@example.com', // 실제 구현에서는 현재 사용자 이메일을 가져와야 함
-        recipients: to,
-        subject,
-        bodyText: content.replace(/<[^>]*>/g, ''), // HTML 태그 제거한 텍스트 버전
-        bodyHtml: content,
-        attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachments_id: att.attachments_id })) : undefined,
-        inReplyTo: replyToId ? Number(replyToId) : undefined,
-        references: []
-      };
+      sender: 'current-user@example.com', 
+      recipients: to,
+      subject,
+      bodyText: content.replace(/<[^>]*>/g, ''), 
+      bodyHtml: content,
+      attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachments_id: att.attachments_id })) : undefined,
+      inReplyTo: inReplyTo || undefined,
+      threadId: threadId || undefined,
+      references: threadId ? [threadId] : []
+    };
   
     console.log('Sending mail with recipients:', to);
     console.log('Attachments:', attachmentData);
   
     // 메일 전송 API 호출
-    sendMail.mutate(mailData, {
+    sendMail.mutate({ mailData }, {
         onSuccess: () => {
           console.log('메일이 성공적으로 전송되었습니다.');
           // 전송 후 목록으로 이동
