@@ -18,24 +18,22 @@ export const SearchListRow: React.FC<SearchListRowProps> = ({ schedule }) => {
     <>
       <tr className="hover:bg-gray-50">
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {schedule.startDate.toLocaleDateString()}
+          {schedule.start_time.toLocaleDateString()}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-          {schedule.endDate.toLocaleDateString()}
+          {schedule.end_time.toLocaleDateString()}
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
           <button
             onClick={handleTitleClick}
             className="text-sm font-medium text-blue-600 hover:text-blue-800"
           >
-            {schedule.title}
+            {schedule.name}
           </button>
         </td>
       </tr>
 
       <ScheduleDetailTemplate
-        isEdit={true}
-        initialData={schedule}
         onClose={closeModal}
         isOpen={isOpen}
         isAnimating={isAnimating}

@@ -3,66 +3,61 @@ import { format } from 'date-fns';
 import { Schedule } from '@/features/schedule/types/schedule';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleService } from '@/features/schedule/services/scheduleService';
+import { useScheduleStore } from '@/features/schedule/stores/useScheduleStore';
 
 interface ValidationErrors {
-  title?: string;
+  name?: string;
   description?: string;
-  startDate?: string;
-  endDate?: string;
+  start_time?: string;
+  end_time?: string;
 }
 
 interface ScheduleDetailTemplateProps {
-  isEdit: boolean;
-  initialData?: Schedule;
   onClose: () => void;
   isOpen: boolean;
   isAnimating: boolean;
-  onDelete?: () => void;
 }
 
 export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
-  isEdit,
-  initialData,
   onClose,
   isOpen,
   isAnimating,
 }) => {
   const queryClient = useQueryClient();
+  const { selectedSchedule, isEdit } = useScheduleStore();
   const [schedule, setSchedule] = useState<Schedule>({
     id: '',
-    title: '',
-    startDate: new Date(),
-    endDate: new Date(),
+    name: '',
+    start_time: new Date(),
+    end_time: new Date(),
     description: '',
-    userId: 'current-user-id'
+    is_done: false,
+    created_at: new Date()
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const validateSchedule = (schedule: Schedule): ValidationErrors => {
     const newErrors: ValidationErrors = {};
-    const now = new Date();
 
-    if (!schedule.title) {
-      newErrors.title = '일정명을 입력해주세요.';
-    } else if (schedule.title.length > 20) {
-      newErrors.title = '일정명은 20자 이내로 입력해주세요.';
+    if (!schedule.name) {
+      newErrors.name = '일정명을 입력해주세요.';
+    } else if (schedule.name.length > 20) {
+      newErrors.name = '일정명은 20자 이내로 입력해주세요.';
     }
 
     if (schedule.description && schedule.description.length > 50) {
       newErrors.description = '일정 메모는 50자 이내로 입력해주세요.';
     }
 
-    if (!schedule.startDate) {
-      newErrors.startDate = '시작 일시를 선택해주세요.';
-    } else if (schedule.startDate < now) {
-      newErrors.startDate = '시작 일시는 현재 시간보다 이후여야 합니다.';
+    if (!schedule.start_time) {
+      newErrors.start_time = '시작 일시를 선택해주세요.';
     }
 
-    if (!schedule.endDate) {
-      newErrors.endDate = '종료 일시를 선택해주세요.';
-    } else if (schedule.endDate <= schedule.startDate) {
-      newErrors.endDate = '종료 일시는 시작 일시보다 이후여야 합니다.';
+    if (!schedule.end_time) {
+      newErrors.end_time = '종료 일시를 선택해주세요.';
+    } else if (schedule.end_time <= schedule.start_time) {
+      newErrors.end_time = '종료 일시는 시작 일시보다 이후여야 합니다.';
     }
 
     return newErrors;
@@ -71,7 +66,10 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   const createMutation = useMutation({
     mutationFn: scheduleService.createSchedule,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['schedules'],
+        refetchType: 'all'
+      });
       onClose();
     }
   });
@@ -79,7 +77,10 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   const updateMutation = useMutation({
     mutationFn: scheduleService.updateSchedule,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['schedules'],
+        refetchType: 'all'
+      });
       onClose();
     }
   });
@@ -87,17 +88,33 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   const deleteMutation = useMutation({
     mutationFn: scheduleService.deleteSchedule,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ 
+        queryKey: ['schedules'],
+        refetchType: 'all'
+      });
       onClose();
     }
   });
 
   useEffect(() => {
-    if (isOpen && initialData) {
-      setSchedule(initialData);
+    if (isOpen) {
+      if (selectedSchedule) {
+        setSchedule(selectedSchedule);
+      } else {
+        setSchedule({
+          id: '',
+          name: '',
+          start_time: new Date(),
+          end_time: new Date(),
+          description: '',
+          is_done: false,
+          created_at: new Date()
+        });
+      }
       setErrors({});
+      setShowDeleteConfirm(false);
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, selectedSchedule]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +122,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
+      console.log('schedule 수정 요청 객체 내용 : ', schedule);
       if (isEdit) {
         updateMutation.mutate(schedule);
       } else {
@@ -172,15 +190,15 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 </label>
                 <input
                   type="text"
-                  value={schedule.title}
-                  onChange={(e) => setSchedule({ ...schedule, title: e.target.value })}
+                  value={schedule.name}
+                  onChange={(e) => setSchedule({ ...schedule, name: e.target.value })}
                   className={`w-full px-3 py-2 border rounded-md ${
-                    errors.title ? 'border-red-500' : 'border-gray-300'
+                    errors.name ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.title && (
-                  <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+                {errors.name && (
+                  <p className="mt-1 text-sm text-red-500">{errors.name}</p>
                 )}
               </div>
 
@@ -190,15 +208,20 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 </label>
                 <input
                   type="datetime-local"
-                  value={format(new Date(schedule.startDate), "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setSchedule({ ...schedule, startDate: new Date(e.target.value) })}
+                  value={format(new Date(schedule.start_time), "yyyy-MM-dd'T'HH:mm")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value) {
+                      setSchedule({ ...schedule, start_time: new Date(value) });
+                    }
+                  }}
                   className={`w-full px-3 py-2 border rounded-md ${
-                    errors.startDate ? 'border-red-500' : 'border-gray-300'
+                    errors.start_time ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.startDate && (
-                  <p className="mt-1 text-sm text-red-500">{errors.startDate}</p>
+                {errors.start_time && (
+                  <p className="mt-1 text-sm text-red-500">{errors.start_time}</p>
                 )}
               </div>
 
@@ -208,15 +231,20 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 </label>
                 <input
                   type="datetime-local"
-                  value={format(new Date(schedule.endDate), "yyyy-MM-dd'T'HH:mm")}
-                  onChange={(e) => setSchedule({ ...schedule, endDate: new Date(e.target.value) })}
+                  value={format(new Date(schedule.end_time), "yyyy-MM-dd'T'HH:mm")}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value) {
+                      setSchedule({ ...schedule, end_time: new Date(value) });
+                    }
+                  }}
                   className={`w-full px-3 py-2 border rounded-md ${
-                    errors.endDate ? 'border-red-500' : 'border-gray-300'
+                    errors.end_time ? 'border-red-500' : 'border-gray-300'
                   }`}
                   required
                 />
-                {errors.endDate && (
-                  <p className="mt-1 text-sm text-red-500">{errors.endDate}</p>
+                {errors.end_time && (
+                  <p className="mt-1 text-sm text-red-500">{errors.end_time}</p>
                 )}
               </div>
 
@@ -236,21 +264,6 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                   <p className="mt-1 text-sm text-red-500">{errors.description}</p>
                 )}
               </div>
-
-              {isEdit && (
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="isCompleted"
-                    checked={schedule.isCompleted}
-                    onChange={(e) => setSchedule({ ...schedule, isCompleted: e.target.checked })}
-                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                  />
-                  <label htmlFor="isCompleted" className="ml-2 block text-sm text-gray-700">
-                    완료 여부
-                  </label>
-                </div>
-              )}
 
               <div className="flex justify-end space-x-2 mt-6">
                 <button

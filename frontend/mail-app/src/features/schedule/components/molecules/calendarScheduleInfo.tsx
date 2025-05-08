@@ -24,7 +24,7 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({
   const handleCheckboxChange = () => {
     updateMutation.mutate({ 
       id: schedule.id, 
-      isCompleted: !schedule.isCompleted 
+      isCompleted: !schedule.is_done 
     });
   };
 
@@ -32,29 +32,23 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({
     <div
       className={`
         flex items-center p-2 mb-1 rounded text-sm
-        ${schedule.color ? `bg-${schedule.color}-100 text-${schedule.color}-800` : 'bg-blue-100 text-blue-800'}
+        bg-blue-100 text-blue-800
         hover:opacity-80
-        ${schedule.isCompleted ? 'opacity-50' : ''}
+        ${schedule.is_done ? 'opacity-50' : ''}
       `}
     >
       <input
         type="checkbox"
-        checked={schedule.isCompleted}
+        checked={schedule.is_done}
         onChange={handleCheckboxChange}
         className="mr-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
         disabled={updateMutation.isPending}
       />
       <div className="flex-1">
-        {schedule.isAllDay ? (
-          <span className="font-medium">{schedule.title}</span>
-        ) : (
-          <>
-            <span className="text-xs">
-              {format(new Date(schedule.startDate), 'MM/dd HH:mm')}
-            </span>
-            <span className="font-medium ml-1">{schedule.title}</span>
-          </>
-        )}
+        <span className="text-xs">
+          {format(new Date(schedule.start_time), 'MM/dd HH:mm')}
+        </span>
+        <span className="font-medium ml-1">{schedule.name}</span>
       </div>
     </div>
   );

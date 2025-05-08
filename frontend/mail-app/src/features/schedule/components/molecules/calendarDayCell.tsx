@@ -26,8 +26,8 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     if (!event) return '';
 
     const currentDate = startOfDay(date);
-    const startDate = startOfDay(new Date(event.startDate));
-    const endDate = startOfDay(new Date(event.endDate));
+    const startDate = startOfDay(new Date(event.start_time));
+    const endDate = startOfDay(new Date(event.end_time));
 
     const isStart = isSameDay(currentDate, startDate);
     const isEnd = isSameDay(currentDate, endDate);
@@ -60,7 +60,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         {events.map((event, index) => {
           if (!event) return <div key={index} className="h-[28px]" />; // null 이벤트의 높이를 실제 이벤트와 동일하게 조정
 
-          const isStart = isSameDay(date, new Date(event.startDate));
+          const isStart = isSameDay(date, new Date(event.start_time));
           
           return (
             <div
@@ -70,7 +70,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
             >
               {isStart ? (
                 <div className="truncate">
-                  {formatTime(event.startDate.toISOString())} {event.title}
+                  {formatTime(event.start_time.toISOString())} {event.name}
                 </div>
               ) : (
                 <div className="invisible">placeholder</div>

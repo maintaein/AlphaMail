@@ -4,7 +4,7 @@ import { Schedule } from '../types/schedule';
 import React from 'react';
 
 export const useCalendarSchedules = (selectedMonth: Date) => {
-  const query = useQuery<Schedule[]>({
+  const query = useQuery<{ data: Schedule[] }>({
     queryKey: ['schedules', 'calendar', selectedMonth.getFullYear(), selectedMonth.getMonth()],
     queryFn: async () => {
       console.log('useCalendarSchedules - API 요청 시작:', {
@@ -14,9 +14,9 @@ export const useCalendarSchedules = (selectedMonth: Date) => {
       
       const response = await scheduleService.getSchedulesForMonthRange(selectedMonth);
       
-      console.log('useCalendarSchedules - API 응답:', response.data);
+      console.log('useCalendarSchedules - API 응답:', response);
       
-      return response.data;
+      return response;
     },
     placeholderData: (previousData) => previousData,
     staleTime: 1000 * 60 * 5, // 5분
