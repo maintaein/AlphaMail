@@ -238,4 +238,32 @@ export const mailService = {
       throw error;
     }
   },
+
+  async downloadAttachment(mailId: number, attachmentId: number): Promise<Blob> {
+    const endpoint = `/api/mails/${mailId}/attachments/${attachmentId}`;
+    
+    logApiCall('GET', endpoint);
+    
+    try {
+      const response = await api.get(endpoint, { 
+        responseType: 'blob' 
+      });
+      
+      // 바이너리 데이터는 로깅하지 않음
+      console.log(`✅ API 응답: GET ${endpoint}`, { 
+        상태코드: response.status, 
+        콘텐츠타입: response.headers['content-type'],
+        콘텐츠길이: response.headers['content-length']
+      });
+      
+      return response.data;
+    } catch (error) {
+      logApiError('GET', endpoint, error as Record<string, unknown> & { 
+        response?: { status?: number, data?: unknown }, 
+        message?: string 
+      });
+      throw error;
+    }
+  },
+
 };

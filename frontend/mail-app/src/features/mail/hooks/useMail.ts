@@ -23,7 +23,7 @@ export const useMail = () => {
     return useQuery({
       queryKey: MAIL_QUERY_KEYS.folders(userId),
       queryFn: () => mailService.getFolders(userId),
-      staleTime: 5 * 60 * 1000,
+      staleTime: 30* 60 * 1000,
     });
   };
 
@@ -156,6 +156,39 @@ export const useMail = () => {
       return folder?.id;
     };
   
+      // 첨부파일 다운로드 뮤테이션
+  const downloadAttachment = useMutation({
+    mutationFn: async ({ 
+      mailId, 
+      attachmentId, 
+      fileName, 
+    }: { 
+      mailId: number, 
+      attachmentId: number, 
+      fileName: string, 
+    }) => {
+      const blob = await mailService.downloadAttachment(mailId, attachmentId);
+      
+      // 파일 다운로드 처리
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      
+      // 정리
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      return { success: true };
+    },
+    onError: (error) => {
+      console.error('첨부파일 다운로드 오류:', error);
+      toast.error('첨부파일 다운로드 중 오류가 발생했습니다.');
+    }
+  });
+
 
   return {
     useMailList,
@@ -169,5 +202,6 @@ export const useMail = () => {
     emptyTrash,
     useFolders,
     getFolderIdByName,
+    downloadAttachment,
   };
 };

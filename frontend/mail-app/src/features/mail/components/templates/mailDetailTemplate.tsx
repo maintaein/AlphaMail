@@ -17,7 +17,7 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { useMailDetail, moveMailToTrash } = useMail();
+  const { useMailDetail, moveMailToTrash, downloadAttachment } = useMail();
   const { setTitle } = useHeaderStore();
 
   // URL 경로에서 source 결정 (props가 없는 경우)
@@ -97,7 +97,13 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   
   // 첨부 파일 다운로드 처리
   const handleDownload = (attachmentId: number, fileName: string) => {
-    console.log(`Downloading attachment: ${fileName} (ID: ${attachmentId})`);
+    if (!id) return;
+    
+    downloadAttachment.mutate({
+      mailId: Number(id),
+      attachmentId,
+      fileName
+    });
   };
   
   if (isLoading) {

@@ -79,7 +79,7 @@ export interface Mail {
     bodyText: string;
     bodyHtml: string;
     attachments?: Array<{
-      attachments_id: number;
+      attachmentsId: number;
     }>;
     threadId?: string;
     inReplyTo?: number | null;

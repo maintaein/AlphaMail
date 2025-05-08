@@ -146,7 +146,7 @@ const MailWriteTemplate: React.FC = () => {
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 
       bodyHtml: content,
-      attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachments_id: att.attachments_id })) : undefined,
+      attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachmentsId: att.attachments_id })) : undefined,
       inReplyTo: inReplyTo || undefined,
       threadId: threadId || undefined,
       references: threadId ? [threadId] : []
