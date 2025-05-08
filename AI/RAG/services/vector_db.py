@@ -26,7 +26,7 @@ splitter = RecursiveCharacterTextSplitter(
 # DB벡터에 메일 내용 저장
 class VectorDBHandler:
     @staticmethod
-    def store_email_data(thread_id, email_data, attachments):
+    def store_email_data(thread_id, email_data):
     
         # 메타데이터 제외한 body만 담음
         email_text = email_data["body"]
@@ -51,8 +51,6 @@ class VectorDBHandler:
                     metadatas=[{
                         "thread_id": thread_id,
                         "doc_type": "email",
-                        # "chunk_index": i,
-                        # "total_chunks": len(email_chunks),
                         **email_data["metadata"]
                     }],
                     # chunk 별로 고유한 id 있어야함
@@ -64,47 +62,18 @@ class VectorDBHandler:
                 import traceback
                 traceback.print_exc()
 
-        # 첨부파일 저장
-        for idx, att in enumerate(attachments):
-            chunks = splitter.split_text(att["text_content"])
-            print(f"[DEBUG] Split attachment {att['filename']} into {len(chunks)} chunks")
-            
-            for i, chunk in enumerate(chunks):
-                try:
-                    collection.add(
-                        documents=[chunk],
-                        metadatas=[{
-                            "thread_id": thread_id,
-                            "doc_type": "attachment",
-                            "file_type": att["file_type"],
-                            "filename": att["filename"],
-                            "chunk_index": i,
-                            "total_chunks": len(chunks)
-                        }],
-                        ids=[f"{thread_id}_attachment_{idx}_{i}"]
-                    )
-                    print(f"[DEBUG] Successfully stored attachment chunk {i} for {att['filename']}")
-                except Exception as e:
-                    print(f"[ERROR] Failed to store attachment chunk {i}: {str(e)}")
-                    import traceback
-                    traceback.print_exc()
 
     # 데이터 검색
-    ## query가 현재 없기 때문에 query 관련 코드는 다 삭제해도 될듯(2차 mvp 확인)
     @staticmethod
-    def retrieve_thread_data(thread_id, query=None, top_k=10):
+    def retrieve_thread_data(thread_id):
         try:
 
-            # 쿼리에 따른 분기 처리 이후 상황에 따라 삭제
-            if query:
-                res = collection.query(query_texts=[query], where={"thread_id": thread_id}, n_results=top_k)
-            else:
-                res = collection.get(where={"thread_id": thread_id})
+            res = collection.get(where={"thread_id": thread_id})
 
             documents = []
             if res and 'documents' in res:
-                docs = res['documents'][0] if query else res['documents']
-                metas = res['metadatas'][0] if query else res['metadatas']
+                docs = res['documents']
+                metas = res['metadatas']
                 
                 print(f"[DEBUG] Retrieved {len(docs)} documents for thread {thread_id}")
                 
