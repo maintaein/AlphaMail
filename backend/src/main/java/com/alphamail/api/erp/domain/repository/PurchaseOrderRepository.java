@@ -18,5 +18,5 @@ public interface PurchaseOrderRepository {
 
 	PurchaseOrder save(PurchaseOrder purchaseOrder);
 
-	List<PurchaseOrder> findAllByIds(List<Integer> ids);
+	void deleteAllByIds(List<Integer> orderIds);
 }

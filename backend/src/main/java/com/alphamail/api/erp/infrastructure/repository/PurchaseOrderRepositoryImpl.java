@@ -70,9 +70,7 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 	}
 
 	@Override
-	public List<PurchaseOrder> findAllByIds(List<Integer> ids) {
-		return purchaseOrderJpaRepository.findAllById(ids).stream()
-			.map(purchaseOrderMapper::toDomain)
-			.collect(Collectors.toList());
+	public void deleteAllByIds(List<Integer> orderIds) {
+		purchaseOrderJpaRepository.deleteAllByIds(orderIds);
 	}
 }

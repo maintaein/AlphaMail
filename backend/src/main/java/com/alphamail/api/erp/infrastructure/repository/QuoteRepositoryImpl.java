@@ -70,7 +70,7 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 	}
 
 	@Override
-	public void deleteAllByIds(@Param("ids") List<Integer> ids) {
-		quoteJpaRepository.deleteAllByIds(ids);
+	public void deleteAllByIds(List<Integer> quoteIds) {
+		quoteJpaRepository.deleteAllByIds(quoteIds);
 	}
 }
