@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.presentation.dto.product;
 
+import java.time.LocalDateTime;
+
 import com.alphamail.api.erp.domain.entity.Product;
 
 public record GetProductResponse(

@@ -129,7 +129,7 @@ public class QuoteController {
 	public ResponseEntity<Void> remove(@PathVariable Integer quoteId) {
 		boolean deleted = removeQuoteUseCase.execute(quoteId);
 
-		return deleted ? ResponseEntity.ok().build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }

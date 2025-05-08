@@ -24,14 +24,14 @@ public class ProductRepositoryImpl implements ProductRepository {
 	@Override
 	public Page<Product> findByCompanyId(Integer companyId, Pageable pageable) {
 		return productJpaRepository
-			.findByCompanyId(companyId, pageable)
+			.findByCompanyIdAndDeletedAtIsNull(companyId, pageable)
 			.map(productMapper::toDomain);
 	}
 
 	@Override
 	public Page<Product> findByCompanyIdAndNameContainingIgnoreCase(Integer companyId, String name, Pageable pageable) {
 		return productJpaRepository
-			.findByCompanyIdAndNameContainingIgnoreCase(companyId, name, pageable)
+			.findByCompanyIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(companyId, name, pageable)
 			.map(productMapper::toDomain);
 	}
 
@@ -45,7 +45,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 	@Override
 	public Optional<Product> duplicateProduct(Integer companyId, String name, String standard, Long inboundPrice) {
 		return productJpaRepository
-			.findByCompanyIdAndNameAndStandardAndInboundPrice(companyId, name, standard, inboundPrice)
+			.findByCompanyIdAndNameAndStandardAndInboundPriceAndDeletedAtIsNull(companyId, name, standard, inboundPrice)
 			.map(productMapper::toDomain);
 	}
 
@@ -58,12 +58,12 @@ public class ProductRepositoryImpl implements ProductRepository {
 	}
 
 	@Override
-	public void deleteAllByIds(List<Integer> ids) {
-		productJpaRepository.deleteAllByIdInBatch(ids);
+	public void deleteAllByIds(List<Integer> productIds) {
+		productJpaRepository.deleteAllByIds(productIds);
 	}
 
 	@Override
-	public void delete(Integer productId) {
-		productJpaRepository.deleteById(productId);
+	public void softDeleteById(Integer productId) {
+		productJpaRepository.softDeleteById(productId);
 	}
 }

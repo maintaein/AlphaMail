@@ -43,7 +43,6 @@ public class Quote {
 			.quoteNo(
 				request.quoteNo() != null ? request.quoteNo() : generateQuoteNo()
 			)
-			.createdAt(LocalDateTime.now())
 			.quoteProducts(new ArrayList<>())
 			.build();
 
@@ -106,12 +105,6 @@ public class Quote {
 
 		this.quoteProducts.clear();
 		this.quoteProducts.addAll(updatedQuotes);
-
-		this.updatedAt = LocalDateTime.now();
-	}
-
-	public void softDelete() {
-		this.deletedAt = LocalDateTime.now();
 	}
 
 	private static String generateQuoteNo() {

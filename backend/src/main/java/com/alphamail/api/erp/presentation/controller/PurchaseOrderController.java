@@ -129,7 +129,7 @@ public class PurchaseOrderController {
 	public ResponseEntity<Void> remove(@PathVariable Integer orderId) {
 		boolean deleted = removePurchaseOrderUseCase.execute(orderId);
 
-		return deleted ? ResponseEntity.ok().build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }

@@ -31,6 +31,8 @@ public class ModifyPurchaseOrderUseCase {
 
 		if (order == null) {
 			return RegistResultDto.notFound();
+		} else if (order.getDeletedAt() != null) {
+			return RegistResultDto.notFound();
 		}
 
 		if (request.userId() != null && !request.userId().equals(order.getUser().getId().getValue())) {

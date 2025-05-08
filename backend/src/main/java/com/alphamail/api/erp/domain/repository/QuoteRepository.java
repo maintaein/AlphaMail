@@ -19,4 +19,6 @@ public interface QuoteRepository {
 	Quote save(Quote quote);
 
 	void deleteAllByIds(List<Integer> quoteIds);
+
+	void softDeleteById(Integer quoteId);
 }

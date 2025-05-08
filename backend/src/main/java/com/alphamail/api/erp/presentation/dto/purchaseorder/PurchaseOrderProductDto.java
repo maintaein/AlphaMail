@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.presentation.dto.purchaseorder;
 
+import java.time.LocalDateTime;
+
 import com.alphamail.api.erp.domain.entity.PurchaseOrderProduct;
 
 public record PurchaseOrderProductDto(
@@ -7,7 +9,8 @@ public record PurchaseOrderProductDto(
 	String name,
 	String standard,
 	Integer count,
-	Long price
+	Long price,
+	LocalDateTime deletedAt
 ) {
 	public static PurchaseOrderProductDto from(PurchaseOrderProduct pop) {
 		return new PurchaseOrderProductDto(
@@ -15,7 +18,8 @@ public record PurchaseOrderProductDto(
 			pop.getProduct().getName(),
 			pop.getProduct().getStandard(),
 			pop.getCount(),
-			pop.getPrice()
+			pop.getPrice(),
+			pop.getProduct().getDeletedAt()
 		);
 	}
 }

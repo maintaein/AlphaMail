@@ -25,4 +25,9 @@ public interface PurchaseOrderJpaRepository extends JpaRepository<PurchaseOrderE
 	@Transactional
 	@Query("UPDATE PurchaseOrderEntity p SET p.deletedAt = CURRENT_TIMESTAMP WHERE p.id IN :ids")
 	void deleteAllByIds(@Param("ids") List<Integer> ids);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE PurchaseOrderEntity p SET p.deletedAt = CURRENT_TIMESTAMP WHERE p.id = :orderId AND p.deletedAt IS NULL")
+	void softDeleteById(Integer orderId);
 }

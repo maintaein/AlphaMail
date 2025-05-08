@@ -16,7 +16,6 @@ public record GetQuoteResponse(
 	String quoteNo,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt,
-	LocalDateTime deletedAt,
 	List<QuoteProductDto> products
 ) {
 	public static GetQuoteResponse from(Quote quote) {
@@ -31,7 +30,6 @@ public record GetQuoteResponse(
 			quote.getQuoteNo(),
 			quote.getCreatedAt(),
 			quote.getUpdatedAt(),
-			quote.getDeletedAt(),
 			quote.getQuoteProducts().stream()
 				.map(QuoteProductDto::from)
 				.toList()

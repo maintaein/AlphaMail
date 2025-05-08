@@ -73,4 +73,9 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 	public void deleteAllByIds(List<Integer> quoteIds) {
 		quoteJpaRepository.deleteAllByIds(quoteIds);
 	}
+
+	@Override
+	public void softDeleteById(Integer quoteId) {
+		quoteJpaRepository.softDeleteById(quoteId);
+	}
 }

@@ -19,4 +19,6 @@ public interface PurchaseOrderRepository {
 	PurchaseOrder save(PurchaseOrder purchaseOrder);
 
 	void deleteAllByIds(List<Integer> orderIds);
+
+	void softDeleteById(Integer orderId);
 }

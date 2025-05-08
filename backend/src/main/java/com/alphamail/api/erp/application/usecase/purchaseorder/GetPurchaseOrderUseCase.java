@@ -19,8 +19,14 @@ public class GetPurchaseOrderUseCase {
 	private final PurchaseOrderRepository purchaseOrderRepository;
 
 	public GetPurchaseOrderResponse execute(Integer orderId) {
-		Optional<PurchaseOrder> order = purchaseOrderRepository.findById(orderId);
+		PurchaseOrder order = purchaseOrderRepository.findById(orderId).orElse(null);
 
-		return order.map(GetPurchaseOrderResponse::from).orElse(null);
+		if (order == null) {
+			return null;
+		} else if (order.getDeletedAt() != null) {
+			return null;
+		}
+
+		return GetPurchaseOrderResponse.from(order);
 	}
 }

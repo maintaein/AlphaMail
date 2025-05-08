@@ -31,6 +31,8 @@ public class ModifyQuoteUseCase {
 
 		if (quote == null) {
 			return RegistResultDto.notFound();
+		} else if (quote.getDeletedAt() != null) {
+			return RegistResultDto.notFound();
 		}
 
 		if (request.userId() != null && !request.userId().equals(quote.getUser().getId().getValue())) {

@@ -20,4 +20,9 @@ public interface QuoteJpaRepository extends JpaRepository<QuoteEntity, Integer>,
 	@Transactional
 	@Query("UPDATE QuoteEntity q SET q.deletedAt = CURRENT_TIMESTAMP WHERE q.id IN :ids")
 	void deleteAllByIds(@Param("ids") List<Integer> ids);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE QuoteEntity q SET q.deletedAt = CURRENT_TIMESTAMP WHERE q.id = :quoteId AND q.deletedAt IS NULL")
+	void softDeleteById(Integer quoteId);
 }

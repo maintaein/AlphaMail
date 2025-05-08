@@ -19,10 +19,11 @@ public class RemoveQuoteUseCase {
 		Quote quote = quoteRepository.findById(quoteId).orElse(null);
 		if (quote == null) {
 			return false;
+		} else if (quote.getDeletedAt() != null) {
+			return false;
 		}
 
-		quote.softDelete();
-		quoteRepository.save(quote);
+		quoteRepository.softDeleteById(quoteId);
 		return true;
 	}
 }

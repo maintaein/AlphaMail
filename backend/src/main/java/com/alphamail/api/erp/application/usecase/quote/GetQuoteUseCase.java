@@ -19,8 +19,14 @@ public class GetQuoteUseCase {
 	private final QuoteRepository quoteRepository;
 
 	public GetQuoteResponse execute(Integer quoteId) {
-		Optional<Quote> quote = quoteRepository.findById(quoteId);
+		Quote quote = quoteRepository.findById(quoteId).orElse(null);
 
-		return quote.map(GetQuoteResponse::from).orElse(null);
+		if (quote == null) {
+			return null;
+		} else if (quote.getDeletedAt() != null) {
+			return null;
+		}
+
+		return GetQuoteResponse.from(quote);
 	}
 }

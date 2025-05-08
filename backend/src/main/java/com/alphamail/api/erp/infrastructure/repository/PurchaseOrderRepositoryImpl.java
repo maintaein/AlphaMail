@@ -73,4 +73,9 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 	public void deleteAllByIds(List<Integer> orderIds) {
 		purchaseOrderJpaRepository.deleteAllByIds(orderIds);
 	}
+
+	@Override
+	public void softDeleteById(Integer orderId) {
+		purchaseOrderJpaRepository.softDeleteById(orderId);
+	}
 }

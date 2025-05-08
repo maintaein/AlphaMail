@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.presentation.dto.quote;
 
+import java.time.LocalDateTime;
+
 import com.alphamail.api.erp.domain.entity.QuoteProduct;
 
 public record QuoteProductDto(
@@ -7,7 +9,8 @@ public record QuoteProductDto(
 	String name,
 	String standard,
 	Integer count,
-	Long price
+	Long price,
+	LocalDateTime deletedAt
 ) {
 	public static QuoteProductDto from(QuoteProduct quoteProduct) {
 		return new QuoteProductDto(
@@ -15,7 +18,8 @@ public record QuoteProductDto(
 			quoteProduct.getProduct().getName(),
 			quoteProduct.getProduct().getStandard(),
 			quoteProduct.getCount(),
-			quoteProduct.getPrice()
+			quoteProduct.getPrice(),
+			quoteProduct.getProduct().getDeletedAt()
 		);
 	}
 }
