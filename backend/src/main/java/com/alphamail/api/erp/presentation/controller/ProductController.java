@@ -112,5 +112,4 @@ public class ProductController {
 		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
-
 }

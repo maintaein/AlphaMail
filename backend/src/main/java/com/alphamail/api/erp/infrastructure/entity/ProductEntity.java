@@ -3,6 +3,7 @@ package com.alphamail.api.erp.infrastructure.entity;
 import java.time.LocalDateTime;
 
 import com.alphamail.common.entity.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

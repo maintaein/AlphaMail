@@ -19,10 +19,11 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Integ
 
 	Page<ProductEntity> findByCompanyIdAndDeletedAtIsNull(Integer companyId, Pageable pageable);
 
-	Page<ProductEntity> findByCompanyIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(Integer companyId, String name, Pageable pageable);
+	Page<ProductEntity> findByCompanyIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(Integer companyId, String name,
+		Pageable pageable);
 
-	Optional<ProductEntity> findByCompanyIdAndNameAndStandardAndInboundPriceAndDeletedAtIsNull(Integer companyId, String name,
-		String standard, Long inboundPrice);
+	Optional<ProductEntity> findByCompanyIdAndNameAndStandardAndInboundPriceAndDeletedAtIsNull(Integer companyId,
+		String name, String standard, Long inboundPrice);
 
 	@Modifying
 	@Transactional
