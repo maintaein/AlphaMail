@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.domain.entity;
 
+import java.time.LocalDateTime;
+
 import com.alphamail.api.erp.presentation.dto.product.ModifyProductRequest;
 import com.alphamail.api.erp.presentation.dto.product.RegistProductRequest;
 
@@ -12,14 +14,17 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Product {
-	private final Integer productId;  // 품목 아이디
-	private Integer companyId;  // FK (companies.id)
-	private String name;  // 재고 이름
-	private String standard;  // 규격
-	private Integer stock = 0;  // 재고 수량 (기본값 0)
-	private Long inboundPrice;  // 입고 단가
-	private Long outboundPrice;  // 출고 단가
-	private String image;  // 이미지 URL (nullable)
+	private final Integer productId;
+	private Integer companyId;
+	private String name;
+	private String standard;
+	private Integer stock = 0;
+	private Long inboundPrice;
+	private Long outboundPrice;
+	private String image;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private LocalDateTime deletedAt;
 
 	public static Product of(Integer id) {
 		return Product.builder()
@@ -31,6 +36,7 @@ public class Product {
 			.inboundPrice(null)
 			.outboundPrice(null)
 			.image(null)
+			.createdAt(null)
 			.build();
 	}
 

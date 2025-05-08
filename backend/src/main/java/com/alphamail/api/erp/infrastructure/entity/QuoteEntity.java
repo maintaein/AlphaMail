@@ -7,8 +7,8 @@ import com.alphamail.api.organization.infrastructure.entity.ClientEntity;
 import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
 import com.alphamail.api.organization.infrastructure.entity.GroupEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
-
 import com.alphamail.common.entity.BaseTimeEntity;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

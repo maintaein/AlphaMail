@@ -48,7 +48,6 @@ public class PurchaseOrderController {
 	private final RemoveAllPurchaseOrdersUseCase removeAllPurchaseOrdersUseCase;
 	private final RemovePurchaseOrderUseCase removePurchaseOrderUseCase;
 
-	// 발주서 전체 조회
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.ORDERS_BASE_API)
 	public ResponseEntity<GetPageResponse<GetAllPurchaseOrdersResponse>> getAll(
 		@PathVariable Integer companyId,
@@ -66,13 +65,15 @@ public class PurchaseOrderController {
 		Pageable pageable = PageRequest.of(page, size);
 
 		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(companyId,
-			condition,
-			pageable);
+			condition, pageable);
+
+		if (response == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
 
 		return ResponseEntity.ok(response);
 	}
 
-	// 발주서 상세 조회
 	@GetMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
 	public ResponseEntity<GetPurchaseOrderResponse> get(@PathVariable Integer orderId) {
 		GetPurchaseOrderResponse response = getPurchaseOrderUseCase.execute(orderId);
@@ -84,7 +85,6 @@ public class PurchaseOrderController {
 		return ResponseEntity.ok(response);
 	}
 
-	// 발주서 등록하기
 	@PostMapping(ApiPaths.ORDERS_BASE_API)
 	public ResponseEntity<?> regist(@RequestBody RegistPurchaseOrderRequest request) {
 		RegistResultDto result = registPurchaseOrderUseCase.execute(request);
@@ -100,7 +100,6 @@ public class PurchaseOrderController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.id()));
 	}
 
-	// 발주서 수정하기
 	@PutMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
 	public ResponseEntity<?> modify(@PathVariable Integer orderId, @RequestBody RegistPurchaseOrderRequest request) {
 		RegistResultDto result = modifyPurchaseOrderUseCase.execute(orderId, request);
@@ -118,21 +117,19 @@ public class PurchaseOrderController {
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
 	}
 
-	// 발주서 다중 삭제
-	@DeleteMapping(ApiPaths.ORDERS_BASE_API)
-	public ResponseEntity<Void> delete(@RequestBody RemoveAllErpRequest request) {
-		boolean deleted = removeAllPurchaseOrdersUseCase.execute(request);
+	@PostMapping(ApiPaths.ORDERS_BASE_API + "/delete")
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest request) {
+		boolean deleted = removeAllPurchaseOrdersUseCase.execute(request.ids());
 
-		return deleted ? ResponseEntity.ok().build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
-	// 발주서 삭제하기
 	@DeleteMapping(ApiPaths.ORDERS_BASE_API + "/{orderId}")
 	public ResponseEntity<Void> remove(@PathVariable Integer orderId) {
 		boolean deleted = removePurchaseOrderUseCase.execute(orderId);
 
-		return deleted ? ResponseEntity.ok().build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }

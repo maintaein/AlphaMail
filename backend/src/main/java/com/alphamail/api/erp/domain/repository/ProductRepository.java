@@ -20,7 +20,7 @@ public interface ProductRepository {
 
 	Product save(Product product);
 
-	void deleteAllByIds(List<Integer> ids);
+	void deleteAllByIds(List<Integer> productIds);
 
-	void delete(Integer productId);
+	void softDeleteById(Integer productId);
 }

@@ -16,7 +16,6 @@ public record GetPurchaseOrderResponse(
 	String orderNo,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt,
-	LocalDateTime deletedAt,
 	LocalDateTime deliverAt,
 	List<PurchaseOrderProductDto> products
 ) {
@@ -32,7 +31,6 @@ public record GetPurchaseOrderResponse(
 			order.getOrderNo(),
 			order.getCreatedAt(),
 			order.getUpdatedAt(),
-			order.getDeletedAt(),
 			order.getDeliverAt(),
 			order.getPurchaseOrderProducts().stream()
 				.map(PurchaseOrderProductDto::from)

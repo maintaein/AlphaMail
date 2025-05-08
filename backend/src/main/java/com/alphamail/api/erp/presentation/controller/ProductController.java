@@ -45,7 +45,6 @@ public class ProductController {
 	private final RemoveAllProductsUseCase removeAllProductsUseCase;
 	private final RemoveProductUseCase removeProductUseCase;
 
-	// 품목 전체 조회
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.PRODUCTS_BASE_API)
 	public ResponseEntity<GetPageResponse<GetAllProductsResponse>> getAll(@PathVariable Integer companyId,
 		@RequestParam(name = "query", required = false) String query, @RequestParam(defaultValue = "0") int page,
@@ -60,7 +59,6 @@ public class ProductController {
 		return ResponseEntity.ok(response);
 	}
 
-	// 품목 상세 조회
 	@GetMapping(ApiPaths.PRODUCTS_BASE_API + "/{productId}")
 	public ResponseEntity<GetProductResponse> get(@PathVariable Integer productId) {
 		GetProductResponse response = getProductUseCase.execute(productId);
@@ -72,7 +70,6 @@ public class ProductController {
 		return ResponseEntity.ok(response);
 	}
 
-	// 품목 등록하기
 	@PostMapping(ApiPaths.PRODUCTS_BASE_API)
 	public ResponseEntity<?> regist(@RequestBody RegistProductRequest registProductRequest) {
 		RegistResultDto result = registProductUseCase.execute(registProductRequest);
@@ -86,7 +83,6 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.CREATED).body(new RegistErpResponse(result.id()));
 	}
 
-	// 품목 수정하기
 	@PutMapping(ApiPaths.PRODUCTS_BASE_API + "/{productId}")
 	public ResponseEntity<?> modify(@PathVariable Integer productId,
 		@RequestBody ModifyProductRequest modifyProductRequest) {
@@ -101,22 +97,19 @@ public class ProductController {
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
 	}
 
-	// 품목 다중 삭제하기
-	@DeleteMapping(ApiPaths.PRODUCTS_BASE_API)
-	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest removeAllErpRequest) {
-		boolean deleted = removeAllProductsUseCase.execute(removeAllErpRequest);
+	@PostMapping(ApiPaths.PRODUCTS_BASE_API + "/delete")
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest request) {
+		boolean deleted = removeAllProductsUseCase.execute(request.ids());
 
-		return deleted ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
-	// 품목 삭제하기
 	@DeleteMapping(ApiPaths.PRODUCTS_BASE_API + "/{productId}")
 	public ResponseEntity<Void> remove(@PathVariable Integer productId) {
 		boolean deleted = removeProductUseCase.execute(productId);
 
-		return deleted ? ResponseEntity.status(HttpStatus.NO_CONTENT).build() :
+		return deleted ? ResponseEntity.noContent().build() :
 			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
-
 }

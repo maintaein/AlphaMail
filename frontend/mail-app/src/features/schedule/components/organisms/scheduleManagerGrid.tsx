@@ -16,11 +16,11 @@ export const ScheduleManagerGrid: React.FC<ScheduleManagerGridProps> = ({
   endOfWeek.setDate(startOfWeek.getDate() + 6);
 
   const completedSchedules = schedules.filter(
-    (schedule) => schedule.isCompleted && new Date(schedule.startDate) >= startOfWeek && new Date(schedule.startDate) <= endOfWeek
+    (schedule) => schedule.is_done
   );
 
   const remainingSchedules = schedules.filter(
-    (schedule) => !schedule.isCompleted && new Date(schedule.startDate) >= startOfWeek && new Date(schedule.startDate) <= endOfWeek
+    (schedule) => !schedule.is_done
   );
 
   return (

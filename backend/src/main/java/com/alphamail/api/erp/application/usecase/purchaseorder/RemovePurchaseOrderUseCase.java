@@ -19,10 +19,11 @@ public class RemovePurchaseOrderUseCase {
 		PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(orderId).orElse(null);
 		if (purchaseOrder == null) {
 			return false;
+		} else if (purchaseOrder.getDeletedAt() != null) {
+			return false;
 		}
 
-		purchaseOrder.softDelete();
-		purchaseOrderRepository.save(purchaseOrder);
+		purchaseOrderRepository.softDeleteById(orderId);
 		return true;
 	}
 }

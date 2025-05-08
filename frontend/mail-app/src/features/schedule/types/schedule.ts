@@ -1,22 +1,23 @@
+// 일정 타입
 export interface Schedule {
   id: string;
-  title: string;
-  startDate: Date;
-  endDate: Date;
+  name: string;
+  created_at: Date;
+  start_time: Date;
+  end_time: Date;
+  is_done: boolean;
   description: string;
-  color?: string;
-  userId: string;
-  isCompleted?: boolean;
-  isAllDay?: boolean;
 }
 
+// API 응답 타입
 export interface ScheduleResponse {
-  items: Array<{
+  schedules: Array<{
+    id: number;
     name: string;
-    created_at: string;
-    start_time: string;
-    end_time: string;
-    is_done: boolean;
+    createdAt: string;
+    startTime: string;
+    endTime: string;
+    isDone: boolean;
     description: string;
   }>;
   total_count: number;

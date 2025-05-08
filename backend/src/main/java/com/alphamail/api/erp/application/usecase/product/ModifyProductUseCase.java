@@ -22,6 +22,8 @@ public class ModifyProductUseCase {
 
 		if (product == null) {
 			return RegistResultDto.notFound();
+		} else if (product.getDeletedAt() != null) {
+			return RegistResultDto.notFound();
 		}
 
 		product.update(request);

@@ -18,18 +18,12 @@ public class RemoveAllPurchaseOrdersUseCase {
 
 	private final PurchaseOrderRepository purchaseOrderRepository;
 
-	public boolean execute(RemoveAllErpRequest request) {
-		List<Integer> ids = request.ids();
-		if (ids == null || ids.isEmpty()) {
+	public boolean execute(List<Integer> orderIds) {
+		if (orderIds == null || orderIds.isEmpty()) {
 			return false;
 		}
 
-		List<PurchaseOrder> orders = purchaseOrderRepository.findAllByIds(ids);
-
-		for (PurchaseOrder order : orders) {
-			order.softDelete();
-			purchaseOrderRepository.save(order);
-		}
+		purchaseOrderRepository.deleteAllByIds(orderIds);
 		return true;
 	}
 }

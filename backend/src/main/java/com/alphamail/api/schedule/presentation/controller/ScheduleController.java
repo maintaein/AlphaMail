@@ -1,6 +1,7 @@
 package com.alphamail.api.schedule.presentation.controller;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -61,8 +62,9 @@ public class ScheduleController {
 	}
 
 	@GetMapping
-	public ResponseEntity<ScheduleListResponse> getAllSchedules(@RequestParam LocalDate startDate,
-		@RequestParam LocalDate endDate,
+	public ResponseEntity<ScheduleListResponse> getAllSchedules(
+		@RequestParam(required = false) LocalDateTime startTime,
+		@RequestParam(required = false) LocalDateTime endTime,
 		@RequestParam(required = false) String keyword,
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
@@ -79,8 +81,8 @@ public class ScheduleController {
 		//임시 아이디 1
 		Integer userId = 1;
 
-		ScheduleListResponse schedules = getAllSchedulesUseCase.execute(startDate,
-			endDate, keyword, pageable, userId);
+		ScheduleListResponse schedules = getAllSchedulesUseCase.execute(startTime,
+			endTime, keyword, pageable, userId);
 
 		return ResponseEntity.ok(schedules);
 

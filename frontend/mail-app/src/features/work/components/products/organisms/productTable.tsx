@@ -1,73 +1,41 @@
 import { Product } from '../../../types/product';
 import { ProductTableRow } from '../molecules/productTableRow';
 import { Pagination } from '../molecules/pagination';
-import { usePagedProducts } from '../../../hooks/usePagedProducts';
 
 interface ProductTableProps {
-  companyId: number;
+  products: Product[];
+  totalCount: number;
+  pageCount: number;
+  currentPage: number;
   onProductClick?: (product: Product) => void;
   onSelectProduct?: (id: number) => void;
   selectedProductIds?: Set<number>;
+  onPageChange: (page: number) => void;
 }
 
 export const ProductTable: React.FC<ProductTableProps> = ({ 
-  companyId, 
+  products,
+  totalCount,
+  pageCount,
+  currentPage,
   onProductClick,
   onSelectProduct,
-  selectedProductIds = new Set()
+  selectedProductIds = new Set(),
+  onPageChange
 }) => {
-  const {
-    products,
-    totalCount,
-    pageCount,
-    currentPage,
-    pageSize,
-    sortOption,
-    isLoading,
-    error,
-    handlePageChange,
-    handleSizeChange,
-    handleSortChange
-  } = usePagedProducts({
-    companyId
-  });
-
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>에러가 발생했습니다.</div>;
-
-  console.log('Products in Table:', products);
-
-  // products가 배열인지 확인
   if (!Array.isArray(products)) {
     console.error('Products is not an array:', products);
     return <div>데이터 형식이 올바르지 않습니다.</div>;
   }
 
+  // 페이지당 상품 수 (기본값 10)
+  const itemsPerPage = 10;
+  // 현재 페이지의 시작 인덱스
+  const startIndex = (currentPage - 1) * itemsPerPage;
+
   return (
     <div>
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <select
-            value={pageSize}
-            onChange={(e) => handleSizeChange(Number(e.target.value))}
-            className="p-2 border rounded"
-          >
-            <option value={10}>10개씩 보기</option>
-            <option value={20}>20개씩 보기</option>
-            <option value={50}>50개씩 보기</option>
-          </select>
-
-          <select
-            value={sortOption}
-            onChange={(e) => handleSortChange(Number(e.target.value))}
-            className="p-2 border rounded"
-          >
-            <option value={0}>최신순</option>
-            <option value={1}>이름순</option>
-            <option value={2}>재고순</option>
-          </select>
-        </div>
-
+      <div className="mb-4 flex justify-end items-center">
         <div className="text-sm text-gray-600">
           총 {totalCount}개의 상품
         </div>
@@ -78,7 +46,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
           <thead className="bg-gray-50">
             <tr>
               <th className="p-4 text-left">선택</th>
-              <th className="p-4 text-left">ID</th>
+              <th className="p-4 text-left">순번</th>
               <th className="p-4 text-left">품목명</th>
               <th className="p-4 text-center">규격</th>
               <th className="p-4 text-center">재고</th>
@@ -88,7 +56,9 @@ export const ProductTable: React.FC<ProductTableProps> = ({
           </thead>
           <tbody>
             {products.length > 0 ? (
-              products.map((product) => {
+              products.map((product, index) => {
+                // 역순 순번 계산 (전체 개수 - (현재 페이지 시작 인덱스 + 현재 인덱스))
+                const sequenceNumber = totalCount - (startIndex + index);
                 console.log('Rendering product:', product);
                 return (
                   <ProductTableRow
@@ -97,6 +67,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
                       ...product,
                       isSelected: selectedProductIds.has(product.id)
                     }}
+                    sequenceNumber={sequenceNumber}
                     onSelect={onSelectProduct || (() => {})}
                     onProductClick={onProductClick}
                   />
@@ -116,7 +87,7 @@ export const ProductTable: React.FC<ProductTableProps> = ({
       <Pagination
         currentPage={currentPage}
         totalPages={pageCount}
-        onPageChange={handlePageChange}
+        onPageChange={onPageChange}
       />
     </div>
   );

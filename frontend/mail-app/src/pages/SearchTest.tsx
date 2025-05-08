@@ -7,27 +7,30 @@ const SearchTest: React.FC = () => {
   const [schedules] = useState<Schedule[]>([
     {
       id: '1',
-      title: '프로젝트 미팅',
-      startDate: new Date('2024-03-20T10:00:00'),
-      endDate: new Date('2024-03-20T12:00:00'),
+      name: '프로젝트 미팅',
+      start_time: new Date('2024-03-20T10:00:00'),
+      end_time: new Date('2024-03-20T12:00:00'),
       description: '프로젝트 진행 상황 공유',
-      userId: 'test-user-1'
+      is_done: false,
+      created_at: new Date('2024-03-20T10:00:00')
     },
     {
       id: '2',
-      title: '코드 리뷰',
-      startDate: new Date('2024-03-21T14:00:00'),
-      endDate: new Date('2024-03-21T16:00:00'),
+      name: '코드 리뷰',
+      start_time: new Date('2024-03-21T14:00:00'),
+      end_time: new Date('2024-03-21T16:00:00'),
       description: '새로운 기능 코드 리뷰',
-      userId: 'test-user-1'
+      is_done: false,
+      created_at: new Date('2024-03-21T14:00:00')
     },
     {
       id: '3',
-      title: '팀 워크샵',
-      startDate: new Date('2024-03-22T09:00:00'),
-      endDate: new Date('2024-03-22T18:00:00'),
+      name: '팀 워크샵',
+      start_time: new Date('2024-03-22T09:00:00'),
+      end_time: new Date('2024-03-22T18:00:00'),
       description: '팀 빌딩 활동',
-      userId: 'test-user-1'
+      is_done: false,
+      created_at: new Date('2024-03-22T09:00:00')
     },
   ]);
 

@@ -19,8 +19,14 @@ public class GetProductUseCase {
 	private final ProductRepository productRepository;
 
 	public GetProductResponse execute(Integer productId) {
-		Optional<Product> product = productRepository.findById(productId);
+		Product product = productRepository.findById(productId).orElse(null);
 
-		return product.map(GetProductResponse::from).orElse(null);
+		if (product == null) {
+			return null;
+		} else if (product.getDeletedAt() != null) {
+			return null;
+		}
+
+		return GetProductResponse.from(product);
 	}
 }

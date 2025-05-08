@@ -16,11 +16,14 @@ public class RemoveProductUseCase {
 	private final ProductRepository productRepository;
 
 	public boolean execute(Integer productId) {
-		if (productRepository.findById(productId).isEmpty()) {
+		Product product = productRepository.findById(productId).orElse(null);
+		if (product == null) {
+			return false;
+		} else if (product.getDeletedAt() != null) {
 			return false;
 		}
 
-		productRepository.delete(productId);
+		productRepository.softDeleteById(productId);
 		return true;
 	}
 }

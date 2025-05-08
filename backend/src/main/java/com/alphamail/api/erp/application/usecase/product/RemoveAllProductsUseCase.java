@@ -17,13 +17,12 @@ public class RemoveAllProductsUseCase {
 
 	private final ProductRepository productRepository;
 
-	public boolean execute(RemoveAllErpRequest request) {
-		List<Integer> ids = request.ids();
-		if (ids == null || ids.isEmpty()) {
+	public boolean execute(List<Integer> productIds) {
+		if (productIds == null || productIds.isEmpty()) {
 			return false;
 		}
 
-		productRepository.deleteAllByIds(ids);
+		productRepository.deleteAllByIds(productIds);
 		return true;
 	}
 }

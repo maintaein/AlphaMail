@@ -24,9 +24,12 @@ public class GetAllPurchaseOrdersUseCase {
 	private final CompanyReader companyReader;
 
 	public GetPageResponse<GetAllPurchaseOrdersResponse> execute(Integer companyId,
-		PurchaseOrderSearchCondition condition,
-		Pageable pageable) {
+		PurchaseOrderSearchCondition condition, Pageable pageable) {
 		Company company = companyReader.findById(companyId);
+
+		if (company == null) {
+			return null;
+		}
 
 		Page<GetAllPurchaseOrdersResponse> page = purchaseOrderRepository.findAllByCondition(company, condition,
 				pageable)

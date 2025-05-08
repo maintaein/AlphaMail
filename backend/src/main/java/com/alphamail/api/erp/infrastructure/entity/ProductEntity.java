@@ -1,5 +1,9 @@
 package com.alphamail.api.erp.infrastructure.entity;
 
+import java.time.LocalDateTime;
+
+import com.alphamail.common.entity.BaseTimeEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +23,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @ToString
-public class ProductEntity {
+public class ProductEntity extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;  // 품목 아이디
@@ -45,4 +49,7 @@ public class ProductEntity {
 
 	@Column(length = 255)
 	private String image;  // 이미지 URL (nullable)
+
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
 }
