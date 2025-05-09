@@ -4,6 +4,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,7 @@ import com.alphamail.api.erp.application.usecase.client.GetAllClientsUseCase;
 import com.alphamail.api.erp.application.usecase.client.GetClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.ModifyClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.RegistClientUseCase;
+import com.alphamail.api.erp.application.usecase.client.RemoveClientUseCase;
 import com.alphamail.api.erp.presentation.dto.client.GetAllClientsResponse;
 import com.alphamail.api.erp.presentation.dto.client.GetClientResponse;
 import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
@@ -36,6 +38,7 @@ public class ClientController {
 	private final GetClientUseCase getClientUseCase;
 	private final RegistClientUseCase registClientUseCase;
 	private final ModifyClientUseCase modifyClientUseCase;
+	private final RemoveClientUseCase removeClientUseCase;
 
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.CLIENTS_BASE_API)
 	public ResponseEntity<GetPageResponse<GetAllClientsResponse>> getAll(
@@ -92,5 +95,13 @@ public class ClientController {
 		}
 
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
+	}
+
+	@DeleteMapping(ApiPaths.CLIENTS_BASE_API + "/{clientId}")
+	public ResponseEntity<Void> remove(@PathVariable Integer clientId) {
+		boolean deleted = removeClientUseCase.execute(clientId);
+
+		return deleted ? ResponseEntity.noContent().build() :
+			ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 }

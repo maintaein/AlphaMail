@@ -55,4 +55,9 @@ public class ClientRepositoryImpl implements ClientRepository {
 
 		return clientMapper.toDomain(savedEntity);
 	}
+
+	@Override
+	public void softDeleteById(Integer clientId) {
+		clientJpaRepository.softDeleteById(clientId);
+	}
 }

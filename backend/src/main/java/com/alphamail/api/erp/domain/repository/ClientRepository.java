@@ -18,4 +18,6 @@ public interface ClientRepository {
 	Optional<Client> duplicateClient(Integer groupId, String licenseNum);
 
 	Client save(Client client);
+
+	void softDeleteById(Integer clientId);
 }
