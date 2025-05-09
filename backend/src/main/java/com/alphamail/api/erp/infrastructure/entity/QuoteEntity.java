@@ -56,6 +56,15 @@ public class QuoteEntity extends BaseTimeEntity {
 	@JoinColumn(name = "client_id", nullable = false)
 	private ClientEntity clientEntity;
 
+	@Column(name = "shipping_address", length = 255)
+	private String shippingAddress;
+
+	@Column(name = "manager", length = 30)
+	private String manager;
+
+	@Column(name = "manager_number", length = 30)
+	private String managerNumber;
+
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
 

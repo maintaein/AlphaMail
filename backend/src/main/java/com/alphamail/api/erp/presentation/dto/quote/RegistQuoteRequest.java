@@ -9,6 +9,9 @@ public record RegistQuoteRequest(
 	Integer groupId,
 	Integer clientId,
 	String quoteNo,
+	String shippingAddress,
+	String manager,
+	String managerNumber,
 	List<QuoteProductDto> products
 ) {
 	public record QuoteProductDto(

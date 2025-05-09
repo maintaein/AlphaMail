@@ -29,6 +29,9 @@ public class Quote {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime deletedAt;
+	private String shippingAddress;
+	private String manager;
+	private String managerNumber;
 	private List<QuoteProduct> quoteProducts;
 
 	public static Quote create(RegistQuoteRequest request, User user, Company company, Group group, Client client) {
@@ -40,6 +43,9 @@ public class Quote {
 			.quoteNo(
 				request.quoteNo() != null ? request.quoteNo() : generateQuoteNo()
 			)
+			.shippingAddress(request.shippingAddress())
+			.manager(request.manager())
+			.managerNumber(request.managerNumber())
 			.quoteProducts(new ArrayList<>())
 			.build();
 
@@ -75,6 +81,9 @@ public class Quote {
 		if (request.quoteNo() != null) {
 			this.quoteNo = request.quoteNo();
 		}
+		this.shippingAddress = request.shippingAddress();
+		this.manager = request.manager();
+		this.managerNumber = request.managerNumber();
 
 		Map<Integer, QuoteProduct> existingMap = this.quoteProducts.stream()
 			.filter(p -> p.getQuoteProductId() != null)
