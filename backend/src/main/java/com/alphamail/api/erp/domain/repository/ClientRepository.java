@@ -6,9 +6,9 @@ import com.alphamail.api.erp.domain.entity.Client;
 
 public interface ClientRepository {
 
-	Client findById(Integer id);
+	Optional<Client> findById(Integer clientId);
 
-	Optional<Client> duplicateClient(Integer companyId, Integer groupId, String licenseNum);
+	Optional<Client> duplicateClient(Integer groupId, String licenseNum);
 
 	Client save(Client client);
 }

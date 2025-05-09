@@ -20,16 +20,15 @@ public class ClientRepositoryImpl implements ClientRepository {
 	private final ClientMapper clientMapper;
 
 	@Override
-	public Client findById(Integer id) {
-		return clientJpaRepository.findById(id)
-			.map(clientMapper::toDomain)
-			.orElse(null); // or throw exception if required
+	public Optional<Client> findById(Integer id) {
+		return clientJpaRepository.findByIdAndDeletedAtIsNull(id)
+			.map(clientMapper::toDomain);
 	}
 
 	@Override
-	public Optional<Client> duplicateClient(Integer companyId, Integer groupId, String licenseNum) {
+	public Optional<Client> duplicateClient(Integer groupId, String licenseNum) {
 		return clientJpaRepository
-			.findDuplicateClient(companyId, groupId, licenseNum)
+			.findDuplicateClient(groupId, licenseNum)
 			.map(clientMapper::toDomain);
 	}
 

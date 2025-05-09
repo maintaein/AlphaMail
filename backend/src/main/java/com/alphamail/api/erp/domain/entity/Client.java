@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.domain.entity;
 
+import java.time.LocalDateTime;
+
 import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
 import com.alphamail.api.organization.domain.entity.Company;
 import com.alphamail.api.organization.domain.entity.Group;
@@ -23,6 +25,9 @@ public class Client {
 	private String email;
 	private String phoneNum;
 	private String businessLicense;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private LocalDateTime deletedAt;
 	private Company company;
 	private Group group;
 

@@ -13,9 +13,10 @@ import com.alphamail.api.erp.infrastructure.entity.ClientEntity;
 @Repository
 public interface ClientJpaRepository extends JpaRepository<ClientEntity, Integer> {
 
-	@Query("SELECT c FROM ClientEntity c WHERE c.companyEntity.id = :companyId AND c.groupEntity.id = :groupId AND c.licenseNum = :licenseNum AND c.deletedAt IS NULL")
-	Optional<ClientEntity> findDuplicateClient(@Param("companyId") Integer companyId,
+	Optional<ClientEntity> findByIdAndDeletedAtIsNull(int id);
+
+	@Query("SELECT c FROM ClientEntity c WHERE c.groupEntity.id = :groupId AND c.licenseNum = :licenseNum AND c.deletedAt IS NULL")
+	Optional<ClientEntity> findDuplicateClient(
 		@Param("groupId") Integer groupId,
 		@Param("licenseNum") String licenseNum);
-
 }

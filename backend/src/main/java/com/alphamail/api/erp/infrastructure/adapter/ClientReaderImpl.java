@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.infrastructure.adapter;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 
 import com.alphamail.api.erp.domain.entity.Client;
@@ -16,6 +18,6 @@ public class ClientReaderImpl implements ClientReader {
 
 	@Override
 	public Client findById(Integer id) {
-		return clientRepository.findById(id);
+		return clientRepository.findById(id).orElse(null);
 	}
 }

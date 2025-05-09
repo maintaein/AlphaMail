@@ -33,7 +33,7 @@ public class RegistClientUseCase {
 			return RegistResultDto.badRequest();
 		}
 		Optional<Client> duplicateClient = clientRepository.duplicateClient(
-			request.companyId(), request.groupId(), request.licenseNum());
+			request.groupId(), request.licenseNum());
 
 		if (duplicateClient.isPresent()) {
 			return RegistResultDto.duplicated();
