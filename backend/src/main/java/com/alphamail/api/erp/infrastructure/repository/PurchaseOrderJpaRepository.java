@@ -19,7 +19,7 @@ public interface PurchaseOrderJpaRepository extends JpaRepository<PurchaseOrderE
 	JpaSpecificationExecutor<PurchaseOrderEntity> {
 
 	@EntityGraph(attributePaths = {"products", "products.productEntity"})
-	Optional<PurchaseOrderEntity> findById(Integer orderId);
+	Optional<PurchaseOrderEntity> findByIdAndDeletedAtIsNull(Integer orderId);
 
 	@Modifying
 	@Transactional

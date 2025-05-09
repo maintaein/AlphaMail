@@ -23,8 +23,6 @@ public class GetPurchaseOrderUseCase {
 
 		if (order == null) {
 			return null;
-		} else if (order.getDeletedAt() != null) {
-			return null;
 		}
 
 		return GetPurchaseOrderResponse.from(order);

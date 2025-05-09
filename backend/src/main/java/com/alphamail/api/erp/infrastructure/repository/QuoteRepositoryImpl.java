@@ -50,7 +50,7 @@ public class QuoteRepositoryImpl implements QuoteRepository {
 
 	@Override
 	public Optional<Quote> findById(Integer quoteId) {
-		return quoteJpaRepository.findById(quoteId)
+		return quoteJpaRepository.findByIdAndDeletedAtIsNull(quoteId)
 			.map(quoteMapper::toDomain);
 	}
 

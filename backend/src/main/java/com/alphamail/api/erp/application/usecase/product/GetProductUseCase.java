@@ -23,8 +23,6 @@ public class GetProductUseCase {
 
 		if (product == null) {
 			return null;
-		} else if (product.getDeletedAt() != null) {
-			return null;
 		}
 
 		return GetProductResponse.from(product);

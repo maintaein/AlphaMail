@@ -23,8 +23,6 @@ public class GetQuoteUseCase {
 
 		if (quote == null) {
 			return null;
-		} else if (quote.getDeletedAt() != null) {
-			return null;
 		}
 
 		return GetQuoteResponse.from(quote);
