@@ -2,6 +2,9 @@ import React from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { MailSubject } from '../molecules/mailSubject';
 import { MailDetailAiButton } from '../molecules/mailDetailAiButton';
+import { addHours, format } from 'date-fns';
+import { ko } from 'date-fns/locale';
+
 
 interface MailMetadataProps {
   subject?: string;
@@ -21,6 +24,13 @@ export const MailMetadata: React.FC<MailMetadataProps> = ({
   onTranslate = () => console.log('번역 클릭')
 
 }) => {
+    // 한국 시간으로 변환하고 원하는 형식으로 포맷팅하는 함수
+    const formatKoreanDateTime = (date: Date): string => {
+      const koreaDate = addHours(date, 9);
+      
+      return format(koreaDate, 'yyyy년 M월 d일 (E) a h:mm', { locale: ko });
+    };
+  
   return (
     <div className="px-4 py-2">
       {/* 메일 제목 */}
@@ -78,7 +88,7 @@ export const MailMetadata: React.FC<MailMetadataProps> = ({
             <span>보낸 날짜:</span>
           </Typography>
           <Typography variant="body">
-            {receivedDateTime ? new Date(receivedDateTime).toLocaleString('ko-KR') : ''}
+            {receivedDateTime ? formatKoreanDateTime(new Date(receivedDateTime)) : ''}
           </Typography>
         </div>
       </div>

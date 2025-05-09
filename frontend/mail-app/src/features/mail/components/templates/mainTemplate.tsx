@@ -86,17 +86,23 @@ const MainTemplate: React.FC = () => {
   
   // API 응답 구조에 맞게 메일 데이터 변환
   const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
-    return emails.map(mail => ({
-      id: mail.id.toString(),
-      subject: mail.subject,
-      sender: {
-        name: mail.sender.split('@')[0],
-        email: mail.sender
-      },
-      receivedAt: mail.receivedDateTime || mail.sentDateTime,
-      isRead: mail.readStatus === undefined ? true : mail.readStatus,
-      attachmentSize: mail.size > 0 ? mail.size : 0
-    }));
+    return emails.map(mail => {
+      // UTC 시간을 한국 시간으로 변환 (UTC+9)
+      const receivedTime = mail.receivedDateTime || mail.sentDateTime;
+      const koreaTime = new Date(new Date(receivedTime).getTime() + 9 * 60 * 60 * 1000).toISOString();
+      
+      return {
+        id: mail.id.toString(),
+        subject: mail.subject,
+        sender: {
+          name: mail.sender.split('@')[0],
+          email: mail.sender
+        },
+        receivedAt: koreaTime,
+        isRead: mail.readStatus === undefined ? true : mail.readStatus,
+        attachmentSize: mail.size > 0 ? mail.size : 0
+      };
+    });
   };
   
   return (

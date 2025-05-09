@@ -130,7 +130,7 @@ export const mailService = {
   // 메일 삭제 (휴지통으로 이동)
   async deleteMails(userId: number = 1, ids: number[]): Promise<void> {
     const data = {
-      mail_list: ids,
+      mailList: ids,
       userId
     };
     

@@ -141,7 +141,7 @@ const MailWriteTemplate: React.FC = () => {
     
     // 메일 전송 데이터 준비 
     const mailData: SendMailRequest = {
-      sender: 'current-user@example.com', 
+      sender: 'test@alphamail.my', 
       recipients: to,
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 
