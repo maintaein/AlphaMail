@@ -3,7 +3,6 @@ package com.alphamail.api.erp.infrastructure.entity;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.alphamail.api.organization.infrastructure.entity.ClientEntity;
 import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
 import com.alphamail.api.organization.infrastructure.entity.GroupEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;

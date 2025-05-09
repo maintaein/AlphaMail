@@ -1,4 +1,10 @@
-package com.alphamail.api.organization.infrastructure.entity;
+package com.alphamail.api.erp.infrastructure.entity;
+
+import java.time.LocalDateTime;
+
+import com.alphamail.api.organization.infrastructure.entity.CompanyEntity;
+import com.alphamail.api.organization.infrastructure.entity.GroupEntity;
+import com.alphamail.common.entity.BaseTimeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClientEntity {
+public class ClientEntity extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
@@ -59,4 +65,7 @@ public class ClientEntity {
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "group_id", nullable = false)
 	private GroupEntity groupEntity;
+
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
 }

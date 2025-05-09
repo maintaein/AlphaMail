@@ -5,7 +5,6 @@ import org.mapstruct.Mapping;
 
 import com.alphamail.api.erp.domain.entity.Quote;
 import com.alphamail.api.erp.infrastructure.entity.QuoteEntity;
-import com.alphamail.api.organization.infrastructure.mapping.ClientMapper;
 import com.alphamail.api.organization.infrastructure.mapping.CompanyMapper;
 import com.alphamail.api.organization.infrastructure.mapping.GroupMapper;
 import com.alphamail.api.user.infrastructure.mapping.UserMapper;
