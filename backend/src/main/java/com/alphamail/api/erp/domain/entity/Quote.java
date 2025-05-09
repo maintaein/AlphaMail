@@ -6,13 +6,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.alphamail.api.erp.presentation.dto.quote.RegistQuoteRequest;
-import com.alphamail.api.organization.domain.entity.Client;
 import com.alphamail.api.organization.domain.entity.Company;
 import com.alphamail.api.organization.domain.entity.Group;
 import com.alphamail.api.user.domain.entity.User;

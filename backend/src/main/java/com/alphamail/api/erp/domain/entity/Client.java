@@ -1,0 +1,44 @@
+package com.alphamail.api.erp.domain.entity;
+
+import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
+import com.alphamail.api.organization.domain.entity.Company;
+import com.alphamail.api.organization.domain.entity.Group;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Client {
+	private Integer clientId;
+	private String licenseNum;
+	private String address;
+	private String corpName;
+	private String representative;
+	private String businessType;
+	private String businessItem;
+	private String email;
+	private String phoneNum;
+	private String businessLicense;
+	private Company company;
+	private Group group;
+
+	public static Client create(RegistClientRequest request, Company company, Group group) {
+		return Client.builder()
+			.licenseNum(request.licenseNum())
+			.address(request.address())
+			.corpName(request.corpName())
+			.representative(request.representative())
+			.businessType(request.businessType())
+			.businessItem(request.businessItem())
+			.email(request.email())
+			.phoneNum(request.phoneNum())
+			.businessLicense(request.businessLicense())
+			.company(company)
+			.group(group)
+			.build();
+	}
+}
