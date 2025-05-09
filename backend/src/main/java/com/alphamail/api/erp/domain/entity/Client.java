@@ -46,4 +46,42 @@ public class Client {
 			.group(group)
 			.build();
 	}
+
+	public void update(RegistClientRequest request) {
+		if (request.licenseNum() != null) {
+			this.licenseNum = request.licenseNum();
+		}
+
+		if (request.address() != null) {
+			this.address = request.address();
+		}
+
+		if (request.corpName() != null) {
+			this.corpName = request.corpName();
+		}
+
+		if (request.representative() != null) {
+			this.representative = request.representative();
+		}
+
+		if (request.businessType() != null) {
+			this.businessType = request.businessType();
+		}
+
+		if (request.businessItem() != null) {
+			this.businessItem = request.businessItem();
+		}
+
+		if (request.email() != null) {
+			this.email = request.email();
+		}
+
+		if (request.phoneNum() != null) {
+			this.phoneNum = request.phoneNum();
+		}
+
+		if (request.businessLicense() != null) {
+			this.businessLicense = request.businessLicense();
+		}
+	}
 }

@@ -2,7 +2,6 @@ package com.alphamail.api.erp.presentation.dto.quote;
 
 import java.util.List;
 
-// 견적서 등록용
 public record RegistQuoteRequest(
 	Integer userId,
 	Integer companyId,
