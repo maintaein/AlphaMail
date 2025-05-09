@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -54,6 +55,11 @@ public class ClientRepositoryImpl implements ClientRepository {
 		ClientEntity savedEntity = clientJpaRepository.save(entity);
 
 		return clientMapper.toDomain(savedEntity);
+	}
+
+	@Override
+	public void deleteAllByIds(List<Integer> clientIds) {
+		clientJpaRepository.deleteAllByIds(clientIds);
 	}
 
 	@Override

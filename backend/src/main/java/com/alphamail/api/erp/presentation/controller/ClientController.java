@@ -19,12 +19,14 @@ import com.alphamail.api.erp.application.usecase.client.GetAllClientsUseCase;
 import com.alphamail.api.erp.application.usecase.client.GetClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.ModifyClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.RegistClientUseCase;
+import com.alphamail.api.erp.application.usecase.client.RemoveAllClientsUseCase;
 import com.alphamail.api.erp.application.usecase.client.RemoveClientUseCase;
 import com.alphamail.api.erp.presentation.dto.client.GetAllClientsResponse;
 import com.alphamail.api.erp.presentation.dto.client.GetClientResponse;
 import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.api.global.dto.RegistErpResponse;
+import com.alphamail.api.global.dto.RemoveAllErpRequest;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,7 @@ public class ClientController {
 	private final GetClientUseCase getClientUseCase;
 	private final RegistClientUseCase registClientUseCase;
 	private final ModifyClientUseCase modifyClientUseCase;
+	private final RemoveAllClientsUseCase removeAllClientsUseCase;
 	private final RemoveClientUseCase removeClientUseCase;
 
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.CLIENTS_BASE_API)
@@ -95,6 +98,14 @@ public class ClientController {
 		}
 
 		return ResponseEntity.ok(new RegistErpResponse(result.id()));
+	}
+
+	@PostMapping(ApiPaths.CLIENTS_BASE_API + "/delete")
+	public ResponseEntity<Void> removeAll(@RequestBody RemoveAllErpRequest request) {
+		boolean deleted = removeAllClientsUseCase.execute(request.ids());
+
+		return deleted ? ResponseEntity.noContent().build() :
+		ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 
 	@DeleteMapping(ApiPaths.CLIENTS_BASE_API + "/{clientId}")

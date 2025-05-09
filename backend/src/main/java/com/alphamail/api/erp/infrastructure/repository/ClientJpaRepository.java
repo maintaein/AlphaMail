@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -38,6 +39,11 @@ public interface ClientJpaRepository extends JpaRepository<ClientEntity, Integer
 	Optional<ClientEntity> findDuplicateClient(
 		@Param("groupId") Integer groupId,
 		@Param("licenseNum") String licenseNum);
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE ClientEntity c SET c.deletedAt = CURRENT_TIMESTAMP WHERE c.id IN :ids")
+	void deleteAllByIds(@Param("ids") List<Integer> ids);
 
 	@Modifying
 	@Transactional

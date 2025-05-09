@@ -1,5 +1,6 @@
 package com.alphamail.api.erp.domain.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public interface ClientRepository {
 	Optional<Client> duplicateClient(Integer groupId, String licenseNum);
 
 	Client save(Client client);
+
+	void deleteAllByIds(List<Integer> clientIds);
 
 	void softDeleteById(Integer clientId);
 }
