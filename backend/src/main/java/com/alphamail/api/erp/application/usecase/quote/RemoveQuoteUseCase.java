@@ -19,8 +19,6 @@ public class RemoveQuoteUseCase {
 		Quote quote = quoteRepository.findById(quoteId).orElse(null);
 		if (quote == null) {
 			return false;
-		} else if (quote.getDeletedAt() != null) {
-			return false;
 		}
 
 		quoteRepository.softDeleteById(quoteId);

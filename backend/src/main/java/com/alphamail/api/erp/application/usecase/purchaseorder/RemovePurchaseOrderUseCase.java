@@ -19,8 +19,6 @@ public class RemovePurchaseOrderUseCase {
 		PurchaseOrder purchaseOrder = purchaseOrderRepository.findById(orderId).orElse(null);
 		if (purchaseOrder == null) {
 			return false;
-		} else if (purchaseOrder.getDeletedAt() != null) {
-			return false;
 		}
 
 		purchaseOrderRepository.softDeleteById(orderId);

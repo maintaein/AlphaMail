@@ -19,8 +19,6 @@ public class RemoveProductUseCase {
 		Product product = productRepository.findById(productId).orElse(null);
 		if (product == null) {
 			return false;
-		} else if (product.getDeletedAt() != null) {
-			return false;
 		}
 
 		productRepository.softDeleteById(productId);
