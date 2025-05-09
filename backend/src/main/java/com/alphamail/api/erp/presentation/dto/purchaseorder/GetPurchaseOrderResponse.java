@@ -36,7 +36,7 @@ public record GetPurchaseOrderResponse(
 			order.getGroup().getName(),
 			order.getClient().getClientId(),
 			order.getClient().getCorpName(),
-			order.getClient().getBusinessLicense(),
+			order.getClient().getLicenseNum(),
 			order.getClient().getRepresentative(),
 			order.getClient().getBusinessType(),
 			order.getClient().getBusinessItem(),

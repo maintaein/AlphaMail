@@ -35,7 +35,7 @@ public record GetQuoteResponse(
 			quote.getClient().getCorpName(),
 			quote.getManager(),
 			quote.getManagerNumber(),
-			quote.getClient().getBusinessLicense(),
+			quote.getClient().getLicenseNum(),
 			quote.getClient().getBusinessType(),
 			quote.getClient().getBusinessItem(),
 			quote.getShippingAddress(),
