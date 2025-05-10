@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,7 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alphamail.api.email.application.service.EmailService;
 import com.alphamail.api.email.application.usecase.DeleteDetailUseCase;
@@ -91,14 +94,17 @@ public class EmailController {
 		return ResponseEntity.ok().build();
 	}
 
-	@PostMapping
-	public ResponseEntity<Void> sendEmail(@RequestBody SendEmailRequest emailRequest,
+	@CrossOrigin(origins = "*") // 또는 특정 origin
+	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Void> sendEmail(@RequestPart("data") SendEmailRequest emailRequest,
+		@RequestPart(value = "files", required = false) List<MultipartFile> attachments,
 		@AuthenticationPrincipal UserDetails userDetails) {
 
+		System.out.println("들어왔습니다. ");
 		//test용 임의 유저아이디
 		Integer userId = 1;
 
-		emailService.sendEmail(emailRequest, userId);
+		emailService.sendEmail(emailRequest, attachments, userId);
 		return ResponseEntity.ok().build();
 	}
 
@@ -147,7 +153,6 @@ public class EmailController {
 
 		return ResponseEntity.ok().build();
 	}
-
 
 	@PatchMapping("/trash")
 	public ResponseEntity<Void> moveMailsToTrash(@RequestBody DeleteMailsRequest request,

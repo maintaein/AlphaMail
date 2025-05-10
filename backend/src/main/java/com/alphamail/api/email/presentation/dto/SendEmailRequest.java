@@ -14,7 +14,9 @@ public record SendEmailRequest(
 ) {
 
 	public record Attachment(
-		Long attachments_id
+		String name,
+		Long size,
+		String type
 	) {
 	}
 }
