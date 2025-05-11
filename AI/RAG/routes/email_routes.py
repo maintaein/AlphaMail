@@ -21,7 +21,6 @@ async def send_mail(
     thread_id: str = Form(...),
     user_id: str = Form(...),
 ):
-    """이메일 내용을 파싱하고 벡터 DB에 저장하는 엔드포인트"""
     try:
         logger.debug(f"Email content sample: {email_content[:100]}")
 
@@ -50,7 +49,6 @@ async def summarize_mail(
     thread_id: str = Form(...),
     user_id: str = Form(...),
 ):
-    """이메일 스레드 요약 생성 엔드포인트"""
     try:
         vector_id = user_id + thread_id
         summary = RAGEngine.generate_email_summary(vector_id)
@@ -130,7 +128,7 @@ async def write_email(
 # 디버깅용 엔드포인트
 @router.get("/debug/thread-data")
 async def debug_thread_data(thread_id: str):
-    """스레드 데이터 확인용 디버깅 엔드포인트"""
+
     try:
         documents = VectorDBHandler.retrieve_thread_data(thread_id)
         email_docs = [d for d in documents if d["metadata"].get("doc_type") == "email"]
@@ -150,7 +148,6 @@ async def debug_thread_data(thread_id: str):
     
 @router.post("/debug/attachment-preview")
 async def debug_attachment_preview(file: UploadFile = File(...)):
-    """첨부파일 텍스트 추출 결과 미리보기용 디버깅 엔드포인트"""
     try:
         filename = file.filename
         content = await file.read()

@@ -1,6 +1,5 @@
 import io
 import re
-import traceback
 from email import message_from_string
 import email.policy
 import pandas as pd
@@ -14,17 +13,15 @@ from typing import List, Dict, Optional, Any, Union
 logger = logging.getLogger(__name__)
 
 class EmailProcessor:
-    """이메일 콘텐츠 및 첨부파일 처리를 위한 유틸리티 클래스"""
 
     @staticmethod
     async def extract_text_from_pdf(pdf_content: bytes) -> str:
-        """PDF 파일에서 텍스트 추출"""
         try:
             pdf_file = io.BytesIO(pdf_content)
             reader = PyPDF2.PdfReader(pdf_file)
             text = "\n".join(page.extract_text() or "" for page in reader.pages)
             logger.debug(f"Extracted {len(text)} characters from PDF")
-            print(text)
+            
             return text
         except Exception as e:
             logger.error(f"PDF extraction error: {e}")
@@ -32,7 +29,6 @@ class EmailProcessor:
 
     @staticmethod
     async def extract_text_from_excel(excel_content: bytes) -> str:
-        """Excel 파일에서 텍스트 추출 및 정리"""
         try:
             excel_file = io.BytesIO(excel_content)
             all_dfs = pd.read_excel(excel_file, sheet_name=None, header=None)
@@ -82,7 +78,7 @@ class EmailProcessor:
                 cleaned_texts.append(sheet_text)
 
             final_text = "\n\n".join(cleaned_texts)
-            print(final_text)
+          
             logger.debug(f"Extracted {len(final_text)} characters from Excel file")
             return final_text
 
@@ -92,7 +88,6 @@ class EmailProcessor:
         
     @staticmethod
     async def extract_text_from_word(word_content: bytes) -> str:
-        """Word 문서에서 텍스트 추출"""
         try:
             # ZIP 형식 검증
             if not word_content.startswith(b'PK'):
@@ -110,7 +105,7 @@ class EmailProcessor:
             doc = Document(word_file)
             text = "\n".join([para.text for para in doc.paragraphs if para.text.strip() != ""])
 
-            print(text)
+        
             logger.debug(f"Extracted {len(text)} characters from Word document")
             return text
         except zipfile.BadZipFile:
@@ -122,7 +117,6 @@ class EmailProcessor:
             
     @staticmethod
     def parse_email_content(email_content: Union[str, bytes]) -> Dict[str, Any]:
-        """이메일 내용을 파싱하여 메타데이터와 본문으로 분리"""
         try:
             # 바이트 문자열인 경우 디코딩
             if isinstance(email_content, bytes):
@@ -182,7 +176,6 @@ class EmailProcessor:
     
     @staticmethod
     def clean_text(text: Optional[Union[str, bytes]]) -> str:
-        """텍스트 정리 및 인코딩 처리"""
         if not text:
             return ""
         
@@ -208,7 +201,6 @@ class EmailProcessor:
 
     @staticmethod
     async def process_attachments(attachments: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """첨부파일을 처리하여 텍스트 추출"""
         processed = []
         for idx, att in enumerate(attachments):
             try:
