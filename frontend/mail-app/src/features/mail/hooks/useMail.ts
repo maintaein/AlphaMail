@@ -28,10 +28,10 @@ export const useMail = () => {
   };
 
   // useQuery 직접 호출
-  const useMailList = (userId: number = 1, folderId?: number, page: number = 1, sort: number = 0, content?: string) => {
+  const useMailList = (userId: number = 1, folderId?: number, page: number = 1, sort: number = 0, keyword?: string) => {
     return useQuery({
-      queryKey: MAIL_QUERY_KEYS.mailList(userId, folderId, page, sort, content),
-      queryFn: () => mailService.getMailList(userId, folderId, page, 15, sort, content),
+      queryKey: MAIL_QUERY_KEYS.mailList(userId, folderId, page, sort, keyword),
+      queryFn: () => mailService.getMailList(userId, folderId, page, 15, sort, keyword),
       placeholderData: keepPreviousData,
       staleTime: 0,
       refetchOnMount: 'always',

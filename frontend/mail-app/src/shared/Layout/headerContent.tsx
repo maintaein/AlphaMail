@@ -2,12 +2,15 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
+import { SearchBar } from '@/shared/components/searchBar';
 
 export const HeaderContent: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
   const { title, subtitle, mailStats } = useHeaderStore();
   
+  const isSearchablePath = path === '/mail' || path === '/mail/sent' || path === '/schedule';
+
   // 경로에 따라 다른 헤더 내용 반환
   if (path === '/') {
     return (
@@ -31,32 +34,41 @@ export const HeaderContent: React.FC = () => {
       mailTitle = title 
       showMailStats = path === '/mail';
     }
-    
+        
     return (
-      <div className="flex items-center">
-        <Typography variant="titleLarge">
-          {mailTitle}
-        </Typography>
-        
-        {/* 받은 메일함에서만 메일 통계 표시 */}
-        {showMailStats && mailStats.totalCount >= 0 && (
-          <Typography variant="body" className="text-gray-600 ml-4">
-            전체메일 {mailStats.totalCount} / 안읽은메일 {mailStats.unreadCount}
-          </Typography>
-        )}
-        
-        {subtitle && (
-          <Typography variant="body" className="text-gray-600 ml-4">
-            {subtitle}
-          </Typography>
-        )}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center">
+            <Typography variant="titleLarge">
+              {mailTitle}
+            </Typography>
+            
+            {/* 받은 메일함에서만 메일 통계 표시 */}
+            {showMailStats && mailStats.totalCount >= 0 && (
+              <Typography variant="body" className="text-gray-600 ml-4">
+                전체메일 {mailStats.totalCount} / 안읽은메일 {mailStats.unreadCount}
+              </Typography>
+            )}
+            
+            {subtitle && (
+              <Typography variant="body" className="text-gray-600 ml-4">
+                {subtitle}
+              </Typography>
+            )}
+            
+          </div>
+          {/* 검색창 (받은 메일함과 보낸 메일함에서만 표시) */}
+          {isSearchablePath && <SearchBar />}
       </div>
     );
   } else if (path === '/schedule') {
     return (
-      <Typography variant="titleLarge">
-        일정
-      </Typography>
+      <div className="flex items-center justify-between w-full">
+        <Typography variant="titleLarge">
+          일정
+        </Typography>
+        {/* 일정 페이지에 검색창 추가 */}
+        <SearchBar />
+      </div>
     );
   } else if (path === '/work') {
     return (

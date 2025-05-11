@@ -29,15 +29,16 @@ const logApiError = (method: string, endpoint: string, error: Record<string, unk
 // 메일 서비스 클래스
 export const mailService = {
   // 메일 목록 조회
-  async getMailList(userId: number = 1, folderId?: number, page: number = 1, size: number = 15, sort: number = 0, content?: string): Promise<MailListResponse> {
+  async getMailList(userId: number = 1, folderId?: number, page: number = 1, size: number = 15, sort: number = 0, keyword?: string): Promise<MailListResponse> {
     const params = new URLSearchParams();
     params.append('userId', String(userId));
     params.append('page', String(page - 1)); // API는 0부터 시작하는 페이지 인덱스 사용
     params.append('size', String(size));
     params.append('sort', String(sort));
     
-    if (content) {
-      params.append('content', content);
+    // 검색어가 있으면 추가
+    if (keyword && keyword.trim() !== '') {
+      params.append('query', keyword);
     }
     
     if (folderId) {
