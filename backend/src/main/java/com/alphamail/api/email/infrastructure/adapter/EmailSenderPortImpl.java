@@ -23,10 +23,13 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EmailSenderPortImpl implements EmailSenderPort {
 
 	private final AmazonSimpleEmailService sesClient;
@@ -34,6 +37,7 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 	@Override
 	public void send(Email email, List<MultipartFile> multipartFiles) {
 		// AWS SES 사용한 이메일 발송 구현
+
 		try {
 			// JavaMail 세션 생성
 			Session session = Session.getDefaultInstance(new Properties());
@@ -100,7 +104,8 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 					attachmentPart.setFileName(file.getOriginalFilename());
 					attachmentPart.setContent(file.getBytes(), file.getContentType());
 					attachmentPart.setHeader("Content-Type", file.getContentType());
-					attachmentPart.setHeader("Content-Disposition", "attachment; filename=\"" + file.getOriginalFilename() + "\"");
+					attachmentPart.setHeader("Content-Disposition",
+						"attachment; filename=\"" + file.getOriginalFilename() + "\"");
 
 					mixedMultipart.addBodyPart(attachmentPart);
 				}
@@ -124,9 +129,15 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			sesClient.sendRawEmail(rawRequest);
 
 		} catch (MessageRejectedException e) {
+			// 로그 추가
+			log.error("SES 메시지 거부: {}", e.getMessage(), e);
 			throw new InternalServerException(ErrorMessage.FILE_UPLOAD_FAIL);
 		} catch (Exception e) {
+			// 로그 추가
+			System.err.println("Error sending email: " + e.getMessage());
+			e.printStackTrace();
 			throw new InternalServerException(ErrorMessage.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
+
