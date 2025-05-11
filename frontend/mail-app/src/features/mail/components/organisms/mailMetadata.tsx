@@ -24,7 +24,10 @@ export const MailMetadata: React.FC<MailMetadataProps> = ({
   onTranslate = () => console.log('번역 클릭')
 
 }) => {
-    // 한국 시간으로 변환하고 원하는 형식으로 포맷팅하는 함수
+    // useEffect(() => {
+    //   console.log('MailMetadata에 전달된 recipients:', recipients);
+    // }, [recipients]);
+    
     const formatKoreanDateTime = (date: Date): string => {
       const koreaDate = addHours(date, 9);
       

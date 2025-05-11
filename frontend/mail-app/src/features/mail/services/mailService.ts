@@ -71,6 +71,7 @@ export const mailService = {
     try {
       const response = await api.get(endpoint, { params });
       logApiResponse('GET', endpoint, response.data, response.status);
+      console.log('API에서 받은 recipients:', response.data.recipients)
       return response.data;
     } catch (error) {
       logApiError('GET', endpoint, error as Record<string, unknown> & { 

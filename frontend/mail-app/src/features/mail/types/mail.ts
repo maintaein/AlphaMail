@@ -53,8 +53,9 @@ export interface Mail {
     folderId?: number; 
     readStatus: boolean; 
     hasAttachments: boolean; 
-    inReplyTo?: string;
+    inReplyTo?: number | null;
     threadId?: string;
+    references?: string[];
     attachments?: Attachment[];
   }
 

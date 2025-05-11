@@ -9,6 +9,19 @@ import { mailService } from '../../services/mailService';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useMailStore } from '../../stores/useMailStore';
+import { ko } from 'date-fns/locale';
+import { format } from 'date-fns';
+
+const FONT_OPTIONS = [
+  { value: 'pretendard', label: '프리텐다드' },
+  { value: 'notosans', label: '노토 산스' },
+  { value: 'nanumgothic', label: '나눔 고딕' },
+  { value: 'nanummyeongjo', label: '나눔 명조' },
+  { value: 'spoqa', label: '스포카 한 산스' },
+  { value: 'gowundodum', label: '고운 도둠' },
+  { value: 'gowunbatang', label: '고운 바탕' },
+  { value: 'ibmplex', label: 'IBM Plex Sans' }
+];
 
 const MailWriteTemplate: React.FC = () => {
 
@@ -28,20 +41,58 @@ const MailWriteTemplate: React.FC = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [threadId, setThreadId] = useState<string | null>(null);
   const [inReplyTo, setInReplyTo] = useState<number | null>(null);
+  const [references, setReferences] = useState<string[]>([]);
+
 
   // URL 쿼리 파라미터 파싱
   const queryParams = new URLSearchParams(location.search);
   const replyToId = queryParams.get('reply');
-  const forwardId = queryParams.get('forward');
-  const mailId = replyToId || forwardId;
+  const mailId = replyToId
 
-  // 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
-  const { data: originalMail } = useQuery({
-    queryKey: ['mail', mailId],
-    queryFn: () => mailService.getMailDetail(1, mailId!),
-    enabled: !!mailId // mailId가 있을 때만 쿼리 활성화
-  });
+// 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
+const { data: originalMail } = useQuery({
+  queryKey: ['mail', mailId],
+  queryFn: () => mailService.getMailDetail(1, mailId!),
+  enabled: !!mailId, // mailId가 있을 때만 쿼리 활성화
+  staleTime: 0, // 항상 최신 데이터 사용
+  refetchOnMount: 'always', // 컴포넌트 마운트 시 항상 다시 가져오기
+});
   
+// 스레드 검색 - 같은 발신자/수신자와의 이메일 스레드 찾기
+const { data: threadInfo } = useQuery({
+  queryKey: ['mailThread', originalMail?.sender, mailId],
+  queryFn: async () => {
+    if (!originalMail) return null;
+    
+    // 같은 발신자와의 이메일 검색 (최근 30일 이내)
+    try {
+      const response = await mailService.getMailList(
+        1, 
+        1,
+        1, 
+        5, 
+        0, 
+        originalMail.sender
+      );
+      
+      // 같은 발신자와의 이메일이 있으면 가장 최근 메일의 threadId 반환
+      if (response.emails && response.emails.length > 0) {
+        const latestMail = response.emails[0];
+        const detail = await mailService.getMailDetail(1, latestMail.id);
+        return {
+          threadId: detail.threadId || String(detail.id),
+          references: detail.references || []
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('스레드 검색 오류:', error);
+      return null;
+    }
+  },
+  enabled: !!originalMail && replyToId !== null,
+  staleTime: 0,
+});  
   // 토스트 메시지 표시 함수 (중복 방지)
   const showToast = (message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
     // 이전 토스트가 있으면 닫기
@@ -62,36 +113,75 @@ const MailWriteTemplate: React.FC = () => {
     lastToastIdRef.current = toastId;
   };
   
+  // 한국 시간 형식으로 변환하는 함수
+  const formatKoreanDateTime = (dateString: string): string => {
+    const date = new Date(dateString);
+    return format(date, 'yyyy년 M월 d일 (E) a h:mm', { locale: ko });
+  };
+  
   useEffect(() => {
-    if (originalMail) {
-      if (replyToId) {
-        // 답장 모드
-        setTo([originalMail.sender]);
-        setSubject(`RE: ${originalMail.subject}`);
-        
-        const displayDate = originalMail.emailType === 'SENT' 
+    if (originalMail && replyToId) {
+      // 답장 모드
+      setTo([originalMail.sender]);
+  
+      const rePrefix = /^RE:\s*/i;
+      const newSubject = rePrefix.test(originalMail.subject) 
+        ? originalMail.subject 
+        : `RE: ${originalMail.subject}`;
+      setSubject(newSubject);
+      
+      const displayDate = originalMail.emailType === 'SENT' 
         ? originalMail.sentDateTime 
         : originalMail.receivedDateTime;
-
-        // HTML 형식으로 원본 메일 내용 추가
-        const replyContent = `
-          <p></p>
-          <p></p>
+  
+      // HTML 형식으로 원본 메일 내용 추가
+      const replyContent = `
+        <p></p>
+        <p></p>
+        <div style="border-left: 1px solid #ccc; padding-left: 12px; margin: 10px 0; color: #666;">
           <p>---------- 원본 메일 ----------</p>
-          <p><strong>보낸 사람:</strong> ${originalMail.sender}</p>
-          <p><strong>날짜:</strong> ${new Date(displayDate).toLocaleString()}</p>
+          <p><strong>보낸 사람:</strong> "${originalMail.sender}" &lt;${originalMail.sender}&gt;</p>
+          <p><strong>날짜:</strong> ${formatKoreanDateTime(displayDate)}</p>
           <p><strong>제목:</strong> ${originalMail.subject}</p>
+          <p><strong>받는 사람:</strong> ${originalMail.recipients.join(', ')}</p>
           <p></p>
           ${originalMail.bodyHtml || `<p>${originalMail.bodyText}</p>`}
-        `;
-        setContent(replyContent);
-
-        setInReplyTo(originalMail.id);
-        setThreadId(originalMail.threadId || String(originalMail.id));
-      }
-    }
-  }, [originalMail, replyToId, forwardId]);
+        </div>
+      `;
+      setContent(replyContent);
   
+      setInReplyTo(originalMail.id);
+      
+      // 스레드 ID 및 참조 설정 로직
+      if (originalMail.threadId) {
+        setThreadId(originalMail.threadId);
+        setReferences(originalMail.references 
+          ? [...originalMail.references, originalMail.id.toString()]
+          : [originalMail.id.toString()]);
+      } else if (threadInfo && threadInfo.threadId) {
+        setThreadId(threadInfo.threadId);
+        setReferences([
+          ...threadInfo.references,
+          originalMail.id.toString()
+        ]);
+      } else {
+        setThreadId(String(originalMail.id));
+        setReferences([originalMail.id.toString()]);
+      }
+  
+      console.log('답장 모드: 원본 메일 내용 설정 완료', {
+        to: [originalMail.sender],
+        subject: newSubject,
+        content: replyContent.substring(0, 100) + '...',
+        threadId: originalMail.threadId || (threadInfo?.threadId || String(originalMail.id)),
+        inReplyTo: originalMail.id,
+        references: originalMail.references 
+          ? [...originalMail.references, originalMail.id.toString()]
+          : [originalMail.id.toString()]
+      });
+    }
+  }, [originalMail, replyToId, threadInfo]);
+
     // sendMail.isPending 상태가 변경될 때 로딩 상태 관리
     useEffect(() => {
     if (sendMail.isPending) {
@@ -149,11 +239,12 @@ const MailWriteTemplate: React.FC = () => {
       attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachmentsId: att.attachments_id })) : undefined,
       inReplyTo: inReplyTo || undefined,
       threadId: threadId || undefined,
-      references: threadId ? [threadId] : []
+      references: references.length > 0 ? references : undefined
     };
   
     console.log('Sending mail with recipients:', to);
     console.log('Attachments:', attachmentData);
+    console.log('Thread info:', { threadId, inReplyTo, references });
   
     // 메일 전송 API 호출
     sendMail.mutate({ mailData }, {
@@ -237,6 +328,7 @@ const MailWriteTemplate: React.FC = () => {
         onContentChange={handleContentChange}
         onSubjectChange={handleSubjectChange}
         onRecipientsChange={handleRecipientsChange}
+        fontOptions={FONT_OPTIONS}
       />
 
         {/* 로딩 오버레이 */}

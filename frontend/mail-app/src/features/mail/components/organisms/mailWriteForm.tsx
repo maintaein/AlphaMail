@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MailRecipientInput } from '../molecules/mailRecipientInput';
 import { MailSubjectInput } from '../molecules/mailSubjectInput';
 import { MailAttachmentInput } from '../molecules/mailAttachmentInput';
@@ -14,6 +14,7 @@ interface MailWriteFormProps {
   onContentChange: (content: string) => void;
   onSubjectChange: (subject: string) => void;
   onRecipientsChange: (recipients: string[]) => void;
+  fontOptions?: Array<{ value: string; label: string }>;
 }
 
 export const MailWriteForm: React.FC<MailWriteFormProps> = ({
@@ -23,6 +24,7 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   onContentChange,
   onSubjectChange,
   onRecipientsChange,
+  fontOptions,
 }) => {
   const { attachments, addAttachment, removeAttachment } = useMailStore();
   const [to, setTo] = useState<string[]>(initialTo);
@@ -33,7 +35,23 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   const MAX_TOTAL_ATTACHMENTS_SIZE = 10 * 1024 * 1024;
   const lastToastIdRef = useRef<string | number | null>(null);
 
+  useEffect(() => {
+    setTo(initialTo);
+    onRecipientsChange(initialTo);
+  }, [initialTo, onRecipientsChange]);
+
+  useEffect(() => {
+    setSubject(initialSubject);
+    onSubjectChange(initialSubject);
+  }, [initialSubject, onSubjectChange]);
+
+  useEffect(() => {
+    setContent(initialContent);
+    onContentChange(initialContent);
+  }, [initialContent, onContentChange]);
+
   const showToast = (message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
+
     // 이전 토스트가 있으면 닫기
     if (lastToastIdRef.current) {
       toast.dismiss(lastToastIdRef.current);
@@ -143,6 +161,7 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
         <MailQuillEditor
           content={content}
           onChange={handleContentChange}
+          fontOptions={fontOptions}
         />
       </div>
       

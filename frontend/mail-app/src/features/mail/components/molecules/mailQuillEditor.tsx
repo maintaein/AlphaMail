@@ -34,8 +34,8 @@ const customStyles = {
 interface MailQuillEditorProps {
   content: string;
   onChange: (content: string) => void;
+  fontOptions?: Array<{ value: string; label: string }>;
 }
-
 interface QuillLinkBlot {
   create: (value: string) => HTMLElement;
   // 필요한 다른 속성들...
@@ -43,10 +43,22 @@ interface QuillLinkBlot {
 
 export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
   content,
-  onChange
+  onChange,
+  fontOptions
 }) => {
   const quillRef = useRef<ReactQuill>(null);
 
+  // 폰트 옵션을 Quill에 등록
+  useEffect(() => {
+    if (fontOptions && fontOptions.length > 0) {
+      const Font = ReactQuill.Quill.import('formats/font') as any;
+
+      Font.whitelist = fontOptions.map(option => option.value);
+
+      ReactQuill.Quill.register(Font, true);
+      }
+  }, [fontOptions]);
+  
     // 링크 삽입 핸들러 커스터마이징
     useEffect(() => {
       if (quillRef.current) {
@@ -97,6 +109,7 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
   const modules = {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
+      [{ 'font': fontOptions?.map(option => option.value) }], // 폰트 옵션 추가
       ['bold', 'italic', 'underline', 'strike'],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }],
       [{ 'color': [] }, { 'background': [] }],
@@ -114,6 +127,7 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
   // Quill 에디터 포맷 설정
   const formats = [
     'header',
+    'font',
     'bold', 'italic', 'underline', 'strike',
     'list',
     'indent',
@@ -138,6 +152,42 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
         border-right: none;
         border-bottom: 1px solid #ccc;
       }
+      
+      /* 폰트 선택기 스타일 */
+      .ql-font .ql-picker-label::before {
+        content: "글꼴";
+      }
+      
+      /* 각 폰트 옵션 스타일 */
+      ${fontOptions?.map(font => {
+        // 폰트 이름과 실제 CSS 폰트 패밀리 매핑
+        const fontFamilyMap: { [key: string]: string } = {
+          'pretendard': 'Pretendard',
+          'notosans': 'Noto Sans KR',
+          'nanumgothic': 'Nanum Gothic',
+          'nanummyeongjo': 'Nanum Myeongjo',
+          'spoqa': 'Spoqa Han Sans Neo',
+          'gowundodum': 'Gowun Dodum',
+          'gowunbatang': 'Gowun Batang',
+          'ibmplex': 'IBM Plex Sans KR'
+        };
+        
+        const fontFamily = fontFamilyMap[font.value] || font.value;
+        
+        return `
+          .ql-font-${font.value} {
+            font-family: '${fontFamily}', sans-serif;
+          }
+          .ql-picker-item[data-value="${font.value}"]::before {
+            content: '${font.label}';
+            font-family: '${fontFamily}', sans-serif;
+          }
+          .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="${font.value}"]::before {
+            content: '${font.label}' !important;
+            font-family: '${fontFamily}', sans-serif !important;
+          }
+        `;
+      }).join('\n')}      
       `}</style>
       <ReactQuill
         ref={quillRef}
