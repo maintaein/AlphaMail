@@ -1,17 +1,24 @@
 import re
 import chromadb
+import torch
 from chromadb.utils import embedding_functions
 from transformers import AutoTokenizer
 from typing import List, Dict, Any
 import logging
 
+
+
 # 로깅 설정
 logger = logging.getLogger(__name__)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+logger.info(f"Using device: {device}")
 
 # 한국어 특화 임베딩 모델 및 토크나이저 설정
 EMBEDDING_MODEL = 'nlpai-lab/KURE-v1'
 embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
-    model_name=EMBEDDING_MODEL
+    model_name=EMBEDDING_MODEL,
+    device=str(device)
 )
 tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL)
 
