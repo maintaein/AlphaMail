@@ -33,6 +33,10 @@ public class PurchaseOrder {
 	private LocalDateTime deletedAt;
 	private LocalDateTime deliverAt;
 	private String orderNo;
+	private String shippingAddress;
+	private String manager;
+	private String managerNumber;
+	private String paymentTerm;
 	private List<PurchaseOrderProduct> purchaseOrderProducts;
 
 	public static PurchaseOrder create(RegistPurchaseOrderRequest request, User user, Company company, Group group,
@@ -46,6 +50,10 @@ public class PurchaseOrder {
 				request.orderNo() != null ? request.orderNo() : generateOrderNo()
 			)
 			.deliverAt(request.deliverAt())
+			.shippingAddress(request.shippingAddress())
+			.manager(request.manager())
+			.managerNumber(request.managerNumber())
+			.paymentTerm(request.paymentTerm())
 			.purchaseOrderProducts(new ArrayList<>())
 			.build();
 
@@ -84,15 +92,17 @@ public class PurchaseOrder {
 		if (request.deliverAt() != null) {
 			this.deliverAt = request.deliverAt();
 		}
+		this.shippingAddress = request.shippingAddress();
+		this.manager = request.manager();
+		this.managerNumber = request.managerNumber();
+		this.paymentTerm = request.paymentTerm();
 
-		// 기존 품목 매핑 (기존 ID → 객체)
 		Map<Integer, PurchaseOrderProduct> existingMap = this.purchaseOrderProducts.stream()
 			.filter(p -> p.getPurchaseOrderProductId() != null)
 			.collect(Collectors.toMap(PurchaseOrderProduct::getPurchaseOrderProductId, p -> p));
 
 		List<PurchaseOrderProduct> updatedProducts = new ArrayList<>();
 
-		// 수정/추가
 		for (RegistPurchaseOrderRequest.PurchaseOrderProductDto info : request.products()) {
 
 			if (info.purchaseOrderProductId() != null && existingMap.containsKey(info.purchaseOrderProductId())) {

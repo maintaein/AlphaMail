@@ -22,6 +22,8 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Integ
 	Page<ProductEntity> findByCompanyIdAndNameContainingIgnoreCaseAndDeletedAtIsNull(Integer companyId, String name,
 		Pageable pageable);
 
+	Optional<ProductEntity> findByIdAndDeletedAtIsNull(Integer id);
+
 	Optional<ProductEntity> findByCompanyIdAndNameAndStandardAndInboundPriceAndDeletedAtIsNull(Integer companyId,
 		String name, String standard, Long inboundPrice);
 
@@ -33,5 +35,5 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Integ
 	@Modifying
 	@Transactional
 	@Query("UPDATE ProductEntity p SET p.deletedAt = CURRENT_TIMESTAMP WHERE p.id = :productId AND p.deletedAt IS NULL")
-	void softDeleteById(Integer productId);
+	void softDeleteById(@Param("productId") Integer productId);
 }

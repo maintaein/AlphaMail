@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +20,7 @@ public interface PurchaseOrderJpaRepository extends JpaRepository<PurchaseOrderE
 	JpaSpecificationExecutor<PurchaseOrderEntity> {
 
 	@EntityGraph(attributePaths = {"products", "products.productEntity"})
-	Optional<PurchaseOrderEntity> findById(Integer orderId);
+	Optional<PurchaseOrderEntity> findByIdAndDeletedAtIsNull(Integer orderId);
 
 	@Modifying
 	@Transactional
@@ -29,5 +30,5 @@ public interface PurchaseOrderJpaRepository extends JpaRepository<PurchaseOrderE
 	@Modifying
 	@Transactional
 	@Query("UPDATE PurchaseOrderEntity p SET p.deletedAt = CURRENT_TIMESTAMP WHERE p.id = :orderId AND p.deletedAt IS NULL")
-	void softDeleteById(Integer orderId);
+	void softDeleteById(@Param("orderId") Integer orderId);
 }

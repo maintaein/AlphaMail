@@ -1,7 +1,10 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.erp.domain.entity.Client;
@@ -20,16 +23,29 @@ public class ClientRepositoryImpl implements ClientRepository {
 	private final ClientMapper clientMapper;
 
 	@Override
-	public Client findById(Integer id) {
-		return clientJpaRepository.findById(id)
-			.map(clientMapper::toDomain)
-			.orElse(null); // or throw exception if required
+	public Page<Client> findByCompanyId(Integer companyId, Pageable pageable) {
+		return clientJpaRepository
+			.findByCompanyId(companyId, pageable)
+			.map(clientMapper::toDomain);
 	}
 
 	@Override
-	public Optional<Client> duplicateClient(Integer companyId, Integer groupId, String licenseNum) {
+	public Page<Client> findByCompanyIdAndQuery(Integer companyId, String query, Pageable pageable) {
 		return clientJpaRepository
-			.findDuplicateClient(companyId, groupId, licenseNum)
+			.findByCompanyIdAndQuery(companyId, query, pageable)
+			.map(clientMapper::toDomain);
+	}
+
+	@Override
+	public Optional<Client> findById(Integer id) {
+		return clientJpaRepository.findByIdAndDeletedAtIsNull(id)
+			.map(clientMapper::toDomain);
+	}
+
+	@Override
+	public Optional<Client> duplicateClient(Integer groupId, String licenseNum) {
+		return clientJpaRepository
+			.findDuplicateClient(groupId, licenseNum)
 			.map(clientMapper::toDomain);
 	}
 
@@ -39,5 +55,15 @@ public class ClientRepositoryImpl implements ClientRepository {
 		ClientEntity savedEntity = clientJpaRepository.save(entity);
 
 		return clientMapper.toDomain(savedEntity);
+	}
+
+	@Override
+	public void deleteAllByIds(List<Integer> clientIds) {
+		clientJpaRepository.deleteAllByIds(clientIds);
+	}
+
+	@Override
+	public void softDeleteById(Integer clientId) {
+		clientJpaRepository.softDeleteById(clientId);
 	}
 }

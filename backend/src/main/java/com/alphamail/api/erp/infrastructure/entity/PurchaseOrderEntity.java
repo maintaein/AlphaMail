@@ -61,6 +61,18 @@ public class PurchaseOrderEntity extends BaseTimeEntity {
 	@Column(name = "order_no", nullable = false, length = 255)
 	private String orderNo;
 
+	@Column(name = "shipping_address", length = 255)
+	private String shippingAddress;
+
+	@Column(name = "manager", length = 30)
+	private String manager;
+
+	@Column(name = "manager_number", length = 13)
+	private String managerNumber;
+
+	@Column(name = "payment_term", length = 255)
+	private String paymentTerm;
+
 	@Setter
 	@OneToMany(mappedBy = "purchaseOrderEntity", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<PurchaseOrderProductEntity> products;

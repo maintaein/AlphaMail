@@ -1,6 +1,8 @@
 package com.alphamail.api.erp.infrastructure.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,6 +18,8 @@ import com.alphamail.api.erp.infrastructure.entity.QuoteEntity;
 public interface QuoteJpaRepository extends JpaRepository<QuoteEntity, Integer>,
 	JpaSpecificationExecutor<QuoteEntity> {
 
+	Optional<QuoteEntity> findByIdAndDeletedAtIsNull(Integer id);
+
 	@Modifying
 	@Transactional
 	@Query("UPDATE QuoteEntity q SET q.deletedAt = CURRENT_TIMESTAMP WHERE q.id IN :ids")
@@ -24,5 +28,5 @@ public interface QuoteJpaRepository extends JpaRepository<QuoteEntity, Integer>,
 	@Modifying
 	@Transactional
 	@Query("UPDATE QuoteEntity q SET q.deletedAt = CURRENT_TIMESTAMP WHERE q.id = :quoteId AND q.deletedAt IS NULL")
-	void softDeleteById(Integer quoteId);
+	void softDeleteById(@Param("quoteId") Integer quoteId);
 }

@@ -50,7 +50,7 @@ public class PurchaseOrderRepositoryImpl implements PurchaseOrderRepository {
 
 	@Override
 	public Optional<PurchaseOrder> findById(Integer orderId) {
-		return purchaseOrderJpaRepository.findById(orderId)
+		return purchaseOrderJpaRepository.findByIdAndDeletedAtIsNull(orderId)
 			.map(purchaseOrderMapper::toDomain);
 	}
 

@@ -10,6 +10,10 @@ public record RegistPurchaseOrderRequest(
 	Integer clientId,
 	String orderNo,
 	LocalDateTime deliverAt,
+	String shippingAddress,
+	String manager,
+	String managerNumber,
+	String paymentTerm,
 	List<PurchaseOrderProductDto> products
 ) {
 	public record PurchaseOrderProductDto(
