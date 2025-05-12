@@ -47,7 +47,7 @@ public class UserRepositoryImpl implements UserRepository {
 	@Override
 	public Optional<UserInfo> findUserInfoById(Integer userId) {
 		return userJpaRepository.findByIdWithGroupAndCompany(userId)
-			  .map(entity -> new UserInfo(
+			.map(entity -> new UserInfo(
 			userMapper.toDomain(entity),
 			groupMapper.toDomain(entity.getGroup()),
 			companyMapper.toDomain(entity.getGroup().getCompanyEntity())

@@ -14,9 +14,9 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Integer> {
 
 	Optional<UserEntity> findByEmail(String email);
 
-	@Query("SELECT u FROM UserEntity u " +
-		"JOIN FETCH u.group g " +
-		"JOIN FETCH g.companyEntity " +
-		"WHERE u.userId = :userId")
+	@Query("SELECT u FROM UserEntity u "
+		+ "JOIN FETCH u.group g "
+		+ "JOIN FETCH g.companyEntity "
+		+ "WHERE u.userId = :userId")
 	Optional<UserEntity> findByIdWithGroupAndCompany(@Param("userId") Integer userId);
 }

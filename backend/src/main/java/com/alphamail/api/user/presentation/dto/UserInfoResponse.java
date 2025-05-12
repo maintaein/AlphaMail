@@ -16,7 +16,8 @@ public record UserInfoResponse(
 	String groupName,
 	Integer companyId,
 	String companyName
-	) {
+) {
+
 	public static UserInfoResponse from(User user, Group group, Company company) {
 		return new UserInfoResponse(user.getId().getValue(),
 			user.getPosition(),
