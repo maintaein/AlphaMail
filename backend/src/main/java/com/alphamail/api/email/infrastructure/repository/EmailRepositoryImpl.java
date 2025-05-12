@@ -2,7 +2,6 @@ package com.alphamail.api.email.infrastructure.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -76,7 +75,12 @@ public class EmailRepositoryImpl implements EmailRepository {
 
 	@Override
 	public Integer deleteByFolderId(Integer folderId, Integer userId) {
-		return emailJpaRepository.deleteByFolder_EmailFolderIdAndUser_UserId(folderId, userId);
+		List<EmailEntity> emails = emailJpaRepository.findAllWithAttachmentsByFolderIdAndUserId(folderId, userId);
+		for (EmailEntity email : emails) {
+			email.getAttachments().clear(); // orphanRemoval 트리거
+			emailJpaRepository.delete(email);
+		}
+		return emails.size();
 	}
 
 	@Override

@@ -20,7 +20,7 @@ export const PaginationButton: React.FC<PaginationButtonProps> = ({
     <button
       className={`
         w-8 h-8 flex items-center justify-center rounded
-        ${isActive ? 'bg-[#3E99C6] text-white' : 'text-gray-700 hover:bg-gray-100'}
+        ${isActive ? 'bg-[#CDECFC] text-white' : 'text-gray-700 hover:bg-gray-100'}
         ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
       `}
       onClick={onClick}

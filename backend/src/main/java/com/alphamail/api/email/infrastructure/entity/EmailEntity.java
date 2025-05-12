@@ -11,6 +11,7 @@ import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.entity.EmailType;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +22,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -93,6 +96,9 @@ public class EmailEntity {
 	private EmailStatus emailStatus;
 
 	private Integer originalFolderId;
+
+	@OneToMany(mappedBy = "email", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<EmailAttachmentEntity> attachments;
 
 	public void updateStatus(EmailStatus status) {
 		this.emailStatus = status;

@@ -2,9 +2,11 @@ package com.alphamail.api.email.infrastructure.adapter;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.util.List;
 import java.util.Properties;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.port.EmailSenderPort;
@@ -22,16 +24,19 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EmailSenderPortImpl implements EmailSenderPort {
 
 	private final AmazonSimpleEmailService sesClient;
 
 	@Override
-	public void send(Email email) {
+	public void send(Email email, List<MultipartFile> multipartFiles) {
 		// AWS SES 사용한 이메일 발송 구현
+
 		try {
 			// JavaMail 세션 생성
 			Session session = Session.getDefaultInstance(new Properties());
@@ -82,16 +87,33 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 				multipart.addBodyPart(htmlPart);
 			}
 
-			message.setContent(multipart);
-
-			// 첨부 파일 처리 (필요하다면)
-			if (email.getHasAttachment()) {
-				// MimeMultipart를 mixed 타입으로 변경 (alternative는 본문 표현 방식만 다른 경우)
-				MimeMultipart mixedMultipart = new MimeMultipart("mixed");
-
+			// 첨부 파일 처리
+			if (email.getHasAttachment() && multipartFiles != null && !multipartFiles.isEmpty()) {
+				// 1. 본문을 contentPart로 래핑
 				MimeBodyPart contentPart = new MimeBodyPart();
 				contentPart.setContent(multipart);
-				mixedMultipart.addBodyPart(contentPart);
+
+				// 2. mixed 타입의 MimeMultipart 생성
+				MimeMultipart mixedMultipart = new MimeMultipart("mixed");
+				mixedMultipart.addBodyPart(contentPart); // 본문 추가
+
+				// 3. 각 MultipartFile을 첨부파일로 추가
+				for (MultipartFile file : multipartFiles) {
+					MimeBodyPart attachmentPart = new MimeBodyPart();
+					attachmentPart.setFileName(file.getOriginalFilename());
+					attachmentPart.setContent(file.getBytes(), file.getContentType());
+					attachmentPart.setHeader("Content-Type", file.getContentType());
+					attachmentPart.setHeader("Content-Disposition",
+						"attachment; filename=\"" + file.getOriginalFilename() + "\"");
+
+					mixedMultipart.addBodyPart(attachmentPart);
+				}
+
+				// 4. 최종적으로 message에 mixedMultipart 설정
+				message.setContent(mixedMultipart);
+			} else {
+				// 첨부가 없으면 alternative multipart 그대로 설정
+				message.setContent(multipart);
 			}
 
 			// RawMessage로 변환
@@ -106,9 +128,15 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			sesClient.sendRawEmail(rawRequest);
 
 		} catch (MessageRejectedException e) {
+			// 로그 추가
+			log.error("SES 메시지 거부: {}", e.getMessage(), e);
 			throw new InternalServerException(ErrorMessage.FILE_UPLOAD_FAIL);
 		} catch (Exception e) {
+			// 로그 추가
+			System.err.println("Error sending email: " + e.getMessage());
+			e.printStackTrace();
 			throw new InternalServerException(ErrorMessage.INTERNAL_SERVER_ERROR);
 		}
 	}
 }
+

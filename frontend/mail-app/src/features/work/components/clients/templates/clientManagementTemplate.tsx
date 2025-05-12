@@ -3,8 +3,13 @@ import { ClientTable } from '../organisms/clientTable';
 import { ClientSearchBar } from '../organisms/clientSearchBar';
 import { ClientDetailTemplate } from './clientDetailTemplate';
 import { Client } from '../../../types/clients';
-import { useClientsManagementQuery } from '../../../hooks/useClientsManagementQuery';
+import { useClients } from '../../../hooks/useClients';
+import { useClient } from '../../../hooks/useClient';
+import { useQueryClient } from '@tanstack/react-query';
 import { clientService } from '../../../services/clientService';
+import { Button } from '@/shared/components/atoms/button';
+import { Typography } from '@/shared/components/atoms/Typography';
+import { Spinner } from '@/shared/components/atoms/spinner';
 
 export const ClientManagementTemplate: React.FC = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -12,14 +17,18 @@ export const ClientManagementTemplate: React.FC = () => {
   const [pageSize, setPageSize] = useState(10);
   const [selectedClientIds, setSelectedClientIds] = useState<Set<number>>(new Set());
   const [showDetail, setShowDetail] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState<number | null>(null);
 
-  const { data, refetch } = useClientsManagementQuery({
+  const { data, refetch } = useClients({
     companyId: 1,
     query: searchKeyword,
     page: currentPage,
     size: pageSize,
   });
+
+  const { data: clientDetail, isLoading: isLoadingDetail } = useClient(selectedClientId);
+
+  const queryClient = useQueryClient();
 
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
@@ -43,30 +52,42 @@ export const ClientManagementTemplate: React.FC = () => {
   };
 
   const handleAddClient = () => {
-    setSelectedClient(null);
+    setSelectedClientId(null);
     setShowDetail(true);
   };
 
   const handleClientClick = (client: Client) => {
-    setSelectedClient(client);
+    setSelectedClientId(client.id);
     setShowDetail(true);
+    queryClient.invalidateQueries({ queryKey: ['client', client.id] });
   };
 
   const handleDetailCancel = () => {
     setShowDetail(false);
-    setSelectedClient(null);
+    setSelectedClientId(null);
   };
 
   const handleDetailSave = (_data: Partial<Client>) => {
     setShowDetail(false);
-    setSelectedClient(null);
-    refetch();
+    setSelectedClientId(null);
+    queryClient.invalidateQueries({ queryKey: ['clients'] });
+    queryClient.invalidateQueries({ queryKey: ['client'] });
   };
 
   if (showDetail) {
+    if (isLoadingDetail) {
+      return (
+        <div className="p-8 text-center">
+          <Spinner size="large" />
+          <Typography variant="body" className="mt-4">
+            로딩중...
+          </Typography>
+        </div>
+      );
+    }
     return (
       <ClientDetailTemplate
-        client={selectedClient || undefined}
+        client={clientDetail}
         onSave={handleDetailSave}
         onCancel={handleDetailCancel}
       />
@@ -83,22 +104,27 @@ export const ClientManagementTemplate: React.FC = () => {
       <div className="bg-white rounded-lg shadow">
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <button 
+            <Button
               onClick={handleAddClient}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              variant="primary"
+              size="large"
             >
               거래처 등록
-            </button>
-            <div className="space-x-2">
-              <button className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50">
+            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                size="large"
+              >
                 출력
-              </button>
-              <button 
+              </Button>
+              <Button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
+                variant="secondary"
+                size="large"
               >
                 삭제
-              </button>
+              </Button>
             </div>
           </div>
           <ClientTable
@@ -116,8 +142,8 @@ export const ClientManagementTemplate: React.FC = () => {
             }}
             setCurrentPage={setCurrentPage}
             setPageSize={setPageSize}
-            totalCount={data?.total_count || 0}
-            pageCount={data?.page_count || 0}
+            totalCount={data?.totalCount || 0}
+            pageCount={data?.pageCount || 0}
             onClientClick={handleClientClick}
           />
         </div>

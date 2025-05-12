@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
-import { Client } from '../../../types/clients';
+import { ClientDetail } from '../../../types/clients';
 import { clientService } from '../../../services/clientService';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/shared/components/atoms/button';
+import { Input } from '@/shared/components/atoms/input';
+import { Typography } from '@/shared/components/atoms/Typography';
 
 interface ClientDetailTemplateProps {
-  client?: Client;
-  onSave?: (data: Partial<Client>) => void;
+  client?: ClientDetail;
+  onSave?: (data: ClientDetail) => void;
   onCancel: () => void;
 }
 
@@ -13,92 +17,201 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
   onSave,
   onCancel,
 }) => {
-  const [form, setForm] = useState<Partial<Client>>(client || {});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const queryClient = useQueryClient();
+  const [form, setForm] = useState<ClientDetail>({
+    id: client?.id || 1,
+    corpName: client?.corpName || '',
+    representative: client?.representative || '',
+    licenseNum: client?.licenseNum || '',
+    phoneNum: client?.phoneNum || '',
+    email: client?.email || '',
+    address: client?.address || '',
+    businessType: client?.businessType || '',
+    businessItem: client?.businessItem || '',
+    businessLicense: client?.businessLicense || '',
+    createdAt: new Date().toISOString(),
+    updatedAt: null
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data: ClientDetail) => clientService.createClient(1, 1, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      if (onSave) onSave(form);
+    },
+    onError: () => {
+      alert('저장에 실패했습니다.');
+    }
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ClientDetail }) => 
+      clientService.updateClient(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      if (onSave) onSave(form);
+    },
+    onError: () => {
+      alert('수정에 실패했습니다.');
+    }
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev: ClientDetail) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      if (client && client.id) {
-        // 수정
-        const updateData = {
-          id: client.id,
-          name: form.name || '',
-          ceo: form.ceo || '',
-          business_no: form.business_no || '',
-          contact: form.contact || '',
-          email: form.email || '',
-          address: form.address || '',
-          item: form.item,
-          type: form.type,
-          address_detail: form.address_detail,
-        };
-        await clientService.updateClient(String(client.id), updateData);
-      } else {
-        // 등록
-        const createData = {
-          name: form.name || '',
-          ceo: form.ceo || '',
-          business_no: form.business_no || '',
-          contact: form.contact || '',
-          email: form.email || '',
-          address: form.address || '',
-          item: form.item,
-          type: form.type,
-          address_detail: form.address_detail,
-        };
-        await clientService.createClient(createData);
-      }
-      if (onSave) onSave(form);
-    } catch (error) {
-      alert('저장에 실패했습니다.');
-    } finally {
-      setIsSubmitting(false);
+    if (client && client.id) {
+      updateMutation.mutate({ id: String(client.id), data: form });
+    } else {
+      createMutation.mutate(form);
     }
   };
 
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+
   return (
     <form onSubmit={handleSubmit} className="p-8 bg-white rounded shadow max-w-3xl mx-auto">
-      <h2 className="mb-4 font-bold">거래처 {client ? '수정' : '등록'}</h2>
-      <div className="mb-2">
-        <label className="block mb-1">사업자등록증 첨부</label>
-        <button type="button" className="px-2 py-1 border rounded">첨부파일</button>
+      <Typography variant="titleLarge" bold className="mb-6">
+        거래처 {client ? '수정' : '등록'}
+      </Typography>
+
+      <div className="mb-4">
+        <Typography variant="body" color="text-gray-600" className="mb-2">
+          사업자등록증 첨부
+        </Typography>
+        <Button variant="ghost" size="small">
+          첨부파일
+        </Button>
       </div>
-      <div className="mb-2">
-        <label className="block mb-1">거래처명 *</label>
-        <input name="name" value={form.name || ''} onChange={handleChange} required className="w-full border p-2" placeholder="거래처명을 입력하세요." />
+
+      <div className="space-y-4">
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            거래처명 *
+          </Typography>
+          <Input
+            name="corpName"
+            value={form.corpName}
+            onChange={handleChange}
+            required
+            placeholder="거래처명을 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            대표자명
+          </Typography>
+          <Input
+            name="representative"
+            value={form.representative}
+            onChange={handleChange}
+            placeholder="대표자명을 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            사업자 번호
+          </Typography>
+          <Input
+            name="licenseNum"
+            value={form.licenseNum}
+            onChange={handleChange}
+            placeholder="사업자 번호를 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            전화번호
+          </Typography>
+          <Input
+            name="phoneNum"
+            value={form.phoneNum}
+            onChange={handleChange}
+            placeholder="전화번호를 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            Email
+          </Typography>
+          <Input
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email을 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            주소
+          </Typography>
+          <Input
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            placeholder="주소를 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            업태
+          </Typography>
+          <Input
+            name="businessType"
+            value={form.businessType}
+            onChange={handleChange}
+            placeholder="업태를 입력하세요."
+            size="large"
+          />
+        </div>
+
+        <div>
+          <Typography variant="body" color="text-gray-600" className="mb-2">
+            종목
+          </Typography>
+          <Input
+            name="businessItem"
+            value={form.businessItem}
+            onChange={handleChange}
+            placeholder="종목을 입력하세요."
+            size="large"
+          />
+        </div>
       </div>
-      <div className="mb-2">
-        <label className="block mb-1">대표자명</label>
-        <input name="ceo" value={form.ceo || ''} onChange={handleChange} className="w-full border p-2" placeholder="대표자명을 입력하세요." />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">사업자 번호</label>
-        <input name="business_no" value={form.business_no || ''} onChange={handleChange} className="w-full border p-2" placeholder="사업자 번호를 입력하세요." />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">전화번호</label>
-        <input name="contact" value={form.contact || ''} onChange={handleChange} className="w-full border p-2" placeholder="전화번호를 입력하세요." />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">Email</label>
-        <input name="email" value={form.email || ''} onChange={handleChange} className="w-full border p-2" placeholder="Email" />
-      </div>
-      <div className="mb-2">
-        <label className="block mb-1">주소</label>
-        <input name="address" value={form.address || ''} onChange={handleChange} className="w-full border p-2" placeholder="주소" />
-      </div>
-      <div className="flex justify-end gap-2 mt-4">
-        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded" disabled={isSubmitting}>
+
+      <div className="flex justify-end gap-2 mt-8">
+        <Button
+          type="submit"
+          variant="primary"
+          size="large"
+          disabled={isSubmitting}
+        >
           {isSubmitting ? '처리중...' : (client ? '수정' : '등록')}
-        </button>
-        <button type="button" onClick={onCancel} className="bg-gray-400 text-white px-4 py-2 rounded" disabled={isSubmitting}>취소</button>
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          size="large"
+          onClick={onCancel}
+          disabled={isSubmitting}
+        >
+          취소
+        </Button>
       </div>
     </form>
   );

@@ -1,12 +1,13 @@
 export interface Order {
   id: number;
-  order_no: string;
-  date: string;
-  manager: string;
-  client_name: string;
-  due_date: string;
-  item: string;
-  amount: number;
+  orderNo: string;
+  createdAt: Date;
+  userName: string;
+  clientName: string;
+  deliverAt: Date;
+  productName: string;
+  productCount: number;
+  price: number;
   isSelected?: boolean;
 }
 
@@ -22,36 +23,53 @@ export interface OrderSearchParams {
 }
 
 export interface OrderListResponse {
-  contents: Order[];
-  total_count: number;
-  page_count: number;
-  current_page: number;
+  contents: Array<{
+    id: number;
+    orderNo: string;
+    createdAt: Date;
+    userName: string;
+    clientName: string;
+    deliverAt: Date;
+    productName: string;
+    productCount: number;
+    price: number;
+  }>;
+  totalCount: number;
+  pageCount: number;
+  currentPage: number;
 }
 
 export interface OrderDetail {
-  order_no: string;
-  date: string;
-  is_inbound: boolean;
-  manager: string;
-  client_name: string;
-  business_no: string;
+  id: number;
+  userId: number;
+  userName: string;
+  groupId: number;
+  groupName: string;
+  clientId: number;
+  clientName: string;
+  licenseNumber: string;
   representative: string;
-  business_type: string;
-  business_category: string;
-  client_manager: string;
-  client_contact: string;
-  payment_condition: string;
-  due_date: string;
-  address: string;
+  businessType: string;
+  businessItem: string;
+  manager: string;
+  managerNumber: string;
+  paymentTerm: string;
+  shippingAddress: string;
+  orderNo: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deliveryAt: Date;
   products: OrderProduct[];
 }
 
 export interface OrderProduct {
+  id: number;
   name: string;
   standard: string;
-  quantity: number;
-  unit_price: number;
+  count: number;
+  price: number;
   tax_amount: number;
   supply_amount: number;
   amount: number;
+  deletedAt?: Date | null;
 } 
