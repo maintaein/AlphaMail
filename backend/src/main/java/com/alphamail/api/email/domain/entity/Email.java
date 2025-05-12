@@ -1,6 +1,9 @@
 package com.alphamail.api.email.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -100,5 +103,17 @@ public class Email {
 		return this.toBuilder()
 			.readStatus(true)
 			.build();
+	}
+
+	//references (String -> List)
+	public List<String> parseReferences() {
+		if (this.references == null || this.references.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(this.references.split("\\s+"));
+	}
+
+	public boolean hasValidThreadId() {
+		return this.threadId != null && !this.threadId.isEmpty();
 	}
 }

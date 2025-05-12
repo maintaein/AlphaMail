@@ -1,5 +1,6 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,7 @@ import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
 import com.alphamail.api.email.infrastructure.mapper.EmailMapper;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -82,6 +84,22 @@ public class EmailRepositoryImpl implements EmailRepository {
 		}
 		return emails.size();
 	}
+
+	@Override
+	public List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId) {
+
+		return emailJpaRepository.findByThreadIdAndUserUserIdOrderByReceivedDateTimeAsc(threadId, userId)
+			.stream()
+			.map(entity -> new EmailThreadItem(
+				entity.getEmailId(),
+				entity.getSender(),
+				entity.getSubject(),
+				entity.getSentDateTime() != null ? entity.getSentDateTime() : entity.getReceivedDateTime(),
+				entity.getOriginalFolderId()
+			))
+			.collect(Collectors.toList());
+	}
+
 
 	@Override
 	public Page<Email> findByFolderIdAndUserId(Integer folderId, Integer userId, Pageable pageable) {

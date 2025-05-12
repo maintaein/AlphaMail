@@ -14,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 
 public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> {
@@ -51,4 +52,6 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	List<EmailEntity> findAllWithAttachmentsByFolderIdAndUserId(@Param("folderId") Integer folderId,
 		@Param("userId") Integer userId);
 
+
+	List<EmailEntity> findByThreadIdAndUserUserIdOrderByReceivedDateTimeAsc(String threadId, Integer userId);
 }

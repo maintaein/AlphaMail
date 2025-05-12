@@ -57,6 +57,10 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			}
 
 			// 스레드 관련 헤더 설정
+			if (email.getMessageId() != null && !email.getMessageId().isEmpty()) {
+				message.setHeader("Message-ID", email.getMessageId());
+			}
+
 			if (email.getInReplyTo() != null && !email.getInReplyTo().isEmpty()) {
 				message.setHeader("In-Reply-To", email.getInReplyTo());
 			}
