@@ -79,14 +79,22 @@ export interface Mail {
     subject: string;
     bodyText: string;
     bodyHtml: string;
-    attachments?: Array<{
-      attachmentsId: number;
-    }>;
-    threadId?: string;
     inReplyTo?: number | null;
     references?: string[];
+    attachments?: {
+      name: string;
+      size: number;
+      type: string;
+    }[];  
   }
   
+  // 첨부파일 정보 타입 (메일 전송 시 사용)
+  export interface AttachmentInfo {
+    name: string;
+    size: number;
+    type: string;
+  }
+    
   // 메일 전송 응답 타입
   export interface SendMailResponse {
     id: number;

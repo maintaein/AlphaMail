@@ -1,7 +1,7 @@
 // React Query에서 사용할 쿼리 키 상수 정의
 export const MAIL_QUERY_KEYS = {
-    mailList: (userId: number = 1, folderId?: number, page?: number, sort?: number, content?: string) => 
-      ['mails', { userId, folderId, page, sort, content }],
+    mailList: (userId: number, folderId?: number, page?: number, sort?: number, keyword?: string) => 
+      ['mailList', userId, folderId, page, sort, keyword],
     
     mailDetail: (userId: number = 1, id: string | number) => ['mail', userId, id],
     

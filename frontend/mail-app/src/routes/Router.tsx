@@ -10,6 +10,8 @@ import MailWriteTemplate from '@/features/mail/components/templates/mailWriteTem
 import MailResultTemplate from '@/features/mail/components/templates/mailResultTemplate';
 import MailTrashTemplate from '@/features/mail/components/templates/mailTrashTemplate';
 import SentMailTemplate from '@/features/mail/components/templates/sentMailTemplate';
+import LoginPage from '@/pages/LoginPage';
+import { ScheduleSearchTemplate } from '@/features/schedule/components/templates/scheduleSearchTemplate';
 
 export const Router = () => {
   return (
@@ -24,9 +26,11 @@ export const Router = () => {
         <Route path="/mail/write" element={<MailWriteTemplate />} />
         <Route path="/mail/result" element={<MailResultTemplate />} />
         <Route path="/schedule" element={<SchedulePage />} />
+        <Route path="/schedule/search" element={<ScheduleSearchTemplate />} />
         <Route path="/work" element={<WorkPage />} />
         <Route path="/group" element={<GroupManagePage />} />
         <Route path="/search-test" element={<SearchTest />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
   );
 };

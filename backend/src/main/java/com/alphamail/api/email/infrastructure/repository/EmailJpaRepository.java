@@ -43,6 +43,12 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 
 	Boolean existsByEmailIdAndUser_UserId(Integer emailId, Integer userId);
 
-	Integer deleteByFolder_EmailFolderIdAndUser_UserId(Integer folderId, Integer userId);
+	@Query("""
+		    SELECT DISTINCT e FROM EmailEntity e
+		    LEFT JOIN FETCH e.attachments
+		    WHERE e.folder.emailFolderId = :folderId AND e.user.userId = :userId
+		""")
+	List<EmailEntity> findAllWithAttachmentsByFolderIdAndUserId(@Param("folderId") Integer folderId,
+		@Param("userId") Integer userId);
 
 }

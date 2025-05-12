@@ -1,37 +1,43 @@
-import React, { useEffect } from 'react';
 import OrderSearchBar from '../organisms/orderSearchBar';
 import OrderTable from '../organisms/orderTable';
 import { Order } from '../../../types/order';
 import OrderDetailTemplate from './orderDetailTemplate';
 import { OrderDetail } from '../../../types/order';
-import { useOrderStore } from '../../../store/orderStore';
+import { useOrderStore } from '../../../stores/orderStore';
 import { useOrderManagement } from '../../../hooks/useOrderManagement';
 
 function orderToOrderDetail(order: Order): OrderDetail {
   return {
-    order_no: order.order_no,
-    date: order.date,
-    is_inbound: false,
-    manager: order.manager,
-    client_name: order.client_name,
-    business_no: '',
+    id: 0,
+    userId: 0,
+    userName: order.userName,
+    groupId: 0,
+    groupName: '',
+    clientId: 0,
+    clientName: order.clientName,
+    licenseNumber: '',
     representative: '',
-    business_type: '',
-    business_category: '',
-    client_manager: '',
-    client_contact: '',
-    payment_condition: '',
-    due_date: order.due_date,
-    address: '',
+    businessType: '',
+    businessItem: '',
+    manager: order.userName,
+    managerNumber: '',
+    paymentTerm: '',
+    shippingAddress: '',
+    orderNo: order.orderNo,
+    createdAt: order.createdAt,
+    updatedAt: new Date(),
+    deliveryAt: order.deliverAt,
     products: [
       {
-        name: order.item,
+        id: 0,
+        name: order.productName,
         standard: '',
-        quantity: 1,
-        unit_price: order.amount,
+        count: order.productCount,
+        price: order.price,
         tax_amount: 0,
         supply_amount: 0,
-        amount: order.amount,
+        amount: order.price,
+        deletedAt: new Date()
       },
     ],
   };
@@ -39,32 +45,25 @@ function orderToOrderDetail(order: Order): OrderDetail {
 
 const OrderManagementTemplate: React.FC = () => {
   const {
-    orders,
     selectedOrderIds,
     currentPage,
-    totalPages,
     pageSize,
     sortOption,
     showOrderDetail,
     selectedOrder,
-    isLoading,
-    error,
     setCurrentPage,
     setPageSize,
     setSortOption,
     setShowOrderDetail,
     setSelectedOrder,
     toggleOrderSelection,
+    setSearchParams,
   } = useOrderStore();
 
-  const { fetchOrders, handleDeleteOrders, handleSaveOrder } = useOrderManagement();
-
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders, currentPage, pageSize, sortOption]);
+  const { orders, totalPages, isLoading, error, handleDeleteOrders, handleSaveOrder } = useOrderManagement();
 
   const handleSearch = (params: any) => {
-    fetchOrders(params);
+    setSearchParams(params);
   };
 
   const handleAddOrder = () => {
@@ -121,7 +120,7 @@ const OrderManagementTemplate: React.FC = () => {
   }
 
   if (error) {
-    return <div className="p-4 text-red-500">{error}</div>;
+    return <div className="p-4 text-red-500">{error.message}</div>;
   }
 
   return (

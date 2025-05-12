@@ -46,5 +46,9 @@ public class EmailAttachment {
 				.type(request.contentType())
 				.build())
 			.collect(Collectors.toList());
+
 	}
+
+
+
 }

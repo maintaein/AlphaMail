@@ -18,6 +18,7 @@ interface HeaderState {
   setSubtitle: (subtitle?: string) => void;
   setMailStats: (totalCount: number, unreadCount: number) => void;
   resetMailStats: () => void;
+  
 }
 
 export const useHeaderStore = create<HeaderState>((set) => ({
@@ -27,7 +28,7 @@ export const useHeaderStore = create<HeaderState>((set) => ({
   mailStats: {
     totalCount: 0,
     unreadCount: 0,
-  },
+  },  
   
   // 액션
   setTitle: (title: string) => set({ title }),
@@ -49,4 +50,5 @@ export const useHeaderStore = create<HeaderState>((set) => ({
         unreadCount: 0 
       } 
     }),
+
 }));

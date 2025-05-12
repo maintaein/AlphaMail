@@ -91,9 +91,14 @@ export const scheduleService = {
     });
   },
 
-  getSchedulesForSearch: (query: string) => {
+  getSchedulesForSearch: (query: string, page: number = 0, size: number = 10, sort: number = 0) => {
     return api.get<ScheduleResponse>('/api/schedules', {
-      params: { query }
+      params: { 
+        keyword: query,
+        page,
+        size,
+        sort
+      }
     }).then((response: AxiosResponse<ScheduleResponse>) => {
       const schedules: Schedule[] = response.data.schedules.map(item => ({
         id: String(item.id),
@@ -105,10 +110,14 @@ export const scheduleService = {
         description: item.description
       }));
       
-      return { data: schedules };
+      return { 
+        data: schedules,
+        totalCount: response.data.total_count,
+        pageCount: response.data.page_count,
+        currentPage: response.data.current_page
+      };
     });
   },
-
   // 스케줄 생성
   createSchedule: async (schedule: CreateScheduleRequest): Promise<Schedule> => {
     const requestData = {

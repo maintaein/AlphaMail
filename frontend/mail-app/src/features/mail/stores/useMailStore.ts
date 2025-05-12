@@ -20,6 +20,7 @@ interface MailState {
   setCurrentPage: (page: number) => void;
   setSortOrder: (order: number) => void;
   setSearchKeyword: (keyword: string) => void;
+  clearSearchKeyword: () => void;  // 새로 추가
   selectMail: (id: string) => void;
   unselectMail: (id: string) => void;
   selectAllMails: (ids: string[]) => void;
@@ -40,6 +41,7 @@ export const useMailStore = create<MailState>((set) => ({
   setCurrentFolder: (folderId) => set({ 
     currentFolder: folderId,
     currentPage: 1,
+    searchKeyword: '',  // 폴더 변경 시 검색어 초기화
     selectedMails: []
   }),
   
@@ -55,6 +57,8 @@ export const useMailStore = create<MailState>((set) => ({
     currentPage: 1
   }),
   
+  clearSearchKeyword: () => set({ searchKeyword: '' }), 
+
   selectMail: (id) => set((state) => ({
     selectedMails: [...state.selectedMails, id]
   })),
