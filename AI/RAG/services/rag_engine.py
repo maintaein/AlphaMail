@@ -1,11 +1,12 @@
 import anthropic
 import logging
+import os
 from typing import Dict, List, Optional, Any, Union
 
 logger = logging.getLogger(__name__)
 
 # Anthropic 설정
-ANTHROPIC_API_KEY = ""
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 ANTHROPIC_MODEL = "claude-3-7-sonnet-20250219"
 
 # 토큰 수 제한
