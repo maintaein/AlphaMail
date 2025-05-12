@@ -140,7 +140,7 @@ const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
           />
           
           <Pagination
-            currentPage={data?.currentPage || 1}
+            currentPage={(data?.currentPage || 0) + 1}
             totalPages={data?.pageCount || 1}
             onPageChange={handlePageChange}
           />

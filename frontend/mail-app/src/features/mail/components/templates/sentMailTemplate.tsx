@@ -30,7 +30,7 @@ const SentMailTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error } = useMailList(1, 2, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList(1, 2, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -70,7 +70,15 @@ const SentMailTemplate: React.FC = () => {
   
   const handleDelete = () => {
     if (selectedMails.length > 0) {
-      moveToTrash.mutate({ mailIds: selectedMails, userId: 2 });
+      moveToTrash.mutate({ mailIds: selectedMails, userId: 1 }, {
+        onSuccess: () => {
+          // 삭제 성공 후 메일 목록 다시 가져오기
+          refetch();
+          // 선택 상태 초기화
+          clearSelection();
+          setAllSelected(false);
+        }
+      });
     }
   };
   
@@ -127,7 +135,7 @@ const SentMailTemplate: React.FC = () => {
           />
           
           <Pagination
-            currentPage={data?.currentPage || 1}
+            currentPage={(data?.currentPage || 0) + 1}
             totalPages={data?.pageCount || 1}
             onPageChange={handlePageChange}
           />

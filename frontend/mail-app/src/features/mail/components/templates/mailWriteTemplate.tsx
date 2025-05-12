@@ -220,15 +220,14 @@ const { data: threadInfo } = useQuery({
       showToast('제목에는 최소 하나 이상의 문자나 숫자가 포함되어야 합니다.', 'error');
       return;
     }
-
-    // 첨부파일 정보 변환 (File 객체를 서버에 전송할 수 있는 형태로)
-    const attachmentData = attachments.map(attachment => ({
-      attachments_id: parseInt(attachment.id.split('-')[0]), // 임시로 ID의 타임스탬프 부분을 숫자로 변환
+    
+    // 첨부파일 정보 준비 (AttachmentInfo 형식으로 변환)
+    const attachmentInfos = attachments.map(attachment => ({
       name: attachment.name,
       size: attachment.size,
       type: attachment.type
     }));
-    
+
     // 메일 전송 데이터 준비 
     const mailData: SendMailRequest = {
       sender: 'test@alphamail.my', 
@@ -236,41 +235,45 @@ const { data: threadInfo } = useQuery({
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 
       bodyHtml: content,
-      attachments: attachments.length > 0 ? attachmentData.map(att => ({ attachmentsId: att.attachments_id })) : undefined,
       inReplyTo: inReplyTo || undefined,
-      threadId: threadId || undefined,
-      references: references.length > 0 ? references : undefined
+      references: references.length > 0 ? references : undefined,
+      attachments: attachmentInfos // 첨부파일 정보 추가
     };
   
     console.log('Sending mail with recipients:', to);
-    console.log('Attachments:', attachmentData);
+    console.log('Attachments:', attachments);
     console.log('Thread info:', { threadId, inReplyTo, references });
   
-    // 메일 전송 API 호출
-    sendMail.mutate({ mailData }, {
-        onSuccess: () => {
-          console.log('메일이 성공적으로 전송되었습니다.');
-          // 전송 후 목록으로 이동
-          setTimeout(() => {
-            navigate('/mail/result', { state: { status: 'success' } });
-          }, 1000);
-        },
-        onError: (error: Error | { status?: number; statusCode?: number; message?: string }) => {
-            console.error('메일 전송 실패:', error);
-            // 로딩 상태를 1초 동안 유지한 후 결과 페이지로 이동
-            setTimeout(() => {
-              navigate('/mail/result', { 
-                state: { 
-                  status: 'error',
-                  code: (error as { status?: number; statusCode?: number }).status || (error as { statusCode?: number }).statusCode || 500,
-                  message: (error as { message?: string }).message || '메일 전송에 실패했습니다.'
-                } 
-              });
-            }, 1000);
-          }
-        });
-    };
+    // 첨부파일 File 객체 배열 준비
+    const attachmentFiles = attachments.map(attachment => attachment.file).filter(Boolean) as File[];
   
+    // 메일 전송 API 호출
+    sendMail.mutate({ 
+      mailData, 
+      attachments: attachmentFiles 
+    }, {
+      onSuccess: () => {
+        console.log('메일이 성공적으로 전송되었습니다.');
+        // 전송 후 목록으로 이동
+        setTimeout(() => {
+          navigate('/mail/result', { state: { status: 'success' } });
+        }, 1000);
+      },
+      onError: (error: Error | { status?: number; statusCode?: number; message?: string }) => {
+        console.error('메일 전송 실패:', error);
+        // 로딩 상태를 1초 동안 유지한 후 결과 페이지로 이동
+        setTimeout(() => {
+          navigate('/mail/result', { 
+            state: { 
+              status: 'error',
+              code: (error as { status?: number; statusCode?: number }).status || (error as { statusCode?: number }).statusCode || 500,
+              message: (error as { message?: string }).message || '메일 전송에 실패했습니다.'
+            } 
+          });
+        }, 1000);
+      }
+    });
+  };
   
   const handleCancel = () => {
     // 작성 취소 및 이전 페이지로 이동
