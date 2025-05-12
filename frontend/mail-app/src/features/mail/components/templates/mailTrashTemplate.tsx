@@ -30,7 +30,7 @@ const MailTrashTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, emptyTrash } = useMail();
-  const { data, isLoading, error } = useMailList(1, 3, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList(1, 3, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -72,10 +72,18 @@ const MailTrashTemplate: React.FC = () => {
   const handleEmptyTrash = () => {
     // 확인 대화상자 표시
     if (window.confirm('휴지통의 모든 메일을 영구적으로 삭제하시겠습니까?')) {
-      emptyTrash.mutate({ folderId: 3 }); // 휴지통 폴더 ID (3) 전달
+      emptyTrash.mutate({ folderId: 3 }, {
+        onSuccess: () => {
+          // 삭제 성공 후 메일 목록 다시 가져오기
+          refetch();
+          // 선택 상태 초기화
+          clearSelection();
+          setAllSelected(false);
+        }
+      });
     }
   };
-  
+
   // const handleRestore = () => {
   //   if (selectedMails.length > 0) {
   //     // 받은 메일함(1)으로 복원

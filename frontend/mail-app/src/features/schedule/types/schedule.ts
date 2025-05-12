@@ -25,5 +25,13 @@ export interface ScheduleResponse {
   current_page: number;
 }
 
+// 검색 결과 타입
+export interface SearchScheduleResult {
+  data: Schedule[];
+  totalCount: number;
+  pageCount: number;
+  currentPage: number;
+}
+
 export type CreateScheduleRequest = Omit<Schedule, 'id'>;
 export type UpdateScheduleRequest = Schedule; 

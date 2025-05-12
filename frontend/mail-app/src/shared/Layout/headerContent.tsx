@@ -66,8 +66,7 @@ export const HeaderContent: React.FC = () => {
         <Typography variant="titleLarge">
           일정
         </Typography>
-        {/* 일정 페이지에 검색창 추가 */}
-        <SearchBar />
+        {isSearchablePath && <SearchBar />}
       </div>
     );
   } else if (path === '/work') {

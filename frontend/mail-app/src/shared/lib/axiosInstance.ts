@@ -39,7 +39,7 @@ api.interceptors.response.use(
         localStorage.removeItem('accessToken');
         useUserStore.getState().logout();
         window.location.href = '/login';
-      } catch (refreshError) {
+      } catch {
         // 리프레시 토큰도 만료된 경우
         localStorage.removeItem('accessToken');
         useUserStore.getState().logout();

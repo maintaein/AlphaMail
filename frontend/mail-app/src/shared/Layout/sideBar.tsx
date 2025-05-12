@@ -6,6 +6,7 @@ import { Button } from '@/shared/components/atoms/button';
 import { useNavigate } from 'react-router-dom';
 import { useMailStore } from '@/features/mail/stores/useMailStore';
 import { FolderResponse } from '@/features/mail/types/mail';
+import { useMail } from '@/features/mail/hooks/useMail';
 
 interface SideBarProps {
   type: 'mail' | 'work';
@@ -16,18 +17,36 @@ interface SideBarProps {
 export const SideBar: React.FC<SideBarProps> = ({ type}) => {
     const navigate = useNavigate();
     const { 
-        activeItem, 
-        setActiveItem, 
-        isCollapsed, 
-        toggleCollapse,
-        contentVisible,
-        setContentVisible,
-        folders,
-        isLoadingFolders
-      } = useSidebarStore();
-    
+      activeItem, 
+      setActiveItem, 
+      isCollapsed, 
+      toggleCollapse,
+      contentVisible,
+      setContentVisible,
+      folders,
+      setFolders,
+      isLoadingFolders,
+      setLoadingFolders
+    } = useSidebarStore();
+  
     const { setCurrentFolder } = useMailStore();
   
+    // 폴더 목록 가져오기 (여기로 이동)
+    const { useFolders } = useMail();
+    const { data: foldersData, isLoading } = useFolders();
+    
+    // 폴더 데이터 로딩 처리
+    useEffect(() => {
+      if (type === 'mail') {
+        setLoadingFolders(isLoading);
+        
+        if (foldersData) {
+          console.log('폴더 목록 응답:', foldersData);
+          setFolders(foldersData);
+        }
+      }
+    }, [foldersData, isLoading, setFolders, setLoadingFolders, type]);
+    
     const getFolderDisplayName = (folderName: string) => {
       switch(folderName) {
         case 'INBOX': return '받은 메일함';
@@ -193,7 +212,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                             className="w-full text-left py-1 px-2 rounded transition-colors"
                             onClick={() => handleMenuItemClick("재고 관리", 0)}
                           >
-                            <Typography 
+                            <Typography
                               variant="titleSmall"
                               color={activeItem === "재고 관리" ? "text-[#66BAE4]" : ""}
                               bold={activeItem === "재고 관리"}
