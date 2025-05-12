@@ -1,12 +1,12 @@
 package com.alphamail.api.assistants.domain.repository;
 
 import com.alphamail.api.assistants.domain.entity.TemporarySchedule;
+import com.alphamail.api.schedule.domain.entity.Schedule;
 
 import java.util.Optional;
 
 public interface TemporaryScheduleRepository {
     TemporarySchedule save(TemporarySchedule schedule);
-    Optional<TemporarySchedule> findById(Integer id);
     void deleteById(Integer id);
-    TemporarySchedule update(TemporarySchedule schedule);
+    Optional<TemporarySchedule> findByIdAndUserId(Integer scheduleId, Integer userId);
 }
