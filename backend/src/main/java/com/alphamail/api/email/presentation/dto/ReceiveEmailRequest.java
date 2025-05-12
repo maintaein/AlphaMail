@@ -13,7 +13,9 @@ public record ReceiveEmailRequest(
 	String messageId,
 	LocalDateTime date,
 	String actualRecipient,
-	List<AttachmentRequest> attachments
+	List<AttachmentRequest> attachments,
+	String inReplyTo,
+	String references
 ) {
 
 }

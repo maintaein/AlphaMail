@@ -10,7 +10,7 @@ public record SendEmailRequest(
 	String bodyHtml,
 	List<Attachment> attachments,
 	String inReplyTo,
-	List<String> references
+	String references
 ) {
 
 	public record Attachment(
