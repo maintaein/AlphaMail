@@ -1,4 +1,4 @@
-package com.alphamail.api.assistants.application.usecase;
+package com.alphamail.api.assistants.application.usecase.schedule;
 
 import com.alphamail.api.assistants.domain.entity.TemporarySchedule;
 import com.alphamail.api.assistants.domain.repository.TemporaryScheduleRepository;

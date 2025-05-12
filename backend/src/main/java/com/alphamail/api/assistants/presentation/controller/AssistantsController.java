@@ -2,9 +2,7 @@ package com.alphamail.api.assistants.presentation.controller;
 
 
 import com.alphamail.api.assistants.application.usecase.SaveVectorDBUseCase;
-import com.alphamail.api.assistants.application.usecase.GetTemporaryScheduleUseCase;
 import com.alphamail.api.assistants.presentation.dto.SendEmailRequest;
-import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

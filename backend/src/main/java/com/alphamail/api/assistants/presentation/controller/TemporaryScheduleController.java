@@ -1,9 +1,7 @@
 package com.alphamail.api.assistants.presentation.controller;
 
-import com.alphamail.api.assistants.application.usecase.DeleteTemporaryScheduleUseCase;
-import com.alphamail.api.assistants.application.usecase.GetTemporaryScheduleUseCase;
-import com.alphamail.api.assistants.application.usecase.CreateTemporaryScheduleUseCase;
-import com.alphamail.api.assistants.application.usecase.UpdateTemporaryScheduleUseCase;
+import com.alphamail.api.assistants.application.usecase.schedule.*;
+import com.alphamail.api.assistants.presentation.dto.RegisterScheduleRequest;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleResponse;
 import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryScheduleRequest;
@@ -23,6 +21,7 @@ public class TemporaryScheduleController {
     private final GetTemporaryScheduleUseCase getTemporaryScheduleUseCase;
     private final UpdateTemporaryScheduleUseCase updateTemporaryScheduleUseCase;
     private final DeleteTemporaryScheduleUseCase deleteTemporaryScheduleUseCase;
+    private final RegisterScheduleFromTemporaryUseCase registerScheduleFromTemporaryUseCase;
 
     @PostMapping
     public ResponseEntity<Void> addTemporarySchedule(
@@ -57,12 +56,16 @@ public class TemporaryScheduleController {
 
         deleteTemporaryScheduleUseCase.execute(temporaryScheduleId,1);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-//    //일정이 아예 등록(기존 삭제, 넘겨주기)
-//    @PostMapping("/regist/{}")
-    // usecase를 가져와서 쓰기, port로?
-
+    @PostMapping("/register")
+    public ResponseEntity<Void> registerScheduleFromTemporary(
+            @RequestBody RegisterScheduleRequest registerScheduleRequest,
+            @AuthenticationPrincipal UserDetails userDetails
+    ){
+        registerScheduleFromTemporaryUseCase.execute(registerScheduleRequest,1);
+        return ResponseEntity.ok().build();
+    }
 
 }
