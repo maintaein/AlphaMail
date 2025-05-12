@@ -5,6 +5,7 @@ import { useUserStore } from '../shared/stores/useUserStore';
 import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { login as loginService } from '../features/auth/services/loginService';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -15,26 +16,23 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // TODO: 실제 API 연동
-      // const response = await api.post('/auth/login', { email, password });
-      // const { accessToken, user } = response.data;
+      const response = await loginService(email, password);
+      console.log('로그인 성공! 액세스 토큰:', response.accessToken);
       
-      // 임시로 로그인 성공했다고 가정
-      const mockUser = {
-        id: '1',
+      // 유저 정보 생성 (실제로는 API에서 받아와야 함)
+      const user = {
+        id: '1', // 임시 ID
         email: email,
-        name: '테스트 유저',
+        name: '테스트 유저', // 실제로는 API에서 받아와야 함
       };
-      const mockToken = 'mock-access-token';
       
-      // 토큰 저장
-      localStorage.setItem('accessToken', mockToken);
-      // 유저 정보 저장
-      login(mockUser, mockToken);
+      // 유저 정보와 토큰 저장
+      login(user, response.accessToken);
       
       navigate('/');
     } catch (error) {
       console.error('로그인 실패:', error);
+      alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };
 
