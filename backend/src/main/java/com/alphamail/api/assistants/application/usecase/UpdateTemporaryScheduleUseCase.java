@@ -20,9 +20,9 @@ public class UpdateTemporaryScheduleUseCase {
         TemporarySchedule temporarySchedule = temporaryScheduleRepository.findByIdAndUserId(updateTemporaryScheduleRequest.temporaryScheduleId(),userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
-        temporarySchedule.update(updateTemporaryScheduleRequest);
+        TemporarySchedule updateTemporarySchedule = temporarySchedule.update(updateTemporaryScheduleRequest);
 
 
-        return TemporaryScheduleResponse.from(temporaryScheduleRepository.save(temporarySchedule));
+        return TemporaryScheduleResponse.from(temporaryScheduleRepository.save(updateTemporarySchedule));
     }
 }

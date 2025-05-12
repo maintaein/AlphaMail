@@ -25,7 +25,7 @@ public class TemporaryScheduleEntity extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "name", nullable = false, length = 20)
+    @Column(name = "name", length = 20)
     private String name;
 
     @Column(length = 50)

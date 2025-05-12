@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(ApiPaths.ASSISTANTS_BASE_API+ApiPaths.SCHEDULE_BASE_API)
+@RequestMapping(ApiPaths.ASSISTANTS_BASE_API + ApiPaths.SCHEDULE_BASE_API)
 public class TemporaryScheduleController {
 
     private final CreateTemporaryScheduleUseCase createTemporaryScheduleUseCase;
@@ -46,7 +46,7 @@ public class TemporaryScheduleController {
             @RequestBody UpdateTemporaryScheduleRequest updateTemporaryScheduleRequest,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        TemporaryScheduleResponse temporaryScheduleResponse= updateTemporaryScheduleUseCase.execute(updateTemporaryScheduleRequest,1);
+        TemporaryScheduleResponse temporaryScheduleResponse = updateTemporaryScheduleUseCase.execute(updateTemporaryScheduleRequest,1);
 
         return ResponseEntity.ok(temporaryScheduleResponse);
     }
