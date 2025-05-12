@@ -14,17 +14,12 @@ import java.util.Optional;
 public class TemporaryScheduleRepositoryImpl implements TemporaryScheduleRepository {
 
     private final TemporaryScheduleJpaRepository jpaRepository;
-    private final TemporaryScheduleMapper mapper;
+    private final TemporaryScheduleMapper temporaryScheduleMapper;
 
     @Override
     public TemporarySchedule save(TemporarySchedule schedule) {
-        TemporaryScheduleEntity entity = mapper.toEntity(schedule);
-        return mapper.toDomain(jpaRepository.save(entity));
-    }
-
-    @Override
-    public Optional<TemporarySchedule> findById(Integer id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+        TemporaryScheduleEntity entity = temporaryScheduleMapper.toEntity(schedule);
+        return temporaryScheduleMapper.toDomain(jpaRepository.save(entity));
     }
 
     @Override
@@ -33,9 +28,11 @@ public class TemporaryScheduleRepositoryImpl implements TemporaryScheduleReposit
     }
 
     @Override
-    public TemporarySchedule update(TemporarySchedule schedule) {
-        TemporaryScheduleEntity entity = mapper.toEntity(schedule);
-        return mapper.toDomain(jpaRepository.save(entity)); // save acts as update
+    public Optional<TemporarySchedule> findByIdAndUserId(Integer scheduleId, Integer userId){
+        return jpaRepository.findByIdAndUserUserId(scheduleId, userId)
+                .map(temporaryScheduleMapper::toDomain);
     }
+
+
 }
 

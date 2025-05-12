@@ -2,7 +2,7 @@ package com.alphamail.api.assistants.presentation.controller;
 
 
 import com.alphamail.api.assistants.application.usecase.SaveVectorDBUseCase;
-import com.alphamail.api.assistants.application.usecase.TemporaryScheduleUseCase;
+import com.alphamail.api.assistants.application.usecase.GetTemporaryScheduleUseCase;
 import com.alphamail.api.assistants.presentation.dto.SendEmailRequest;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +35,8 @@ public class AssistantsController {
       */
 
      private final SaveVectorDBUseCase saveVectorDBUseCase;
-     private final TemporaryScheduleUseCase temporaryScheduleUseCase;
 
-
-     @PostMapping("/vectordb/test")
+     @PostMapping("/vector/test")
      public ResponseEntity<Void> saveVectorCB(@RequestBody SendEmailRequest sendEmailRequest, @AuthenticationPrincipal UserDetails userDetails) {
 
           saveVectorDBUseCase.execute("thread_id_001",1,sendEmailRequest.bodyText());
@@ -46,15 +44,5 @@ public class AssistantsController {
           return ResponseEntity.ok().build();
      }
 
-
-     @PostMapping("/schedule")
-     public ResponseEntity<Boolean> registTemporarySchedule(@RequestBody TemporaryScheduleRequest temporaryScheduleRequest) {
-
-          // 받은 값이 ISO-8601 형식이 아닐 경우에 대한 처리 해줘야함
-          // userId는 그래서 어케 받지??
-          temporaryScheduleUseCase.create(temporaryScheduleRequest, 1);
-
-          return ResponseEntity.ok().build();
-     }
 
 }

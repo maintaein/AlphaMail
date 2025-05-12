@@ -8,4 +8,6 @@ public final class ApiPaths {
 	public static final String ORDERS_BASE_API = "/purchase-orders";
 	public static final String QUOTES_BASE_API = "/quotes";
 	public static final String CLIENTS_BASE_API = "/clients";
+	public static final String ASSISTANTS_BASE_API = "/api/assistants";
+	public static final String SCHEDULE_BASE_API = "/schedules";
 }

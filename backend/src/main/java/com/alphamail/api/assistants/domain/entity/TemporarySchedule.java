@@ -1,24 +1,76 @@
 package com.alphamail.api.assistants.domain.entity;
 
+import com.alphamail.api.assistants.domain.util.ScheduleTimeParser;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
+import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryScheduleRequest;
+import com.alphamail.common.exception.BadRequestException;
+import com.alphamail.common.exception.ErrorMessage;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TemporarySchedule{
+        private Integer userId; // UserEntity가 아닌 userId
+        private Integer temporaryScheduleId;
+        private String name;
+        private String description;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
 
-public record TemporarySchedule(
-        Integer userId, // UserEntity가 아닌 userId
-        String name,
-        String description,
-        LocalDateTime startTime,
-        LocalDateTime endTime
-) {
-    public static TemporarySchedule from(TemporaryScheduleRequest request, Integer userId) {
-        return new TemporarySchedule(
-                userId,
-                request.name(),
-                request.description(),
-                LocalDateTime.parse(request.startTime()),
-                LocalDateTime.parse(request.endTime())
-        );
+    public static TemporarySchedule create(TemporaryScheduleRequest temporaryScheduleRequest, Integer userId) {
+        LocalDateTime parsedStart = ScheduleTimeParser.parseStart(temporaryScheduleRequest.startTime());
+        LocalDateTime parsedEnd = ScheduleTimeParser.parseEnd(temporaryScheduleRequest.endTime());
+
+        validateTime(parsedStart, parsedEnd);
+        validateFutureLimit(parsedStart, parsedEnd);
+
+        return TemporarySchedule.builder()
+                .userId(userId)
+                .name(temporaryScheduleRequest.name())
+                .startTime(parsedStart)
+                .endTime(parsedEnd)
+                .description(temporaryScheduleRequest.description())
+                .build();
+    }
+
+    public TemporarySchedule update(UpdateTemporaryScheduleRequest updateTemporaryScheduleRequest) {
+        LocalDateTime newStartTime = updateTemporaryScheduleRequest.startTime() != null ? updateTemporaryScheduleRequest.startTime() : this.startTime;
+        LocalDateTime newEndTime = updateTemporaryScheduleRequest.endTime() != null ? updateTemporaryScheduleRequest.endTime() : this.endTime;
+
+        validateTime(newStartTime, newEndTime);
+        validateFutureLimit(newStartTime, newEndTime);
+
+        return TemporarySchedule.builder()
+                .userId(this.userId)
+                .temporaryScheduleId(this.temporaryScheduleId)
+                .name(updateTemporaryScheduleRequest.name()!=null ? updateTemporaryScheduleRequest.name() : this.name)
+                .startTime(newStartTime)
+                .endTime(newEndTime)
+                .description(updateTemporaryScheduleRequest.description()!=null ? updateTemporaryScheduleRequest.description() : this.description)
+                .build();
+    }
+
+    // 시간 검증
+    private static void validateTime(LocalDateTime startTime, LocalDateTime endTime) {
+        if (startTime.isAfter(endTime)) {
+            throw new BadRequestException(ErrorMessage.SCHEDULE_TIME_INVALID);
+        }
+    }
+
+    private static void validateFutureLimit(LocalDateTime startTime, LocalDateTime endTime) {
+        LocalDate maxFutureDate = LocalDate.now().plusYears(20);
+
+        if (startTime.toLocalDate().isAfter(maxFutureDate)
+                || endTime.toLocalDate().isAfter(maxFutureDate)) {
+            throw new BadRequestException(ErrorMessage.SCHEDULE_DATE_TOO_FAR);
+        }
     }
 
 }
