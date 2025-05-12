@@ -6,12 +6,15 @@ import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { login as loginService } from '../features/auth/services/loginService';
+import { useQueryClient } from '@tanstack/react-query';
+import { userService } from '../features/auth/services/userService';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const login = useUserStore((state) => state.login);
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,15 +22,20 @@ const LoginPage = () => {
       const response = await loginService(email, password);
       console.log('로그인 성공! 액세스 토큰:', response.accessToken);
       
-      // 유저 정보 생성 (실제로는 API에서 받아와야 함)
-      const user = {
-        id: '1', // 임시 ID
-        email: email,
-        name: '테스트 유저', // 실제로는 API에서 받아와야 함
-      };
+      // 로그인 성공 후 사용자 정보 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       
-      // 유저 정보와 토큰 저장
-      login(user, response.accessToken);
+      // useUser 쿼리를 즉시 실행하여 최신 사용자 정보 가져오기
+      const userData = await queryClient.fetchQuery({
+        queryKey: ['user'],
+        queryFn: () => userService.getUser(),
+      });
+
+      // 사용자 정보와 토큰 저장
+      login({
+        ...userData,
+        id: String(userData.id), // id를 문자열로 변환
+      }, response.accessToken);
       
       navigate('/');
     } catch (error) {

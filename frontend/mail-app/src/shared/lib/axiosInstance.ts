@@ -26,15 +26,6 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        // TODO: 리프레시 토큰으로 새로운 액세스 토큰 발급 요청
-        // const response = await api.post('/auth/refresh');
-        // const newToken = response.data.accessToken;
-        // localStorage.setItem('accessToken', newToken);
-        
-        // 원래 요청 재시도
-        // originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        // return api(originalRequest);
-        
         // 임시로 로그아웃 처리
         localStorage.removeItem('accessToken');
         useUserStore.getState().logout();

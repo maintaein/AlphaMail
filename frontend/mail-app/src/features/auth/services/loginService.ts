@@ -11,3 +11,19 @@ export const login = async (email: string, password: string): Promise<LoginRespo
   
   return response.data;
 };
+
+export const loginService = {
+  login: async (email: string, password: string): Promise<LoginResponse> => {
+    const response = await api.post<LoginResponse>('/api/login', { email, password });
+    return response.data;
+  },
+
+  logout: async (): Promise<void> => {
+    const response = await api.post('/api/logout');
+
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+
+    return response.data;
+  },
+};
