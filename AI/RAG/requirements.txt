@@ -9,3 +9,4 @@ pandas>=1.5.0
 openpyxl>=3.1.0  # Excel 처리용
 python-docx>=0.8.11  # Word 문서 처리용
 anthropic  # Anthropic API 라이브러리
+python-multipart
