@@ -34,4 +34,12 @@ public interface EmailRepository {
 	Integer deleteByFolderId(Integer folderId, Integer userId);
 
 	List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId);
+
+	Email findBySesMessageId(String sesMessageId);
+
+	void updateMessageIdAndThreadId(Integer emailId, String actualMessageId, String newThreadId);
+
+	void updateMessageId(Integer emailId, String sesMessageId);
+
+	void updateSesMessageId(Integer emailId, String sesMessageId);
 }

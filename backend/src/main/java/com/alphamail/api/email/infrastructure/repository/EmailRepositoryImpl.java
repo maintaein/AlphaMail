@@ -3,10 +3,12 @@ package com.alphamail.api.email.infrastructure.repository;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
@@ -100,6 +102,27 @@ public class EmailRepositoryImpl implements EmailRepository {
 			.collect(Collectors.toList());
 	}
 
+	@Override
+	public Email findBySesMessageId(String sesMessageId) {
+		return emailJpaRepository.findBySesMessageId(sesMessageId)
+			.map(emailMapper::toDomain)
+			.orElse(null);
+	}
+
+	@Override
+	public void updateMessageIdAndThreadId(Integer emailId, String sesMessageId, String newThreadId) {
+		emailJpaRepository.updateMessageIdAndThreadId(emailId, sesMessageId, newThreadId);
+	}
+
+	@Override
+	public void updateMessageId(Integer emailId, String sesMessageId) {
+		emailJpaRepository.updateMessageId(emailId, sesMessageId);
+	}
+
+	@Override
+	public void updateSesMessageId(Integer emailId, String sesMessageId) {
+		emailJpaRepository.updateSesMessageId(emailId, sesMessageId);
+	}
 
 	@Override
 	public Page<Email> findByFolderIdAndUserId(Integer folderId, Integer userId, Pageable pageable) {

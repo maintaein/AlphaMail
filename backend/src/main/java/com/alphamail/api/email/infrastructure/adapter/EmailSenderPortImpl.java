@@ -17,6 +17,7 @@ import com.amazonaws.services.simpleemail.model.MessageRejectedException;
 import com.amazonaws.services.simpleemail.model.RawMessage;
 import com.amazonaws.services.simpleemail.model.SendRawEmailRequest;
 
+import com.amazonaws.services.simpleemail.model.SendRawEmailResult;
 import jakarta.mail.Message;
 import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;
@@ -34,7 +35,7 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 	private final AmazonSimpleEmailService sesClient;
 
 	@Override
-	public void send(Email email, List<MultipartFile> multipartFiles) {
+	public String send(Email email, List<MultipartFile> multipartFiles) {
 		// AWS SES 사용한 이메일 발송 구현
 
 		try {
@@ -129,16 +130,18 @@ public class EmailSenderPortImpl implements EmailSenderPort {
 			SendRawEmailRequest rawRequest = new SendRawEmailRequest()
 				.withRawMessage(rawMessage);
 
-			sesClient.sendRawEmail(rawRequest);
+			SendRawEmailResult result = sesClient.sendRawEmail(rawRequest);
+			String sesMessageId = result.getMessageId();
 
+			log.info("이메일 발송 성공 - SES Message ID: {}", sesMessageId);
+			return sesMessageId;
 		} catch (MessageRejectedException e) {
 			// 로그 추가
 			log.error("SES 메시지 거부: {}", e.getMessage(), e);
 			throw new InternalServerException(ErrorMessage.FILE_UPLOAD_FAIL);
 		} catch (Exception e) {
 			// 로그 추가
-			System.err.println("Error sending email: " + e.getMessage());
-			e.printStackTrace();
+			log.error("이메일 발송 오류: {}", e.getMessage(), e);
 			throw new InternalServerException(ErrorMessage.INTERNAL_SERVER_ERROR);
 		}
 	}
