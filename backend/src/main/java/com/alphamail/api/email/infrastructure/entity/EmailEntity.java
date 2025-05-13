@@ -50,8 +50,9 @@ public class EmailEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 
-	@Column(nullable = false)
 	private String messageId;
+
+	private String sesMessageId;
 
 	@Column(nullable = false)
 	private String sender;

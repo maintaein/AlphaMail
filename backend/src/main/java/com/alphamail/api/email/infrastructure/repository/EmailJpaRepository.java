@@ -14,7 +14,9 @@ import org.springframework.data.repository.query.Param;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
+import io.lettuce.core.Value;
 
 public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> {
 
@@ -51,4 +53,27 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	List<EmailEntity> findAllWithAttachmentsByFolderIdAndUserId(@Param("folderId") Integer folderId,
 		@Param("userId") Integer userId);
 
+
+	List<EmailEntity> findByThreadIdAndUserUserIdOrderByReceivedDateTimeAsc(String threadId, Integer userId);
+
+	Optional<EmailEntity> findBySesMessageId(String sesMessageId);
+
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE EmailEntity e SET e.sesMessageId = :sesMessageId "
+		+ "WHERE e.emailId = :emailId")
+	void updateSesMessageId(Integer emailId, String sesMessageId);
+
+
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE EmailEntity e SET e.messageId = :messageId "
+		+ "WHERE e.emailId = :emailId")
+	void updateMessageId(@Param("emailId") Integer emailId,
+						@Param("messageId") String messageId);
+
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE EmailEntity e SET e.messageId = :messageId, e.threadId = :threadId "
+		+ "WHERE e.emailId = :emailId")
+	void updateMessageIdAndThreadId(@Param("emailId") Integer emailId,
+									@Param("messageId") String messageId,
+									@Param("threadId") String threadId);
 }

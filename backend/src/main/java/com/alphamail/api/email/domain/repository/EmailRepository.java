@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 
 public interface EmailRepository {
 	Email save(Email email);
@@ -31,4 +32,14 @@ public interface EmailRepository {
 	Boolean existsByIdAndUserId(Integer emailId, Integer userId);
 
 	Integer deleteByFolderId(Integer folderId, Integer userId);
+
+	List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId);
+
+	Email findBySesMessageId(String sesMessageId);
+
+	void updateMessageIdAndThreadId(Integer emailId, String actualMessageId, String newThreadId);
+
+	void updateMessageId(Integer emailId, String sesMessageId);
+
+	void updateSesMessageId(Integer emailId, String sesMessageId);
 }

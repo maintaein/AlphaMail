@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 public class SendEmailUseCase {
 	private final EmailSenderPort emailSenderPort;
 
-	public void execute(Email email, List<MultipartFile> multipartFilesAttachments) {
-		emailSenderPort.send(email, multipartFilesAttachments);
+	public String execute(Email email, List<MultipartFile> multipartFilesAttachments) {
+		return emailSenderPort.send(email, multipartFilesAttachments);
 	}
 }
