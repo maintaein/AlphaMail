@@ -52,7 +52,7 @@ const MailWriteTemplate: React.FC = () => {
 // 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
 const { data: originalMail } = useQuery({
   queryKey: ['mail', mailId],
-  queryFn: () => mailService.getMailDetail(1, mailId!),
+  queryFn: () => mailService.getMailDetail(mailId!),
   enabled: !!mailId, // mailId가 있을 때만 쿼리 활성화
   staleTime: 0, // 항상 최신 데이터 사용
   refetchOnMount: 'always', // 컴포넌트 마운트 시 항상 다시 가져오기
@@ -67,7 +67,6 @@ const { data: threadInfo } = useQuery({
     // 같은 발신자와의 이메일 검색 (최근 30일 이내)
     try {
       const response = await mailService.getMailList(
-        1, 
         1,
         1, 
         5, 
@@ -78,7 +77,7 @@ const { data: threadInfo } = useQuery({
       // 같은 발신자와의 이메일이 있으면 가장 최근 메일의 threadId 반환
       if (response.emails && response.emails.length > 0) {
         const latestMail = response.emails[0];
-        const detail = await mailService.getMailDetail(1, latestMail.id);
+        const detail = await mailService.getMailDetail(latestMail.id);
         return {
           threadId: detail.threadId || String(detail.id),
           references: detail.references || []

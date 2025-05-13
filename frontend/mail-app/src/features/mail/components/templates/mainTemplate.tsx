@@ -29,7 +29,7 @@ const MainTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error, refetch } = useMailList(1, 1, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList( 1, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -70,7 +70,7 @@ const MainTemplate: React.FC = () => {
   
   const handleDelete = () => {
     if (selectedMails.length > 0) {
-      moveToTrash.mutate({ mailIds: selectedMails, userId: 1 }, {
+      moveToTrash.mutate({ mailIds: selectedMails }, {
         onSuccess: () => {
           // 삭제 성공 후 메일 목록 다시 가져오기
           refetch();

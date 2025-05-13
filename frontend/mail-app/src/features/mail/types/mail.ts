@@ -116,7 +116,6 @@ export interface Mail {
   // 메일 업데이트 요청 타입 (읽음 상태 변경 등)
   export interface UpdateMailRequest {
     id: number;
-    userId: number;
     readStatus?: boolean;
     folderId?: number;
   }
@@ -125,13 +124,11 @@ export interface Mail {
   export interface MoveMailsRequest {
     ids: number[];
     targetFolderId: number;
-    userId: number;
   }
   
   // 메일 삭제 요청 타입
   export interface DeleteMailsRequest {
     ids: number[];
-    userId: number;
   }
   
   // 메일 폴더 타입 (UI에서 사용)

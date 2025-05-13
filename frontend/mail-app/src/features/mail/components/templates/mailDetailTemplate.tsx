@@ -76,8 +76,8 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
         
         // 받은 메일함과 보낸 메일함에서 메일 목록 조회
         const [inboxResponse, sentResponse] = await Promise.all([
-          mailService.getMailList(1, 1, 1, 50, 0),
-          mailService.getMailList(1, 2, 1, 50, 0)
+          mailService.getMailList(1, 1, 50, 0),
+          mailService.getMailList(2, 1, 50, 0)
         ]);
         
         // 모든 메일 ID 추출
@@ -88,7 +88,7 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
         
         // 각 메일의 상세 정보 조회
         const mailDetails = await Promise.all(
-          allMailIds.map(mailId => mailService.getMailDetail(1, mailId))
+          allMailIds.map(mailId => mailService.getMailDetail(mailId))
         );
         
         // 같은 주제와 발신자/수신자를 가진 메일 필터링

@@ -29,9 +29,8 @@ const logApiError = (method: string, endpoint: string, error: Record<string, unk
 // 메일 서비스 클래스
 export const mailService = {
   // 메일 목록 조회
-  async getMailList(userId: number = 1, folderId?: number, page: number = 1, size: number = 15, sort: number = 0, keyword?: string): Promise<MailListResponse> {
+  async getMailList(folderId?: number, page: number = 1, size: number = 15, sort: number = 0, keyword?: string): Promise<MailListResponse> {
     const params = new URLSearchParams();
-    params.append('userId', String(userId));
     params.append('page', String(page - 1)); // API는 0부터 시작하는 페이지 인덱스 사용
     params.append('size', String(size));
     params.append('sort', String(sort));
@@ -62,10 +61,9 @@ export const mailService = {
   },
   
   // 메일 상세 조회
-  async getMailDetail(userId: number = 1, id: string | number): Promise<MailDetailResponse> {
+  async getMailDetail(id: string | number): Promise<MailDetailResponse> {
     const endpoint = `/api/mails/${id}`;
     const params = new URLSearchParams();
-    params.append('userId', String(userId));
     
     logApiCall('GET', endpoint, { params: Object.fromEntries(params) });
     
@@ -84,11 +82,10 @@ export const mailService = {
   },
 
   // 메일 읽음 상태 변경
-  async updateMailReadStatus(userId: number = 1, id: number, readStatus: boolean): Promise<void> {
+  async updateMailReadStatus(id: number, readStatus: boolean): Promise<void> {
     const data: UpdateMailRequest = {
       id,
       readStatus,
-      userId
     };
     
     const endpoint = `/api/mails/${id}/read-status`;
@@ -107,11 +104,10 @@ export const mailService = {
   },
 
   // 메일 폴더 이동
-  async moveMails(userId: number = 1, ids: number[], targetFolderId: number): Promise<void> {
+  async moveMails(ids: number[], targetFolderId: number): Promise<void> {
     const data: MoveMailsRequest = {
       ids,
       targetFolderId,
-      userId
     };
     
     const endpoint = `/api/mails/move`;
@@ -130,10 +126,9 @@ export const mailService = {
   },
   
   // 메일 삭제 (휴지통으로 이동)
-  async deleteMails(userId: number = 1, ids: number[]): Promise<void> {
+  async deleteMails(ids: number[]): Promise<void> {
     const data = {
       mailList: ids,
-      userId
     };
     
     const endpoint = `/api/mails/trash`;
@@ -152,10 +147,9 @@ export const mailService = {
   },
   
   // 메일 상세에서 삭제 (휴지통으로 이동)
-  async deleteMailById(userId: number = 1, mailId: number, folderId: number = 3): Promise<void> {
+  async deleteMailById(mailId: number, folderId: number = 3): Promise<void> {
     const data = {
       folderId: folderId,
-      userId
     };
     
     const endpoint = `/api/mails/${mailId}/trash`;
@@ -174,10 +168,9 @@ export const mailService = {
   },
 
   // 메일 영구 삭제 (휴지통 비우기)
-  async emptyTrash(userId: number = 1, folderId: number = 3): Promise<{ deletedCount: number }> {
+  async emptyTrash(folderId: number = 3): Promise<{ deletedCount: number }> {
     const data = {
       folderId: folderId,
-      userId
     };
     
     const endpoint = `/api/mails/trash`;
@@ -201,10 +194,8 @@ export const mailService = {
     }
   },
 
-  async sendMail(userId: number = 1, mailData: SendMailRequest, files?: File[]): Promise<SendMailResponse> {
-    // userId를 쿼리 파라미터로 추가
+  async sendMail(mailData: SendMailRequest, files?: File[]): Promise<SendMailResponse> {
     const params = new URLSearchParams();
-    params.append('userId', String(userId));
     const endpoint = `/api/mails?${params.toString()}`;
     
     // FormData 객체 생성
@@ -229,7 +220,6 @@ export const mailService = {
     })));
   
     logApiCall('POST', endpoint, { 
-      userId,
       mailData, 
       filesCount: files?.length || 0 
     });
@@ -249,10 +239,9 @@ export const mailService = {
   },
 
   // 폴더 조회 기능 추가
-  async getFolders(userId: number = 1): Promise<FolderResponse[]> {
+  async getFolders(): Promise<FolderResponse[]> {
     const endpoint = `/api/mails/folders`;
     const params = new URLSearchParams();
-    params.append('userId', String(userId));
     
     logApiCall('GET', endpoint, { params: Object.fromEntries(params) });
     
