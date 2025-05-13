@@ -3,7 +3,7 @@ import { User } from '../types/users';
 
 export const userService = {
   getUser: async (): Promise<User> => {
-    const response = await api.get<User>('/api/user/my');
+    const response = await api.get<User>('/api/users/my');
     return response.data;
   },
 };
