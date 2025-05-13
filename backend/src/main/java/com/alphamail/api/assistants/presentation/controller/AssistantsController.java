@@ -3,6 +3,7 @@ package com.alphamail.api.assistants.presentation.controller;
 
 import com.alphamail.api.assistants.application.usecase.SaveVectorDBUseCase;
 import com.alphamail.api.assistants.presentation.dto.SendEmailRequest;
+import com.alphamail.common.annotation.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +27,7 @@ public class AssistantsController {
 3. 각각에 대해서 수정될 경우
 4. 각각에 대해서 삭제 될 경우
 5. 이메일 요약 요청시
-6. 이메일 초안 작성시
+//6. 이메일 초안 작성시
 7. ocr의 경우는 !?!? + 첨부파일 어떻게 처리 할건지
 8. mcp 리스트 전달
 9. mcp 각 요소에 대해서 전달
@@ -35,9 +36,9 @@ public class AssistantsController {
      private final SaveVectorDBUseCase saveVectorDBUseCase;
 
      @PostMapping("/vector/test")
-     public ResponseEntity<Void> saveVectorCB(@RequestBody SendEmailRequest sendEmailRequest, @AuthenticationPrincipal UserDetails userDetails) {
+     public ResponseEntity<Void> saveVectorCB(@RequestBody SendEmailRequest sendEmailRequest, @Auth Integer userId) {
 
-          saveVectorDBUseCase.execute("thread_id_001",1,sendEmailRequest.bodyText());
+          saveVectorDBUseCase.execute("thread_id_001",userId,sendEmailRequest.bodyText());
 
           return ResponseEntity.ok().build();
      }

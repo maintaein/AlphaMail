@@ -5,11 +5,10 @@ import com.alphamail.api.assistants.presentation.dto.RegisterScheduleRequest;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
 import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleResponse;
 import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryScheduleRequest;
+import com.alphamail.common.annotation.Auth;
 import com.alphamail.common.constants.ApiPaths;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -24,18 +23,18 @@ public class TemporaryScheduleController {
     private final RegisterScheduleFromTemporaryUseCase registerScheduleFromTemporaryUseCase;
 
     @PostMapping
-    public ResponseEntity<Void> addTemporarySchedule(
+    public ResponseEntity<String> addTemporarySchedule(
             @RequestBody TemporaryScheduleRequest temporaryScheduleRequest) {
         createTemporaryScheduleUseCase.execute(temporaryScheduleRequest);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("일정등록이 완료 되었습니다");
     }
 
     @GetMapping("/{temporaryScheduleId}")
     public ResponseEntity<TemporaryScheduleResponse> getTemporarySchedule(
-            @PathVariable Integer temporaryScheduleId, @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Integer temporaryScheduleId, @Auth Integer userId) {
 
-        TemporaryScheduleResponse temporaryScheduleResponse= getTemporaryScheduleUseCase.execute(temporaryScheduleId,1);
+        TemporaryScheduleResponse temporaryScheduleResponse= getTemporaryScheduleUseCase.execute(temporaryScheduleId,userId);
 
         return ResponseEntity.ok(temporaryScheduleResponse);
     }
@@ -43,18 +42,18 @@ public class TemporaryScheduleController {
     @PatchMapping("/update")
     public ResponseEntity<TemporaryScheduleResponse> updateTemporarySchedule(
             @RequestBody UpdateTemporaryScheduleRequest updateTemporaryScheduleRequest,
-            @AuthenticationPrincipal UserDetails userDetails) {
+            @Auth Integer userId) {
 
-        TemporaryScheduleResponse temporaryScheduleResponse = updateTemporaryScheduleUseCase.execute(updateTemporaryScheduleRequest,1);
+        TemporaryScheduleResponse temporaryScheduleResponse = updateTemporaryScheduleUseCase.execute(updateTemporaryScheduleRequest,userId);
 
         return ResponseEntity.ok(temporaryScheduleResponse);
     }
 
     @DeleteMapping("/{temporaryScheduleId}")
     public ResponseEntity<TemporaryScheduleResponse> updateTemporarySchedule(
-            @PathVariable Integer temporaryScheduleId, @AuthenticationPrincipal UserDetails userDetails) {
+            @PathVariable Integer temporaryScheduleId, @Auth Integer userId) {
 
-        deleteTemporaryScheduleUseCase.execute(temporaryScheduleId,1);
+        deleteTemporaryScheduleUseCase.execute(temporaryScheduleId,userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -62,9 +61,9 @@ public class TemporaryScheduleController {
     @PostMapping("/register")
     public ResponseEntity<Void> registerScheduleFromTemporary(
             @RequestBody RegisterScheduleRequest registerScheduleRequest,
-            @AuthenticationPrincipal UserDetails userDetails
+            @Auth Integer userId
     ){
-        registerScheduleFromTemporaryUseCase.execute(registerScheduleRequest,1);
+        registerScheduleFromTemporaryUseCase.execute(registerScheduleRequest,userId);
         return ResponseEntity.ok().build();
     }
 
