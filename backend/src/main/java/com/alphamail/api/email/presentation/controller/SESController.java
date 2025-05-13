@@ -27,7 +27,12 @@ public class SESController {
 	@PostMapping("/api/ses/webhooks")
 	public ResponseEntity<String> handleSnsMessage(@RequestBody String rawPayload) {
 		try {
-			System.out.println(rawPayload);
+			
+			log.info(rawPayload);
+			if (rawPayload.contains("Successfully") && rawPayload.contains("subscription")) {
+				log.info("SNS 구독 확인 수신됨: {}", rawPayload);
+				return ResponseEntity.ok("Subscription confirmation received");
+			}
 
 			// JSON 파싱
 			JsonNode snsMessage = objectMapper.readTree(rawPayload);
