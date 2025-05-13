@@ -39,6 +39,15 @@ export interface Mail {
     type: string;
   }
   
+  // 메일 스레드 조회 응답의 메일 아이템 타입
+  export interface ThreadEmail {
+    emailId: number;
+    sender: string;
+    subject: string;
+    dateTime: string;
+    originalFolderId: number;
+  }
+  
   // 메일 상세 조회 응답 타입
   export interface MailDetailResponse {
     id: number;
@@ -53,12 +62,15 @@ export interface Mail {
     folderId?: number; 
     readStatus: boolean; 
     hasAttachments: boolean; 
-    inReplyTo?: number | null;
+    inReplyTo?: string | null;
     threadId?: string;
     references?: string[];
     attachments?: Attachment[];
+    messageId?: string;
+    threadEmails?: ThreadEmail[];
+    totalThreadCount?: number;
   }
-
+  
   // 파일 첨부 응답 타입
   export interface AttachmentUploadResponse {
     id: number;
@@ -79,7 +91,7 @@ export interface Mail {
     subject: string;
     bodyText: string;
     bodyHtml: string;
-    inReplyTo?: number | null;
+    inReplyTo?: string | null;
     references?: string[];
     attachments?: {
       name: string;

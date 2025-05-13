@@ -234,7 +234,7 @@ const { data: threadInfo } = useQuery({
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 
       bodyHtml: content,
-      inReplyTo: inReplyTo || undefined,
+      inReplyTo: inReplyTo ? String(inReplyTo) : null,
       references: references.length > 0 ? references : undefined,
       attachments: attachmentInfos // 첨부파일 정보 추가
     };
