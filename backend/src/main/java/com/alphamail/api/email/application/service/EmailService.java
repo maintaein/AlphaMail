@@ -40,9 +40,21 @@ public class EmailService {
 
 		try {
 			String sesResponseId = sendEmailUseCase.execute(email, attachments);
+
 			emailRepository.updateSesMessageId(email.getEmailId(), sesResponseId);
 
-			updateEmailUseCase.execute(email.getEmailId(),  EmailStatus.SENT_WAITING_CONFIRMATION);
+			//ses-message-id가 실제 message-id의 도메인 주소 앞 부분과 일치해서 message-id를 ses-message-id를 통해 저장해주기
+			String actualMessageId = "<" + sesResponseId + "@ap-northeast-2.amazonses.com>";
+
+			String threadId = sesResponseId;
+
+			emailRepository.updateMessageIdThreadIdAndStatus(
+				email.getEmailId(),
+				actualMessageId,
+				threadId,
+				EmailStatus.SENT
+			);
+
 		} catch (Exception e) {
 			updateEmailUseCase.execute(email.getEmailId(), EmailStatus.FAILED);
 			throw e;
