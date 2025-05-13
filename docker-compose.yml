@@ -31,4 +31,4 @@ services:
       - pip-cache:/root/.cache/pip
 
 volumes:
-  pip-cache
+  pip-cache: {}
