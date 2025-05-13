@@ -33,6 +33,7 @@ import com.alphamail.api.schedule.presentation.dto.ScheduleListResponse;
 import com.alphamail.api.schedule.presentation.dto.ToggleScheduleResponse;
 import com.alphamail.api.schedule.presentation.dto.UpdateScheduleRequest;
 import com.alphamail.api.schedule.presentation.dto.UpdateScheduleResponse;
+import com.alphamail.common.annotation.Auth;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,10 +51,7 @@ public class ScheduleController {
 
 	@PostMapping
 	public ResponseEntity<?> addSchedule(@RequestBody CreateScheduleRequest request,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시 아이디 1
-		Integer userId = 1;
+		@Auth Integer userId) {
 
 		createScheduleUseCase.execute(request, userId);
 
@@ -69,7 +67,7 @@ public class ScheduleController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size,
 		@RequestParam(defaultValue = "0") int sort,
-		@AuthenticationPrincipal UserDetails userDetails) {
+		@Auth Integer userId) {
 
 		Sort.Direction direction = (sort == 0) ? Sort.Direction.DESC : Sort.Direction.ASC;
 
@@ -77,9 +75,6 @@ public class ScheduleController {
 
 		// Pageable 객체 생성 (정렬 정보 포함)
 		Pageable pageable = PageRequest.of(page, size, sorting);
-
-		//임시 아이디 1
-		Integer userId = 1;
 
 		ScheduleListResponse schedules = getAllSchedulesUseCase.execute(startTime,
 			endTime, keyword, pageable, userId);
@@ -90,11 +85,7 @@ public class ScheduleController {
 
 	@GetMapping("/{scheduleId}")
 	public ResponseEntity<ScheduleDetailResponse> getScheduleDetail(@PathVariable Integer scheduleId,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시 아이디 1
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		ScheduleDetailResponse response = getScheduleDetailUseCase.execute(scheduleId, userId);
 
 		return ResponseEntity.ok().body(response);
@@ -105,11 +96,7 @@ public class ScheduleController {
 	@PatchMapping("/{scheduleId}/toggles")
 	public ResponseEntity<ToggleScheduleResponse> toggleSchedule(@PathVariable Integer scheduleId,
 		@RequestBody ChangeScheduleToggleRequest request,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시 아이디 1
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		ToggleScheduleResponse response = changeToggleUseCase.execute(scheduleId, request, userId);
 
 		return ResponseEntity.ok().body(response);
@@ -119,11 +106,7 @@ public class ScheduleController {
 	@PutMapping("/{scheduleId}")
 	public ResponseEntity<UpdateScheduleResponse> updateSchedule(@PathVariable Integer scheduleId,
 		@RequestBody UpdateScheduleRequest request,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시 아이디 1
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		UpdateScheduleResponse updatedResponse = updateScheduleUseCase.execute(scheduleId, request, userId);
 
 		return ResponseEntity.ok().body(updatedResponse);
@@ -131,11 +114,7 @@ public class ScheduleController {
 
 	@DeleteMapping("/{scheduleId}")
 	public ResponseEntity<Void> deleteSchedule(@PathVariable Integer scheduleId,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시 아이디 1
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		deleteScheduleUseCase.execute(scheduleId, userId);
 
 		return ResponseEntity.noContent().build();
