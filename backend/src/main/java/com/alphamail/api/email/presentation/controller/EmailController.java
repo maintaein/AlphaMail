@@ -94,7 +94,6 @@ public class EmailController {
 		return ResponseEntity.ok().build();
 	}
 
-	@CrossOrigin(origins = "*") // 또는 특정 origin
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> sendEmail(@RequestPart("data") SendEmailRequest emailRequest,
 		@RequestPart(value = "files", required = false) List<MultipartFile> attachments,

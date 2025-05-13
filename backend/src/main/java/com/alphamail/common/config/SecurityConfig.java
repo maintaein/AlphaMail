@@ -35,13 +35,12 @@ public class SecurityConfig {
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				// .requestMatchers("/api/login", "/api/users").permitAll()
-				// .anyRequest().authenticated()
-				.anyRequest().permitAll()
-			);
+				.requestMatchers("/api/login", "/api/users").permitAll()
+				.anyRequest().authenticated()
+			)
 
-			// .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository),
-			// 	UsernamePasswordAuthenticationFilter.class);
+			.addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, tokenRepository),
+				UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
 

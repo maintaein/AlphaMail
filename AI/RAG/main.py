@@ -8,8 +8,10 @@ app.include_router(email_router)
 
 if __name__ == "__main__":
 
+    
     # db 저장용 디렉토리
     os.makedirs("./db", exist_ok=True)
+
 
     #FastAPI 앱을 실행하는 ASGI 서버
     import uvicorn

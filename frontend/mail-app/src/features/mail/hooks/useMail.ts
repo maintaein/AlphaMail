@@ -131,32 +131,44 @@ export const useMail = () => {
   
   // 메일 전송 뮤테이션
   const sendMail = useMutation({
-    mutationFn: ({ mailData, userId = 1 }: { mailData: SendMailRequest, userId?: number }) => 
-      mailService.sendMail(userId, mailData),
+    mutationFn: ({ 
+      mailData, 
+      attachments = [], 
+      userId = 1 
+    }: { 
+      mailData: SendMailRequest, 
+      attachments?: File[], 
+      userId?: number 
+    }) => mailService.sendMail(userId, mailData, attachments),
     onSuccess: () => {
       // 보낸메일함(폴더 ID: 2) 쿼리 무효화
       queryClient.invalidateQueries({ 
         queryKey: MAIL_QUERY_KEYS.mailList(1, 2),  
         refetchType: 'all'
       });
+      toast.success('메일이 성공적으로 전송되었습니다.');
     },
+    onError: (error) => {
+      console.error('메일 전송 오류:', error);
+      toast.error('메일 전송 중 오류가 발생했습니다.');
+    }
   });
-
-    // 폴더 이름으로 폴더 ID 찾기 유틸리티 함수
-    const getFolderIdByName = (folders: FolderResponse[] | undefined, name: string): number | undefined => {
-      if (!folders) return undefined;
-      
-      const folder = folders.find(f => 
-        f.folderName.toUpperCase() === name.toUpperCase() || 
-        (name === "받은 메일함" && f.folderName.toUpperCase() === "INBOX") ||
-        (name === "보낸 메일함" && f.folderName.toUpperCase() === "SENT") ||
-        (name === "휴지통" && f.folderName.toUpperCase() === "TRASH")
-      );
-      
-      return folder?.id;
-    };
+    
+  // 폴더 이름으로 폴더 ID 찾기 유틸리티 함수
+  const getFolderIdByName = (folders: FolderResponse[] | undefined, name: string): number | undefined => {
+    if (!folders) return undefined;
+    
+    const folder = folders.find(f => 
+      f.folderName.toUpperCase() === name.toUpperCase() || 
+      (name === "받은 메일함" && f.folderName.toUpperCase() === "INBOX") ||
+      (name === "보낸 메일함" && f.folderName.toUpperCase() === "SENT") ||
+      (name === "휴지통" && f.folderName.toUpperCase() === "TRASH")
+    );
+    
+    return folder?.id;
+  };
   
-      // 첨부파일 다운로드 뮤테이션
+  // 첨부파일 다운로드 뮤테이션
   const downloadAttachment = useMutation({
     mutationFn: async ({ 
       mailId, 

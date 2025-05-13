@@ -54,7 +54,7 @@ public class Email {
 			.sentDateTime(LocalDateTime.now())
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
-			.references(request.references() != null ? String.join(",", request.references()) : null)
+			.references(request.references())
 			.threadId(generateThreadId(request.inReplyTo()))
 			.emailType(EmailType.SENT)
 			.emailStatus(EmailStatus.RETRYING)
@@ -90,6 +90,8 @@ public class Email {
 			.threadId(generateThreadId(request.messageId()))
 			.emailType(EmailType.RECEIVED)
 			.readStatus(false)
+			.inReplyTo(request.inReplyTo())
+			.references(request.references())
 			.build();
 	}
 

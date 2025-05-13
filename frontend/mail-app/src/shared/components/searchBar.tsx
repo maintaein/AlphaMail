@@ -2,25 +2,31 @@ import React, { useEffect, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useMailStore } from '@/features/mail/stores/useMailStore';
 import { useLocation } from 'react-router-dom';
+import { useScheduleSearchStore } from '@/shared/stores/useSearchBar';
 
 export const SearchBar: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
-  const { searchKeyword, setSearchKeyword } = useMailStore();
-  const [localKeyword, setLocalKeyword] = useState(searchKeyword);
+  const { searchKeyword: mailSearchKeyword, setSearchKeyword: setMailSearchKeyword } = useMailStore();
+  const { searchKeyword: scheduleSearchKeyword, setSearchKeyword: setScheduleSearchKeyword } = useScheduleSearchStore();
   
+  const [localKeyword, setLocalKeyword] = useState('');
+  
+  useEffect(() => {
+    if (path.startsWith('/mail')) {
+      setLocalKeyword(mailSearchKeyword);
+    } else if (path.startsWith('/schedule')) {
+      setLocalKeyword(scheduleSearchKeyword);
+    }
+  }, [path, mailSearchKeyword, scheduleSearchKeyword]);
+
   const getPlaceholder = () => {
-    if (path === '/schedule') {
+    if (path.startsWith('/schedule')) {
       return "일정 검색";
     }
     return "메일 제목 검색";
   };
 
-  // searchKeyword가 변경되면 localKeyword도 업데이트
-  useEffect(() => {
-    setLocalKeyword(searchKeyword);
-  }, [searchKeyword]);
-  
   // 검색어 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLocalKeyword(e.target.value);
@@ -28,7 +34,15 @@ export const SearchBar: React.FC = () => {
   
   // 검색 실행 핸들러
   const handleSearch = () => {
-    setSearchKeyword(localKeyword);
+    if (path.startsWith('/mail')) {
+      setMailSearchKeyword(localKeyword);
+    } else if (path.startsWith('/schedule')) {
+      setScheduleSearchKeyword(localKeyword);
+      // 검색어가 있을 때만 검색 모드 활성화
+      if (localKeyword.trim().length > 0) {
+        // 이미 setSearchKeyword 내부에서 isSearchMode를 설정하도록 수정했으므로 추가 코드 필요 없음
+      }
+    }
   };
   
   // 엔터 키 처리
