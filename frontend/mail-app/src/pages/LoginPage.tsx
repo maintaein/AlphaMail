@@ -5,36 +5,42 @@ import { useUserStore } from '../shared/stores/useUserStore';
 import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { login as loginService } from '../features/auth/services/loginService';
+import { useQueryClient } from '@tanstack/react-query';
+import { userService } from '../features/auth/services/userService';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const login = useUserStore((state) => state.login);
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      // TODO: 실제 API 연동
-      // const response = await api.post('/auth/login', { email, password });
-      // const { accessToken, user } = response.data;
+      const response = await loginService(email, password);
+      console.log('로그인 성공! 액세스 토큰:', response.accessToken);
       
-      // 임시로 로그인 성공했다고 가정
-      const mockUser = {
-        id: '1',
-        email: email,
-        name: '테스트 유저',
-      };
-      const mockToken = 'mock-access-token';
+      // 로그인 성공 후 사용자 정보 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       
-      // 토큰 저장
-      localStorage.setItem('accessToken', mockToken);
-      // 유저 정보 저장
-      login(mockUser, mockToken);
+      // useUser 쿼리를 즉시 실행하여 최신 사용자 정보 가져오기
+      const userData = await queryClient.fetchQuery({
+        queryKey: ['user'],
+        queryFn: () => userService.getUser(),
+      });
+
+      // 사용자 정보와 토큰 저장
+      login({
+        ...userData,
+        id: String(userData.id), // id를 문자열로 변환
+      }, response.accessToken);
       
       navigate('/');
     } catch (error) {
       console.error('로그인 실패:', error);
+      alert('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
     }
   };
 

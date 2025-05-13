@@ -11,6 +11,8 @@ import { SideBar } from './shared/Layout/sideBar';
 import { useSidebarStore } from './shared/stores/useSidebarStore';
 import { HeaderContent } from './shared/Layout/headerContent';
 import { ToastContainer } from 'react-toastify';
+import { AuthProvider } from './features/auth/providers/AuthProvider';
+
 // 라우터를 포함한 앱 레이아웃 컴포넌트
 const AppLayout = () => {
   const location = useLocation();
@@ -63,7 +65,9 @@ export const App = () => {
       <ErrorBoundary>
         <Suspense fallback={<div>로딩 중...</div>}>
           <BrowserRouter>
-            <AppLayout />
+            <AuthProvider>
+              <AppLayout />
+            </AuthProvider>
           </BrowserRouter>
         </Suspense>
       </ErrorBoundary>

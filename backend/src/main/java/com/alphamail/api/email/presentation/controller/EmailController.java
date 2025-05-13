@@ -45,6 +45,7 @@ import com.alphamail.api.email.presentation.dto.FolderResponse;
 import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 import com.alphamail.api.user.domain.valueobject.UserId;
+import com.alphamail.common.annotation.Auth;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,14 +69,10 @@ public class EmailController {
 	public ResponseEntity<Resource> downloadAttachment(
 		@PathVariable Integer emailId,
 		@PathVariable Integer attachmentId,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//일단 임시로 UserId = 1로 저장
-		//todo: UserDetails에 대한 설명을 듣고 UserId를 어떻게 처리할지 고민을 해야한다.
-		UserId userId = new UserId(1);
+		@Auth Integer userId) {
 
 		AttachmentDownloadResponse response = downloadAttachmentUseCase.execute(
-			emailId, attachmentId, userId
+			emailId, attachmentId, UserId.of(userId)
 		);
 
 		InputStreamResource resource = new InputStreamResource(response.getInputStream());
@@ -97,11 +94,7 @@ public class EmailController {
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	public ResponseEntity<Void> sendEmail(@RequestPart("data") SendEmailRequest emailRequest,
 		@RequestPart(value = "files", required = false) List<MultipartFile> attachments,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		System.out.println("들어왔습니다. ");
-		//test용 임의 유저아이디
-		Integer userId = 1;
+		@Auth Integer userId) {
 
 		emailService.sendEmail(emailRequest, attachments, userId);
 		return ResponseEntity.ok().build();
@@ -112,12 +105,7 @@ public class EmailController {
 		@RequestParam(required = false) String query,
 		@RequestParam(required = false, defaultValue = "desc") String sort,
 		@PageableDefault(page = 0, size = 20) Pageable pageable,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		// Integer userId = ((CustomUserDetails) userDetails).getId();
-
-		//test용 임의 유저아이디
-		Integer userId = 1;
+		@Auth Integer userId) {
 
 		EmailListResponse emails = getEmailListUseCase.execute(folderId, userId, query, sort, pageable);
 
@@ -126,28 +114,21 @@ public class EmailController {
 	}
 
 	@GetMapping("/folders")
-	public ResponseEntity<List<FolderResponse>> getUserFolders(@AuthenticationPrincipal UserDetails userDetails) {
-		Integer userId = 1;
+	public ResponseEntity<List<FolderResponse>> getUserFolders(@Auth Integer userId) {
 		List<FolderResponse> folders = getFolderUseCase.execute(userId);
 		return ResponseEntity.ok(folders);
 	}
 
 	@GetMapping("/{mailId}")
 	public ResponseEntity<EmailDetailResponse> getEmail(@PathVariable Integer mailId,
-		@AuthenticationPrincipal UserDetails userDetails) {
-		//임시용
-		Integer userId = 1;
+		@Auth Integer userId) {
 		EmailDetailResponse emailDetail = getEmailDetailUseCase.execute(mailId, userId);
 		return ResponseEntity.ok(emailDetail);
 	}
 
 	@PatchMapping("/{mailId}/trash")
 	public ResponseEntity<Void> moveMailToTrash(@PathVariable Integer mailId,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시용
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		deleteDetailUseCase.execute(mailId, userId);
 
 		return ResponseEntity.ok().build();
@@ -155,11 +136,7 @@ public class EmailController {
 
 	@PatchMapping("/trash")
 	public ResponseEntity<Void> moveMailsToTrash(@RequestBody DeleteMailsRequest request,
-		@AuthenticationPrincipal UserDetails userDetails) {
-
-		//임시용
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		deleteMailsUseCase.execute(request, userId);
 		return ResponseEntity.ok().build();
 
@@ -167,10 +144,7 @@ public class EmailController {
 
 	@DeleteMapping("/trash")
 	public ResponseEntity<EmptyTrashResponse> emptyTrash(@RequestBody EmptyTrashRequest request,
-		@AuthenticationPrincipal UserDetails userDetails) {
-		//임시용
-		Integer userId = 1;
-
+		@Auth Integer userId) {
 		Integer deletedCount = emptyMailUseCase.execute(request, userId);
 		return ResponseEntity.ok(new EmptyTrashResponse(deletedCount));
 
