@@ -14,9 +14,11 @@ import com.alphamail.api.user.application.port.LoadUserPort;
 import com.alphamail.api.user.domain.valueobject.UserId;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReceiveEmailUseCase {
 
 	private final EmailRepository emailRepository;
@@ -25,6 +27,10 @@ public class ReceiveEmailUseCase {
 	private final EmailAttachmentRepository emailAttachmentRepository;
 
 	public void excute(ReceiveEmailRequest request) {
+
+		log.debug("이메일 내용: inReplyTo={}, references={}",
+			request.inReplyTo(), request.references());
+
 		String recipientEmail = request.actualRecipient();
 
 		UserId userId = loadUserPort.loadUserIdByEmail(recipientEmail);
@@ -32,8 +38,10 @@ public class ReceiveEmailUseCase {
 		Integer folderId = emailFolderRepository.getInboxFolderId(userId.getValue());
 
 		Email email = Email.createForReceiving(request, userId.getValue(), folderId);
+		log.info("이메일 객체 생성: threadId={}", email.getThreadId());
 
 		Email savedEmail = emailRepository.save(email);
+		log.info("이메일 저장 완료: emailId={}", savedEmail.getEmailId());
 
 		List<EmailAttachment> emailAttachmentList = EmailAttachment.createAttachments(
 			request.attachments(),
