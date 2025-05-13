@@ -27,6 +27,8 @@ public class SESController {
 	@PostMapping("/api/ses/webhooks")
 	public ResponseEntity<String> handleSnsMessage(@RequestBody String rawPayload) {
 		try {
+			System.out.println(rawPayload);
+
 			// JSON 파싱
 			JsonNode snsMessage = objectMapper.readTree(rawPayload);
 			String messageType = snsMessage.get("Type").asText();
