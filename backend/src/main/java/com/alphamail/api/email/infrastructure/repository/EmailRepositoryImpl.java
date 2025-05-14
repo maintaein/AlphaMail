@@ -131,6 +131,11 @@ public class EmailRepositoryImpl implements EmailRepository {
 	}
 
 	@Override
+	public void updateThreadId(Integer emailId, String threadId) {
+		emailJpaRepository.updateThreadId(emailId, threadId);
+	}
+
+	@Override
 	public Page<Email> findByFolderIdAndUserId(Integer folderId, Integer userId, Pageable pageable) {
 		Page<EmailEntity> emailEntities = emailJpaRepository.findByFolder_EmailFolderIdAndUser_UserId(folderId, userId,
 			pageable);

@@ -9,6 +9,7 @@ import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.domain.repository.EmailAttachmentRepository;
 import com.alphamail.api.email.domain.repository.EmailFolderRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
+import com.alphamail.api.email.domain.valueobject.ThreadId;
 import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.user.application.port.LoadUserPort;
 import com.alphamail.api.user.domain.valueobject.UserId;
@@ -32,12 +33,15 @@ public class ReceiveEmailUseCase {
 			request.inReplyTo(), request.references());
 
 		String recipientEmail = request.actualRecipient();
-
 		UserId userId = loadUserPort.loadUserIdByEmail(recipientEmail);
-
 		Integer folderId = emailFolderRepository.getInboxFolderId(userId.getValue());
 
-		Email email = Email.createForReceiving(request, userId.getValue(), folderId);
+		ThreadId threadId = ThreadId.fromEmailHeaders(
+			request.references(),
+			request.inReplyTo(),
+			request.messageId()
+		);
+		Email email = Email.createForReceiving(request, userId.getValue(), folderId, threadId.getValue());
 		log.info("이메일 객체 생성: threadId={}", email.getThreadId());
 
 		Email savedEmail = emailRepository.save(email);
