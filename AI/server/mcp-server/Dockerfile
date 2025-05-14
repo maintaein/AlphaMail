@@ -14,4 +14,4 @@ COPY . .
 EXPOSE 8000
 
 # FastAPI 앱 실행 (mcp_client_api.py의 app 객체)
-CMD ["uvicorn", "mcpserver:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "mcpserver.py"]

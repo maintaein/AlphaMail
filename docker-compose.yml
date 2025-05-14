@@ -17,11 +17,16 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - CLAUDE_SECRET_KEY=${CLAUDE_SECRET_KEY}
       - CLAUDE_BASE_URL=${CLAUDE_BASE_URL}
+    networks:
+      - alphaMail-networks
+
   frontend:
     build: ./frontend/mail-app
     image: alphaMail/frontend:latest
     ports:
       - "3000:80" 
+    networks:
+      - alphaMail-networks
   rag:
     build: ./AI/server/rag
     image: alphaMail/rag:latest
@@ -31,6 +36,8 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}  
     volumes:
       - pip-cache:/root/.cache/pip
+    networks:
+      - alphaMail-networks
   ocr:
     build: ./AI/server/ocr
     image: alphaMail/ocr:latest
@@ -39,12 +46,16 @@ services:
     environment:
       - OCR_SECRET=${OCR_SECRET}
       - OCR_API_URL=${OCR_API_URL}
+    networks:
+      - alphaMail-networks
 
   mcp-server:
     build: ./AI/server/mcp-server
     image: alphaMail/mcp-server:latest
     ports:
       - "8000:8000"
+    networks:
+      - alphaMail-networks
 
   mcp-client:
     build: ./AI/server/mcp-client
@@ -53,12 +64,17 @@ services:
       - "8001:8001"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-
   chatbot:
     build: ./AI/CHATBOT/services
     image: alphaMail/chatbot:latest
     ports:
       - "5001:5001"
-
+    networks:
+      - alphaMail-networks
+      
 volumes:
   pip-cache: {}
+
+networks:
+  alphaMail-networks:
+    driver: bridge
