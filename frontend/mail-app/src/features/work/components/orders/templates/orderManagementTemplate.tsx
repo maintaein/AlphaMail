@@ -6,8 +6,6 @@ import { OrderDetail } from '../../../types/order';
 import { orderService } from '../../../services/orderService';
 import { useOrderStore } from '../../../stores/orderStore';
 import { useOrderManagement } from '../../../hooks/useOrderManagement';
-import { PdfButton } from './orderDocumentTemplate';
-import { useState } from 'react';
 
 async function orderToOrderDetail(order: Order): Promise<OrderDetail> {
   const orderDetail = await orderService.getOrderDetail(order.id);
@@ -31,8 +29,6 @@ const OrderManagementTemplate: React.FC = () => {
   } = useOrderStore();
 
   const { orders, totalPages, isLoading, error, handleDeleteOrders, handleSaveOrder } = useOrderManagement();
-
-  const [selectedOrderDetails, setSelectedOrderDetails] = useState<OrderDetail[]>([]);
 
   const handleSearch = (params: any) => {
     setSearchParams(params);
@@ -82,23 +78,6 @@ const OrderManagementTemplate: React.FC = () => {
     setSelectedOrder(null);
   };
 
-  const handlePrint = async () => {
-    if (selectedOrderIds.size === 0) {
-      alert('출력할 발주서를 선택해주세요.');
-      return;
-    }
-
-    try {
-      const details = await Promise.all(
-        Array.from(selectedOrderIds).map(id => orderService.getOrderDetail(id))
-      );
-      setSelectedOrderDetails(details);
-    } catch (error) {
-      console.error('발주서 상세 정보 조회 중 오류:', error);
-      alert('발주서 정보를 불러오는데 실패했습니다.');
-    }
-  };
-
   if (showOrderDetail) {
     return (
       <OrderDetailTemplate
@@ -130,13 +109,6 @@ const OrderManagementTemplate: React.FC = () => {
             </button>
             <div className="space-x-2">
               <button
-                onClick={handlePrint}
-                className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
-                disabled={isLoading}
-              >
-                출력
-              </button>
-              <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
                 disabled={isLoading}
@@ -160,15 +132,6 @@ const OrderManagementTemplate: React.FC = () => {
           />
         </div>
       </div>
-      {selectedOrderDetails.length > 0 && (
-        <div className="fixed bottom-4 right-4 space-y-2">
-          {selectedOrderDetails.map((detail) => (
-            <div key={detail.id} className="bg-white p-2 rounded shadow">
-              <PdfButton data={detail} />
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };

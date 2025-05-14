@@ -7,6 +7,7 @@ import { useOrderStore } from '../../../stores/orderStore';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import { useOrderDetail } from '../../../hooks/useOrderDetail';
 import { Spinner } from '@/shared/components/atoms/spinner';
+import { PdfButton } from './orderDocumentTemplate';
 
 interface OrderDetailTemplateProps {
   order: OrderDetail | null;
@@ -58,12 +59,15 @@ const OrderDetailTemplate: React.FC<OrderDetailTemplateProps> = ({ order, onBack
     <div className="p-4">
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-2xl font-bold">{order ? '발주서 수정' : '발주서 등록'}</h2>
-        <button
-          onClick={onBack}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-        >
-          뒤로가기
-        </button>
+        <div className="flex space-x-2">
+          {order && <PdfButton data={formData} />}
+          <button
+            onClick={onBack}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+          >
+            뒤로가기
+          </button>
+        </div>
       </div>
       <form onSubmit={handleSubmit} className="space-y-6">
         <OrderBasicInfoForm />

@@ -134,6 +134,6 @@ import {
       fileName={`${data.orderNo}_발주서.pdf`}
       className="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
     >
-      {({ loading }) => loading ? 'PDF 생성 중...' : `${data.orderNo} PDF 다운로드`}
+      {({ loading }) => loading ? 'PDF 생성 중...' : `PDF 다운로드`}
     </PDFDownloadLink>
   );
