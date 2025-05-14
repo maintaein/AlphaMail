@@ -30,7 +30,7 @@ const MailTrashTemplate: React.FC = () => {
   }, [setCurrentFolder]);
   
   const { useMailList, emptyTrash } = useMail();
-  const { data, isLoading, error, refetch } = useMailList(1, 3, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList(3, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -146,7 +146,7 @@ const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
             onSelectMail={handleSelectMail}
             onMailClick={handleMailClick}
           />
-          
+
           <Pagination
             currentPage={(data?.currentPage || 0) + 1}
             totalPages={data?.pageCount || 1}

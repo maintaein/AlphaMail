@@ -1,15 +1,14 @@
 // React Query에서 사용할 쿼리 키 상수 정의
 export const MAIL_QUERY_KEYS = {
-    mailList: (userId: number, folderId?: number, page?: number, sort?: number, keyword?: string) => 
-      ['mailList', userId, folderId, page, sort, keyword],
+    mailList: (folderId?: number, page?: number, sort?: number, keyword?: string) => 
+      ['mailList', folderId, page, sort, keyword],
     
-    mailDetail: (userId: number = 1, id: string | number) => ['mail', userId, id],
+    mailDetail: (id: string | number) => ['mail', id],
     
-    folders: (userId: number = 1) => ['mail-folders', userId],
+    folders: () => ['mail-folders'],
     
-    attachment: (userId: number = 1, mailId: number, attachmentId: number) => 
-      ['mail-attachment', userId, mailId, attachmentId],
+    attachment: (mailId: number, attachmentId: number) => 
+      ['mail-attachment', mailId, attachmentId],
 
     stats: 'mail-stats',
-    //메일 통계는 뭐지 어디서 쓰는거임?
   };
