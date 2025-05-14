@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.alphamail.api.email.domain.entity.Email;
+import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
 import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
@@ -76,4 +77,13 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	void updateMessageIdAndThreadId(@Param("emailId") Integer emailId,
 									@Param("messageId") String messageId,
 									@Param("threadId") String threadId);
+
+	@Modifying(clearAutomatically = true)
+	@Query("UPDATE EmailEntity e "
+		+ "SET e.messageId = :messageId, e.threadId = :threadId, e.emailStatus = :status "
+		+ "WHERE e.emailId = :emailId")
+	void updateMessageIdThreadIdAndStatus(  @Param("emailId") Integer emailId,
+											@Param("messageId") String messageId,
+											@Param("threadId") String threadId,
+											@Param("status") EmailStatus status);
 }

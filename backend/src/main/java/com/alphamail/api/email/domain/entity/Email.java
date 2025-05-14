@@ -83,25 +83,58 @@ public class Email {
 		}
 		// 2. references가 있는 경우 (첫 번째 참조가 스레드의 시작점)
 		if (references != null && !references.isEmpty()) {
-			String[] refsArray = references.split("\\s+");
-			if (refsArray.length > 0) {
+
+			String cleanRefs = references;
+			if (cleanRefs.startsWith("References:")) {
+				cleanRefs = cleanRefs.substring("References:".length()).trim();
+			}
+
+			// 꺾쇠 괄호(<>)로 둘러싸인 이메일 ID 찾기
+			java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("<([^>]+)>");
+			java.util.regex.Matcher matcher = pattern.matcher(cleanRefs);
+
+			if (matcher.find()) {
+				// 찾은 첫 번째 완전한 이메일 ID
+				return extractIdFromEmailId("<" + matcher.group(1) + ">");
+			}
+
+			// 실패 시 공백으로 분리 시도
+			String[] refsArray = cleanRefs.split("\\s+");
+			if (refsArray.length > 0 && !refsArray[0].isEmpty()) {
 				return extractIdFromEmailId(refsArray[0]);
 			}
 		}
-
+		// 3. 스레드 ID를 생성할 수 없는 경우 새 UUID 사용
 		return UUID.randomUUID().toString();
 	}
 
 	private static String extractIdFromEmailId(String emailId) {
-		String cleanId = emailId.replaceAll("[<>]", "").split("@")[0];
-
 		try {
-			UUID.fromString(cleanId);
-			return cleanId;  // 유효한 UUID면 그대로 반환
-		} catch (IllegalArgumentException e) {
-			// UUID가 아니면 해당 문자열의 해시코드를 이용해 UUID 생성
-			// 같은 입력에 대해 항상 같은 값 반환
-			return new UUID(cleanId.hashCode(), 0).toString();
+			if (emailId == null || emailId.isEmpty()) {
+				return UUID.randomUUID().toString();
+			}
+
+			String cleanId = emailId.replaceAll("[<>]", "").trim();
+
+			// @ 기호로 분리하여 로컬 파트만 추출
+			String localPart = cleanId;
+			if (cleanId.contains("@")) {
+				localPart = cleanId.split("@")[0].trim();
+			}
+			// SES 형식 확인
+			if (localPart.contains("-") && localPart.length() > 30) {
+				return localPart;
+			}
+			try {
+				UUID.fromString(localPart);
+				return localPart;  // 유효한 UUID면 그대로 반환
+			} catch (IllegalArgumentException e) {
+				// UUID가 아니면 해당 문자열의 해시코드를 이용해 UUID 생성
+				// 음수 해시코드 처리를 위해 Math.abs 사용
+				return new UUID(Math.abs(localPart.hashCode()), 0).toString();
+			}
+		} catch (Exception e) {
+			return UUID.randomUUID().toString();
 		}
 	}
 

@@ -26,9 +26,18 @@ public class SESController {
 
 	@PostMapping("/api/ses/webhooks")
 	public ResponseEntity<String> handleSnsMessage(@RequestBody String rawPayload) {
+		log.info("웹훅 수신: {}", rawPayload);
+
+		// AWS SNS 검증 메시지 처리
+		if (rawPayload.contains("Successfully validated") || rawPayload.contains("Amazon SES")) {
+			log.info("AWS SNS 검증 메시지 수신: {}", rawPayload);
+			return ResponseEntity.ok("Validation acknowledged");
+		}
+
 		try {
-			// JSON 파싱
+			// JSON 파싱 시도
 			JsonNode snsMessage = objectMapper.readTree(rawPayload);
+			// JSON 파싱
 			String messageType = snsMessage.get("Type").asText();
 
 			log.info("SNS 메시지 타입: {}", messageType);
