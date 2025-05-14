@@ -11,7 +11,7 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # FastAPI 서버 포트 오픈
-EXPOSE 8001
+EXPOSE 8000
 
 # FastAPI 앱 실행 (mcp_client_api.py의 app 객체)
 CMD ["uvicorn", "mcpserver:app", "--host", "0.0.0.0", "--port", "8000"]
