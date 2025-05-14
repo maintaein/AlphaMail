@@ -53,5 +53,12 @@ services:
       - "8001:8001"
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+  chatbot:
+    build: ./AI/CHATBOT/services
+    image: alphaMail/chatbot:latest
+    ports:
+      - "5001:5001"
+
 volumes:
   pip-cache: {}
