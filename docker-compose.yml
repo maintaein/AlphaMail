@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:80" 
   rag:
-    build: ./AI/server/RAG
+    build: ./AI/server/rag
     image: alphaMail/rag:latest
     ports:
       - "5000:5000"
