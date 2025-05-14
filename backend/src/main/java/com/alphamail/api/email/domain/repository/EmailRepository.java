@@ -44,4 +44,6 @@ public interface EmailRepository {
 	void updateSesMessageId(Integer emailId, String sesMessageId);
 
 	void updateMessageIdThreadIdAndStatus(Integer emailId, String messageId, String threadId, EmailStatus status);
+
+	void updateThreadId(Integer emailId, String threadId);
 }

@@ -13,6 +13,7 @@ import com.alphamail.api.email.application.usecase.UpdateEmailUseCase;
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.repository.EmailRepository;
+import com.alphamail.api.email.domain.valueobject.ThreadId;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -40,20 +41,18 @@ public class EmailService {
 
 		try {
 			String sesResponseId = sendEmailUseCase.execute(email, attachments);
-
 			emailRepository.updateSesMessageId(email.getEmailId(), sesResponseId);
 
 			//ses-message-id가 실제 message-id의 도메인 주소 앞 부분과 일치해서 message-id를 ses-message-id를 통해 저장해주기
 			String actualMessageId = "<" + sesResponseId + "@ap-northeast-2.amazonses.com>";
 
-			String threadId = sesResponseId;
-
 			emailRepository.updateMessageIdThreadIdAndStatus(
 				email.getEmailId(),
 				actualMessageId,
-				threadId,
+				email.getThreadId(),
 				EmailStatus.SENT
 			);
+
 
 		} catch (Exception e) {
 			updateEmailUseCase.execute(email.getEmailId(), EmailStatus.FAILED);

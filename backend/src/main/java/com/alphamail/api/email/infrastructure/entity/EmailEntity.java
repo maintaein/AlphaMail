@@ -84,7 +84,7 @@ public class EmailEntity {
 	@Column(name = "email_references")
 	private String references;
 
-	@Column(length = 100, nullable = false)
+	@Column(length = 100)
 	private String threadId;
 
 	private String filePath;

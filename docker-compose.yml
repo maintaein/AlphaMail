@@ -23,7 +23,7 @@ services:
     ports:
       - "3000:80" 
   rag:
-    build: ./AI/RAG
+    build: ./AI/server/rag
     image: alphaMail/rag:latest
     ports:
       - "5000:5000"
@@ -31,6 +31,27 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}  
     volumes:
       - pip-cache:/root/.cache/pip
+  ocr:
+    build: ./AI/server/ocr
+    image: alphaMail/ocr:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - OCR_SECRET=${OCR_SECRET}
+      - OCR_API_URL=${OCR_API_URL}
 
+  mcp-server:
+    build: ./AI/server/mcp-server
+    image: alphaMail/mcp-server:latest
+    ports:
+      - "8000:8000"
+
+  mcp-client:
+    build: ./AI/server/mcp-client
+    image: alphaMail/mcp-client:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
 volumes:
   pip-cache: {}
