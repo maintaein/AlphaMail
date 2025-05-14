@@ -32,15 +32,6 @@ public class EmailService {
 
 		Email email = saveEmailUseCase.execute(request, userId);
 
-		ThreadId threadId = ThreadId.fromEmailHeaders(
-			request.references(),
-			request.inReplyTo(),
-			null
-		);
-
-		if (!threadId.getValue().equals(email.getThreadId())) {
-			emailRepository.updateThreadId(email.getEmailId(), threadId.getValue());
-		}
 		//request 체크 빈 배열이 들어올 가능성이 있다.
 		if (attachments != null && !attachments.isEmpty()
 			&& request.attachments() != null && !request.attachments().isEmpty()
@@ -50,7 +41,6 @@ public class EmailService {
 
 		try {
 			String sesResponseId = sendEmailUseCase.execute(email, attachments);
-
 			emailRepository.updateSesMessageId(email.getEmailId(), sesResponseId);
 
 			//ses-message-id가 실제 message-id의 도메인 주소 앞 부분과 일치해서 message-id를 ses-message-id를 통해 저장해주기
@@ -59,9 +49,10 @@ public class EmailService {
 			emailRepository.updateMessageIdThreadIdAndStatus(
 				email.getEmailId(),
 				actualMessageId,
-				threadId.getValue(),
+				email.getThreadId(),
 				EmailStatus.SENT
 			);
+
 
 		} catch (Exception e) {
 			updateEmailUseCase.execute(email.getEmailId(), EmailStatus.FAILED);

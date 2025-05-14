@@ -46,6 +46,11 @@ public class Email {
 	// 발송용 이메일 생성 정적 팩토리 메서드
 	public static Email createForSending(SendEmailRequest request, Integer userId, Integer sentFolderId) {
 
+		ThreadId threadId = ThreadId.fromEmailHeaders(
+			request.references(),
+			request.inReplyTo(),
+			null
+		);
 
 		return Email.builder()
 			.folderId(sentFolderId)
@@ -60,7 +65,7 @@ public class Email {
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
 			.references(request.references())
-			.threadId(null)
+			.threadId(threadId.getValue())
 			.emailType(EmailType.SENT)
 			.emailStatus(EmailStatus.RETRYING)
 			.build();
