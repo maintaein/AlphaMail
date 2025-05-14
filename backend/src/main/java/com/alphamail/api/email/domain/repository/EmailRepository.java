@@ -46,4 +46,6 @@ public interface EmailRepository {
 	void updateMessageIdThreadIdAndStatus(Integer emailId, String messageId, String threadId, EmailStatus status);
 
 	void updateThreadId(Integer emailId, String threadId);
+
+	Email findByMessageId(String messageId);
 }

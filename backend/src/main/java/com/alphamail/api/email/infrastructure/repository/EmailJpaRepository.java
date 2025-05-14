@@ -91,4 +91,5 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	@Query("UPDATE EmailEntity e SET e.threadId = :threadId WHERE e.emailId = :emailId")
 	void updateThreadId(@Param("emailId") Integer emailId, @Param("threadId") String threadId);
 
+	Optional<EmailEntity> findByMessageId(String messageId);
 }

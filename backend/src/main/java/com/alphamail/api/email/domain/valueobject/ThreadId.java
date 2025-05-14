@@ -1,5 +1,6 @@
 package com.alphamail.api.email.domain.valueobject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,7 +85,7 @@ public class ThreadId {
 			String result = UUID.nameUUIDFromBytes(cleanId.getBytes("UTF-8")).toString();
 			log.info("변환된 스레드 ID: {}", result);
 			return result;
-		} catch (java.io.UnsupportedEncodingException e) {
+		} catch (UnsupportedEncodingException e) {
 			// UTF-8은 항상 지원되므로 이 예외는 발생하지 않아야 함
 			log.error("UTF-8 인코딩 지원 안 됨", e);
 			String result = UUID.nameUUIDFromBytes(cleanId.getBytes()).toString();

@@ -34,28 +34,35 @@ public class ReceiveEmailUseCase {
 		log.info("이메일 수신 시작 - messageId: {}, inReplyTo: {}, references: {}",
 			request.messageId(), request.inReplyTo(), request.references());
 
-		if (request.references() != null && !request.references().isEmpty()) {
-			Pattern pattern = Pattern.compile("<([^>]+)>");
-			Matcher matcher = pattern.matcher(request.references());
-			if (matcher.find()) {
-				String firstMessageId = matcher.group(0);
-				log.info("References에서 추출한 첫 번째 메시지 ID: {}", firstMessageId);
-			}
-		}
 
 		String recipientEmail = request.actualRecipient();
 		UserId userId = loadUserPort.loadUserIdByEmail(recipientEmail);
 		Integer folderId = emailFolderRepository.getInboxFolderId(userId.getValue());
 
-		ThreadId threadId = ThreadId.fromEmailHeaders(
-			request.references(),
-			request.inReplyTo(),
-			request.messageId()
-		);
+		String threadId = null;
 
-		log.info("계산된 스레드 ID: {}", threadId.getValue());
+		// inReplyTo를 사용해 원본 이메일 찾기
+		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
+			log.info("inReplyTo에서 원본 이메일 찾기: {}", request.inReplyTo());
+			Email originalEmail = emailRepository.findByMessageId(request.inReplyTo());
+			if (originalEmail != null && originalEmail.getThreadId() != null) {
+				threadId = originalEmail.getThreadId();
+				log.info("원본 이메일에서 스레드 ID 찾음: {}", threadId);
+			}
+		}
 
-		Email email = Email.createForReceiving(request, userId.getValue(), folderId, threadId.getValue());
+		// 원본 이메일을 찾지 못한 경우에만 새로 계산
+		if (threadId == null) {
+			ThreadId calculatedThreadId = ThreadId.fromEmailHeaders(
+				request.references(),
+				request.inReplyTo(),
+				request.messageId()
+			);
+			threadId = calculatedThreadId.getValue();
+			log.info("계산된 스레드 ID 사용: {}", threadId);
+		}
+
+		Email email = Email.createForReceiving(request, userId.getValue(), folderId, threadId);
 		log.info("이메일 객체 생성: threadId={}", email.getThreadId());
 
 		Email savedEmail = emailRepository.save(email);
