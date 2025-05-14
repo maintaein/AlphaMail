@@ -65,33 +65,7 @@ public class ThreadId {
 
 		String cleanId = emailId.replaceAll("[<>]", "").trim();
 
-		String localPart = cleanId;
-		if (cleanId.contains("@")) {
-			localPart = cleanId.split("@")[0].trim();
-		}
-
-		// 1. SES 형식 확인 (하이픈으로 구분된 긴 ID)
-		if (localPart.contains("-") && localPart.length() > 30) {
-			return localPart;
-		}
-
-		// todo: 다른 메일 형식들도 다르면 추가해줘야 같은 쓰레드 아이디로 묶을 수 있을듯
-
-		// 2. 네이버 메시지 ID 형식 (32자리 16진수)
-		if (localPart.matches("[a-fA-F0-9]{32}")) {
-			return localPart;
-		}
-
-		// 3. 지메일 메시지 ID 형식 (일정 길이 이상의 영숫자 + 특수문자)
-		// 지메일 ID는 + = 등 특수문자를 포함하며 길이가 변할 수 있음
-		if (localPart.length() >= 20 && localPart.startsWith("CAF")) {
-			// 지메일 ID는 그대로 반환하지만, 특수문자로 인한 문제 방지를 위해
-			// 해시 기반 변환을 적용 (일관성 유지)
-			return new UUID(Math.abs(localPart.hashCode()), 0).toString();
-		}
-
-		// 4. 기타 형식에 대한 일관된 해시 기반 ID 생성
-		return new UUID(Math.abs(localPart.hashCode()), 0).toString();
+		return UUID.nameUUIDFromBytes(cleanId.getBytes()).toString();
 	}
 
 }
