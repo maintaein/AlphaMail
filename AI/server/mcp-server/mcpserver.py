@@ -1,5 +1,3 @@
-import os
-import asyncio
 import logging
 import httpx
 import time
@@ -19,10 +17,10 @@ for log_name in ['fastmcp', 'mcp', 'uvicorn', 'fastapi']:
     logging.getLogger(log_name).setLevel(logging.DEBUG)
 
 # 환경 변수
-ALPHAMAIL_BASE_URL = os.getenv("ALPHAMAIL_BASE_URL", "http://localhost:8080")
-HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", 8000))
-REQUEST_TIMEOUT = float(os.getenv("REQUEST_TIMEOUT", 10.0))
+ALPHAMAIL_BASE_URL = "https://alphamail.my"
+HOST = "0.0.0.0"
+PORT = 8000
+REQUEST_TIMEOUT = 10.0
 
 # MCP 서버 인스턴스 생성
 mcp = FastMCP("AlphaMail MCP Server")
@@ -44,6 +42,7 @@ def date(
     """
     try:
         logger.info(f"일정 생성 요청: {title} ({start} ~ {end})")
+        logger.info(f"endpoint url : {ALPHAMAIL_BASE_URL}")
         response = httpx.post(
             f"{ALPHAMAIL_BASE_URL}/api/assistants/schedules",
             json={
@@ -149,21 +148,14 @@ def estimateRequest(
             "data": {}
         }
 
-# === 메인 실행 부분 ===
 if __name__ == "__main__":
     try:
         logger.info(f"FastMCP 서버를 {HOST}:{PORT}에서 시작합니다...")
-
-        # FastMCP의 기본 실행 메서드 사용
-        # 특별한 구성 없이 기본 설정 사용
-        logger.info("FastMCP의 기본 run() 메서드를 사용합니다.")
-        mcp.run()
-
-        # 서버가 백그라운드에서 실행될 경우 메인 프로세스 유지
+        logger.info("FastMCP의 SSE run() 메서드를 사용합니다.")
+        mcp.run(transport="sse", host=HOST, port=PORT)
         logger.info("메인 프로세스를 유지합니다...")
 
         while True:
-            # 30초마다 서버 상태 확인 및 로그 출력
             logger.info("서버 실행 중...")
             time.sleep(30)
 

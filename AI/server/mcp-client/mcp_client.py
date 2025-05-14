@@ -5,6 +5,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_anthropic import ChatAnthropic
 from langchain.schema import HumanMessage
 from typing import Optional, List, Dict, Any
+import os
 
 # 로깅 설정
 logging.basicConfig(
@@ -17,7 +18,7 @@ logger = logging.getLogger("mcp-client")
 # 서버가 로컬호스트에서 실행 중인 경우 아래 URL을 사용
 
 # Anthropic API 키 설정
-ANTHROPIC_API_KEY = "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"
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 
 class MCPClientManager:
     def __init__(self):
