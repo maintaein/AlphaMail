@@ -1,5 +1,6 @@
 package com.alphamail.api.assistants.infrastructure.entity;
 
+import com.alphamail.api.email.infrastructure.entity.EmailEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 import com.alphamail.common.entity.BaseTimeEntity;
 import jakarta.persistence.*;
@@ -21,6 +22,13 @@ public class TemporaryScheduleEntity extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "title",length = 255)
+    private String title;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "email_id", nullable = false)  // 이 부분 수정 필요
+    private EmailEntity emailEntity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
@@ -28,13 +36,13 @@ public class TemporaryScheduleEntity extends BaseTimeEntity {
     @Column(name = "name", length = 20)
     private String name;
 
-    @Column(length = 50)
+    @Column(name = "description", length = 50)
     private String description;
 
-    @Column(nullable = false)
+    @Column(name = "start_time",nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time",nullable = false)
     private LocalDateTime endTime;
 
 

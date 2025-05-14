@@ -1,7 +1,5 @@
 package com.alphamail.api.erp.infrastructure.adapter;
 
-import java.util.Optional;
-
 import org.springframework.stereotype.Component;
 
 import com.alphamail.api.erp.domain.entity.Client;
@@ -12,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class ClientReaderImpl implements ClientReader {
+public class ClientReaderInAssistantImpl implements ClientReader {
 
 	private final ClientRepository clientRepository;
 

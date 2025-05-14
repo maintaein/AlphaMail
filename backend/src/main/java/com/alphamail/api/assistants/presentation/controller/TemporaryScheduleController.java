@@ -1,10 +1,10 @@
 package com.alphamail.api.assistants.presentation.controller;
 
 import com.alphamail.api.assistants.application.usecase.schedule.*;
-import com.alphamail.api.assistants.presentation.dto.RegisterScheduleRequest;
-import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleRequest;
-import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleResponse;
-import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryScheduleRequest;
+import com.alphamail.api.assistants.presentation.dto.schedule.RegisterScheduleRequest;
+import com.alphamail.api.assistants.presentation.dto.schedule.CreateTemporaryScheduleRequest;
+import com.alphamail.api.assistants.presentation.dto.schedule.TemporaryScheduleResponse;
+import com.alphamail.api.assistants.presentation.dto.schedule.UpdateTemporaryScheduleRequest;
 import com.alphamail.common.annotation.Auth;
 import com.alphamail.common.constants.ApiPaths;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class TemporaryScheduleController {
 
     @PostMapping
     public ResponseEntity<String> addTemporarySchedule(
-            @RequestBody TemporaryScheduleRequest temporaryScheduleRequest) {
+            @RequestBody CreateTemporaryScheduleRequest temporaryScheduleRequest) {
         createTemporaryScheduleUseCase.execute(temporaryScheduleRequest);
 
         return ResponseEntity.ok("일정등록이 완료 되었습니다");
@@ -50,21 +50,21 @@ public class TemporaryScheduleController {
     }
 
     @DeleteMapping("/{temporaryScheduleId}")
-    public ResponseEntity<TemporaryScheduleResponse> updateTemporarySchedule(
+    public ResponseEntity<String> deleteTemporarySchedule(
             @PathVariable Integer temporaryScheduleId, @Auth Integer userId) {
 
         deleteTemporaryScheduleUseCase.execute(temporaryScheduleId,userId);
 
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("임시 스케줄 삭제가 완료 되었습니다");
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> registerScheduleFromTemporary(
+    public ResponseEntity<String> registerScheduleFromTemporary(
             @RequestBody RegisterScheduleRequest registerScheduleRequest,
             @Auth Integer userId
     ){
         registerScheduleFromTemporaryUseCase.execute(registerScheduleRequest,userId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("스케줄 등록이 완료 되었습니다");
     }
 
 }

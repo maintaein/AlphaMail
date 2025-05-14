@@ -1,4 +1,4 @@
-package com.alphamail.api.assistants.presentation.dto;
+package com.alphamail.api.assistants.presentation.dto.schedule;
 
 import java.time.LocalDateTime;
 

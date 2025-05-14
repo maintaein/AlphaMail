@@ -14,8 +14,9 @@ public class DeleteTemporaryScheduleUseCase {
     private final TemporaryScheduleRepository temporaryScheduleRepository;
 
     public void execute(Integer temporaryScheduleId, Integer userId) {
-        TemporarySchedule temporarySchedule = temporaryScheduleRepository.findByIdAndUserId(temporaryScheduleId,userId)
+        temporaryScheduleRepository.findByIdAndUserId(temporaryScheduleId,userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
+
         temporaryScheduleRepository.deleteById(temporaryScheduleId);
     }
 }

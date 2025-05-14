@@ -1,5 +1,7 @@
 package com.alphamail.api.erp.infrastructure.adapter;
 
+import com.alphamail.common.exception.ErrorMessage;
+import com.alphamail.common.exception.NotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.alphamail.api.erp.domain.service.UserReader;
@@ -17,5 +19,11 @@ public class UserReaderImpl implements UserReader {
 	@Override
 	public User findById(Integer id) {
 		return userRepository.findById(id);
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email)
+				.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 	}
 }

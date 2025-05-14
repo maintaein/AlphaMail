@@ -1,14 +1,13 @@
-package com.alphamail.api.assistants.presentation.dto;
+package com.alphamail.api.assistants.presentation.dto.schedule;
 
 import com.alphamail.api.assistants.domain.entity.TemporarySchedule;
-import com.alphamail.api.schedule.domain.entity.Schedule;
-import com.alphamail.api.schedule.presentation.dto.ToggleScheduleResponse;
-import org.springframework.cglib.core.Local;
+import com.alphamail.api.email.domain.entity.Email;
 
 import java.time.LocalDateTime;
 
 public record TemporaryScheduleResponse(
         Integer temporaryScheduleId,
+        Email email,
         String name,
         LocalDateTime startTime,
         LocalDateTime endTime,
@@ -17,6 +16,7 @@ public record TemporaryScheduleResponse(
     public static TemporaryScheduleResponse from(TemporarySchedule temporarySchedule) {
         return new TemporaryScheduleResponse(
                 temporarySchedule.getTemporaryScheduleId(),
+                temporarySchedule.getEmail(),
                 temporarySchedule.getName(),
                 temporarySchedule.getStartTime(),
                 temporarySchedule.getEndTime(),

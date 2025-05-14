@@ -1,4 +1,4 @@
-package com.alphamail.api.assistants.presentation.dto;
+package com.alphamail.api.assistants.presentation.dto.schedule;
 
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
 

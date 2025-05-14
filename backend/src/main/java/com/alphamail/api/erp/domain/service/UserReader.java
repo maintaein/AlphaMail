@@ -4,4 +4,5 @@ import com.alphamail.api.user.domain.entity.User;
 
 public interface UserReader {
 	User findById(Integer id);
+	User findByEmail(String email);
 }
