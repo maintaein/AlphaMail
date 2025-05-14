@@ -9,6 +9,7 @@ import ClientInput from '@/shared/components/atoms/clientInput';
 import AddressInput from '@/shared/components/atoms/addressInput';
 import KakaoAddressTemplate from '@/shared/components/template/kakaoAddressTemplate';
 import { api } from '@/shared/lib/axiosInstance';
+import { PdfButton } from './quoteDocumentTemplate';
 
 interface QuoteDetailTemplateProps {
   quote: QuoteDetail | null;
@@ -145,12 +146,15 @@ export const QuoteDetailTemplate: React.FC<QuoteDetailTemplateProps> = ({
         <h2 className="text-2xl font-bold">
           {quote ? '견적서 수정' : '견적서 등록'}
         </h2>
-        <button
-          onClick={onBack}
-          className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-        >
-          뒤로가기
-        </button>
+        <div className="flex space-x-2">
+          {quote && <PdfButton data={formData} />}
+          <button
+            onClick={onBack}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+          >
+            뒤로가기
+          </button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">

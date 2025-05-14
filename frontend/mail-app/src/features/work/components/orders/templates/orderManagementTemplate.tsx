@@ -109,12 +109,6 @@ const OrderManagementTemplate: React.FC = () => {
             </button>
             <div className="space-x-2">
               <button
-                className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
-                disabled={isLoading}
-              >
-                출력
-              </button>
-              <button
                 onClick={handleDelete}
                 className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
                 disabled={isLoading}
