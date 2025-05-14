@@ -5,10 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.alphamail.api.chatbot.application.dto.ChatBotResult;
-import com.alphamail.api.chatbot.infrastructure.adapter.ClaudeApiClient;
 import com.alphamail.api.chatbot.infrastructure.adapter.VectorSearchClient;
-import com.alphamail.api.chatbot.infrastructure.extractor.SummarizeScheduleExtractor;
-import com.alphamail.api.chatbot.presentation.dto.ChatBotResponse;
+import com.alphamail.api.chatbot.infrastructure.prompt.SummarizeSchedulePrompt;
+import com.alphamail.api.chatbot.presentation.dto.ChatBotRequest;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 public class SearchScheduleService {
 
 	private final VectorSearchClient vectorSearchClient;
-	private final SummarizeScheduleExtractor summarizeScheduleExtractor;
+	private final SummarizeSchedulePrompt summarizeSchedulePrompt;
 
-	public ChatBotResponse searchWithSummary(Integer userId, String query) {
-		List<String> matched = vectorSearchClient.searchByEmbedding(userId, query);
-		ChatBotResult result = ChatBotResult.complete(summarizeScheduleExtractor.extractList(matched));
+	public ChatBotResult searchWithSummary(ChatBotRequest request) {
+		List<String> matched = vectorSearchClient.searchByEmbedding(request.userId(), request.message());
 
-		return ChatBotResponse.from(result);
+		return ChatBotResult.complete(summarizeSchedulePrompt.generateResult(matched));
 	}
 
 }

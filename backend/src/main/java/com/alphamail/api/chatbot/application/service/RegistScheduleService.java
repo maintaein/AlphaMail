@@ -1,10 +1,10 @@
 package com.alphamail.api.chatbot.application.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.alphamail.api.chatbot.application.dto.ChatBotResult;
 import com.alphamail.api.chatbot.application.dto.ScheduleExtractionResult;
-import com.alphamail.api.chatbot.infrastructure.extractor.LlmScheduleExtractor;
+import com.alphamail.api.chatbot.infrastructure.prompt.LlmSchedulePrompt;
 import com.alphamail.api.chatbot.presentation.dto.ChatBotRequest;
 import com.alphamail.api.schedule.application.usecase.CreateScheduleUseCase;
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
@@ -13,11 +13,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class RegistScheduleService {
 
-	private final LlmScheduleExtractor extractor;
+	private final LlmSchedulePrompt extractor;
 	private final CreateScheduleUseCase createScheduleUseCase;
 	private final ObjectMapper objectMapper;
 
@@ -26,9 +26,8 @@ public class RegistScheduleService {
 		String message = request.message();
 
 		ScheduleExtractionResult extracted;
-		ChatBotResult result;
 		try {
-			String json = extractor.extractJson(message);
+			String json = extractor.makeScheduleToJson(message);
 			extracted = objectMapper.readValue(json, ScheduleExtractionResult.class);
 		} catch (Exception e) {
 			return ChatBotResult.followUp(ErrorMessage.NO_CHATBOT_RESULT.getMessage());
