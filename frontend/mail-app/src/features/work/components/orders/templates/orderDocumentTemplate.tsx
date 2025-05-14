@@ -4,7 +4,6 @@ import {
     PDFDownloadLink
   } from '@react-pdf/renderer';
   
-  // 폰트 등록 (한글 대응)
   Font.register({
     family: 'NanumGothic',
     src: '/fonts/NanumGothic.ttf',
@@ -31,6 +30,15 @@ import {
     supplierBox: {
       border: '1pt solid black',
       padding: 5,
+      width: '45%',
+    },
+    orderInfoBox: {
+      width: '45%',
+    },
+    topContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 20,
     },
     row: {
       flexDirection: 'row',
@@ -38,11 +46,11 @@ import {
       paddingVertical: 2,
     },
     label: {
-      width: '20%',
+      width: '40%',
       fontWeight: 'bold',
     },
     value: {
-      width: '30%',
+      width: '60%',
     },
     tableHeader: {
       flexDirection: 'row',
@@ -68,27 +76,30 @@ import {
         <Text style={styles.title}>발 주 서</Text>
         <Text style={styles.orderNo}>NO. {data.orderNo}</Text>
   
-        <Text style={{ marginBottom: 5 }}>발주일: {data.createdAt.toLocaleDateString()}</Text>
-        <Text style={{ marginBottom: 10 }}>귀하 {data.manager}</Text>
+        <View style={styles.topContainer}>
+          <View style={styles.orderInfoBox}>
+            <Text style={{ marginBottom: 5 }}>발주일: {data.createdAt.toLocaleDateString()}</Text>
+            <Text style={{ marginBottom: 10 }}>{data.manager} 귀하</Text>
+            <Text style={{ marginBottom: 3 }}>아래와 같이 발주합니다.</Text>
+          </View>
   
-        <Text style={{ marginBottom: 3 }}>아래와 같이 발주합니다.</Text>
-  
-        <View style={[styles.section, styles.supplierBox]}>
-          {[
-            ['등록번호', data.licenseNumber],
-            ['상호명', data.clientName],
-            ['대표자', data.representative],
-            ['주소', data.shippingAddress],
-            ['업태', data.businessType],
-            ['종목', data.businessItem],
-            ['연락처', data.managerNumber],
-            ['팩스번호', ''],
-          ].map(([label, value], idx) => (
-            <View style={styles.row} key={idx}>
-              <Text style={styles.label}>{label}</Text>
-              <Text style={styles.value}>{value}</Text>
-            </View>
-          ))}
+          <View style={[styles.section, styles.supplierBox]}>
+            {[
+              ['등록번호', data.licenseNumber],
+              ['상호명', data.clientName],
+              ['대표자', data.representative],
+              ['주소', data.shippingAddress],
+              ['업태', data.businessType],
+              ['종목', data.businessItem],
+              ['연락처', data.managerNumber],
+              ['팩스번호', ''],
+            ].map(([label, value], idx) => (
+              <View style={styles.row} key={idx}>
+                <Text style={styles.label}>{label}</Text>
+                <Text style={styles.value}>{value}</Text>
+              </View>
+            ))}
+          </View>
         </View>
   
         <View style={styles.section}>
