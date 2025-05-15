@@ -68,9 +68,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       {/* 월 네비게이션 */}
-      <div className="flex items-center justify-center mb-4 gap-2">
+      <div className="flex items-center justify-center mb-4 gap-2 bg-white">
         <button
           onClick={handlePrevMonth}
           className="p-2 rounded-full hover:bg-gray-100"
@@ -104,7 +104,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 text-left mb-2 pl-2 border-t-2 border-gray-300 pt-2">
+      <div className="grid grid-cols-7 text-left mb-2 pl-2 border-t-2 border-gray-300 pt-2 bg-white">
         {weekDays.map((day) => (
           <Typography key={day} variant="titleSmall">
             {day}
@@ -113,7 +113,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* 날짜 셀 */}
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 bg-white">
         {dates.map((date, index) => {
           const dateString = date.toDateString();
           const isToday = dateString === todayString;
