@@ -33,7 +33,7 @@ public class ScheduleVectorClient {
 		headers.setContentType(MediaType.APPLICATION_JSON);
 		HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-		restTemplate.postForEntity("http://localhost:5001/api/vector/upsert", request, Void.class);
+		restTemplate.postForEntity("http://chatbot:5001/api/vector/upsert", request, Void.class);
 	}
 
 	private String toNaturalText(Schedule schedule) {

@@ -28,37 +28,49 @@ mcp = FastMCP("AlphaMail MCP Server")
 # === 도구 정의 ===
 @mcp.tool()
 def date(
-    start: Annotated[str, Field(description="일정 시작 일자 (예: '2025-05-10T10:00:00')")],
-    end: Annotated[str, Field(description="일정 종료 일자 (예: '2024-05-11T11:30:00')")],
-    user_email : Annotated[str, Field(description="받은 사람의 이메일 (예:'test@alphamail.my')")],
-    title: Annotated[Optional[str], Field(description="일정 제목", default=None)] = None,
-    description: Annotated[Optional[str], Field(description="일정 설명", default=None)] = None
+
+    startTime: Annotated[str, Field(description="일정 시작 일자 (예: '2025-05-10T10:00:00')")],
+    endTime: Annotated[str, Field(description="일정 종료 일자 (예: '2024-05-11T11:30:00')")],
+    userEmail : Annotated[str, Field(description="받은 사람의 이메일 (예:'test@alphamail.my')")],
+    emailId : Annotated[str, Field(description="이메일 아이디 (예:'123'), 메일 아이디 emailId : 로 값이 들어옴")],
+    name: Annotated[Optional[str], Field(description="일정 제목", default=None)] = None,
+    description: Annotated[Optional[str], Field(description="일정 설명", default=None)] = None,
+    title: Annotated[Optional[str], Field(description="전체적인 AI가 만든 제목임 일정 제목은 간단하지만 이 title은 좀 더 길게 만들어짐", default=None)] = None
 ):
     """
     메일 본문에서 일정 관련 날짜 및 제목 정보를 추출하여 일정을 생성합니다.
     사용 조건:
     - 이메일에 회의, 약속, 행사 등 일정이 포함된 경우.
     - 날짜(start, end) 정보가 명확히 존재할 것.
+    - 일정 정보를 외부 시스템에 전송하는 것이 목적임.
+    - user_email은 받은 사람의 이메일임. 
     """
     try:
-        logger.info(f"일정 생성 요청: {title} ({start} ~ {end})")
+        logger.info(f"일정 생성 요청: {title} ({startTime} ~ {endTime})")
         logger.info(f"endpoint url : {ALPHAMAIL_BASE_URL}")
         response = httpx.post(
             f"{ALPHAMAIL_BASE_URL}/api/assistants/schedules",
             json={
-                "name" : title,
-                "start": start,
-                "end": end,
+                "name" : name,
+                "startTime": startTime,
+                "endTime": endTime,
                 "description": description,
-                "userEmail" : user_email
+                "userEmail" : userEmail,
+                "emailId" : emailId,
+                "title" : title
             },
             timeout=REQUEST_TIMEOUT
         )
         response.raise_for_status()
         logger.info("일정 정보 전송 성공")
+        try:
+            response_data = response.json()
+        except:
+            response_data = {"status_code": response.status_code}
+            
         return {
             "message": "일정 정보가 정상적으로 외부 시스템에 전송되었습니다.",
-            "response": response.json()
+            "response": response_data
         }
     except Exception as e:
         logger.error(f"일정 정보 전송 실패: {str(e)}")
@@ -155,9 +167,6 @@ if __name__ == "__main__":
         mcp.run(transport="sse", host=HOST, port=PORT)
         logger.info("메인 프로세스를 유지합니다...")
 
-
-
-        
         while True:
             logger.info("서버 실행 중...")
             time.sleep(30)
@@ -168,4 +177,3 @@ if __name__ == "__main__":
         logger.error(f"서버 실행 중 오류 발생: {e}", exc_info=True)
         import sys
         sys.exit(1)
-app = mcp.app
