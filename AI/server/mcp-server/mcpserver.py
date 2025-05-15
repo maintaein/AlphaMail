@@ -154,10 +154,7 @@ if __name__ == "__main__":
         logger.info("FastMCP의 SSE run() 메서드를 사용합니다.")
         mcp.run(transport="sse", host=HOST, port=PORT)
         logger.info("메인 프로세스를 유지합니다...")
-
-
-
-        
+   
         while True:
             logger.info("서버 실행 중...")
             time.sleep(30)
@@ -168,4 +165,3 @@ if __name__ == "__main__":
         logger.error(f"서버 실행 중 오류 발생: {e}", exc_info=True)
         import sys
         sys.exit(1)
-app = mcp.app
