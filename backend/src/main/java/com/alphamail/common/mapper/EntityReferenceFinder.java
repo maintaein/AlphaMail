@@ -1,5 +1,9 @@
 package com.alphamail.common.mapper;
 
+import com.alphamail.api.email.infrastructure.entity.EmailEntity;
+import com.alphamail.api.email.infrastructure.repository.EmailJpaRepository;
+import com.alphamail.api.erp.infrastructure.entity.ProductEntity;
+import com.alphamail.api.erp.infrastructure.repository.ProductJpaRepository;
 import org.mapstruct.Named;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +24,8 @@ public class EntityReferenceFinder {
 	private final EmailFolderJpaRepository folderRepository;
 	private final UserJpaRepository userRepository;
 	private final GroupJpaRepository groupRepository;
+	private final EmailJpaRepository emailRepository;
+	private final ProductJpaRepository productRepository;
 
 	@Named("toFolderEntity")
 	public EmailFolderEntity toFolderEntity(Integer folderId) {
@@ -47,4 +53,5 @@ public class EntityReferenceFinder {
 		return groupRepository.findById(groupId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 	}
+
 }

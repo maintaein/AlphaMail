@@ -9,7 +9,7 @@ public class ScheduleTimeParser {
 
     // 기본 시간 설정
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(9, 0);    // 09:00
-    private static final LocalTime DEFAULT_END_TIME = LocalTime.of(9, 59);     // 09:59
+    private static final LocalTime DEFAULT_END_TIME = LocalTime.of(9, 59);    // 09:59
 
     public static LocalDateTime parseStart(String rawStart) {
         return parseDateTime(rawStart, DEFAULT_START_TIME);
@@ -20,7 +20,7 @@ public class ScheduleTimeParser {
     }
 
     private static LocalDateTime parseDateTime(String raw, LocalTime defaultTime) {
-        if (raw == null || raw.isBlank()) {
+        if (raw == null ) {
             return LocalDateTime.of(LocalDate.now(), defaultTime);
         }
 

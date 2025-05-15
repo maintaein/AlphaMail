@@ -19,20 +19,18 @@ public class SaveVectorDBRepositoryImpl implements SaveVectorDBRepository {
 
     public VectorDBDTORequest sendEmailToAi(VectorDB vectorDB) {
 
-        // 1. Set body (form-data)
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("thread_id", vectorDB.threadId());
         body.add("user_id", vectorDB.userId());
         body.add("email_content", vectorDB.emailContent());
 
-        // 2. Set headers
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-        // 3. Build request
+
         HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
 
-        // 4. Send request
         ResponseEntity<VectorDBDTORequest> response = restTemplate.postForEntity(
                 AI_ENDPOINT,
                 requestEntity,

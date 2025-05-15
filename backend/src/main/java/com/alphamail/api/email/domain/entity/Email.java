@@ -1,9 +1,12 @@
 package com.alphamail.api.email.domain.entity;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.alphamail.api.email.domain.valueobject.ThreadId;
 import com.alphamail.api.email.presentation.dto.ReceiveEmailRequest;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
@@ -22,6 +25,7 @@ public class Email {
 	private Integer folderId;
 	private Integer userId;
 	private String messageId;
+	private String sesMessageId;
 	private String sender;
 	private List<String> recipients;
 	private String subject;
@@ -45,7 +49,7 @@ public class Email {
 		return Email.builder()
 			.folderId(sentFolderId)
 			.userId(userId)
-			.messageId(generateMessageId())
+			.messageId(null)
 			.sender(request.sender())
 			.recipients(request.recipients())
 			.subject(request.subject())
@@ -55,27 +59,14 @@ public class Email {
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
 			.inReplyTo(request.inReplyTo())
 			.references(request.references())
-			.threadId(generateThreadId(request.inReplyTo()))
+			.threadId(null)
 			.emailType(EmailType.SENT)
 			.emailStatus(EmailStatus.RETRYING)
 			.build();
 	}
 
-	// MessageId 생성 메서드
-	private static String generateMessageId() {
-		return "<" + UUID.randomUUID().toString() + "@alphamail.my>";
-	}
 
-	// ThreadId 생성 메서드
-	private static String generateThreadId(String inReplyTo) {
-		// inReplyTo가 있으면 해당 스레드의 일부로 처리
-		if (inReplyTo != null && !inReplyTo.isEmpty()) {
-			return inReplyTo.replaceAll("[<>]", "").split("@")[0];
-		}
-		return UUID.randomUUID().toString();
-	}
-
-	public static Email createForReceiving(ReceiveEmailRequest request, Integer userId, Integer inboxFolderId) {
+	public static Email createForReceiving(ReceiveEmailRequest request, Integer userId, Integer inboxFolderId, String threadId) {
 		return Email.builder()
 			.userId(userId)
 			.folderId(inboxFolderId)
@@ -87,7 +78,7 @@ public class Email {
 			.bodyHtml(request.html())
 			.receivedDateTime(request.date())
 			.hasAttachment(request.attachments() != null && !request.attachments().isEmpty())
-			.threadId(generateThreadId(request.messageId()))
+			.threadId(threadId)
 			.emailType(EmailType.RECEIVED)
 			.readStatus(false)
 			.inReplyTo(request.inReplyTo())
@@ -95,10 +86,23 @@ public class Email {
 			.build();
 	}
 
+
 	// 읽음 처리 메서드
 	public Email markAsRead() {
 		return this.toBuilder()
 			.readStatus(true)
 			.build();
+	}
+
+	//references (String -> List)
+	public List<String> parseReferences() {
+		if (this.references == null || this.references.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return Arrays.asList(this.references.split("\\s+"));
+	}
+
+	public boolean hasValidThreadId() {
+		return this.threadId != null && !this.threadId.isEmpty();
 	}
 }

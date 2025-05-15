@@ -5,7 +5,7 @@ import com.alphamail.api.assistants.infrastructure.dto.VectorDBDTORequest;
 
 public interface SaveVectorDBRepository {
 
-    public VectorDBDTORequest sendEmailToAi(VectorDB vectorDB);
+    VectorDBDTORequest sendEmailToAi(VectorDB vectorDB);
 
 
 }

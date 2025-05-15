@@ -15,13 +15,15 @@ services:
       - REDIS_PORT=${REDIS_PORT}
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - JWT_SECRET=${JWT_SECRET}
+      - CLAUDE_SECRET_KEY=${CLAUDE_SECRET_KEY}
+      - CLAUDE_BASE_URL=${CLAUDE_BASE_URL}
   frontend:
     build: ./frontend/mail-app
     image: alphaMail/frontend:latest
     ports:
       - "3000:80" 
   rag:
-    build: ./AI/RAG
+    build: ./AI/server/rag
     image: alphaMail/rag:latest
     ports:
       - "5000:5000"
@@ -29,6 +31,34 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}  
     volumes:
       - pip-cache:/root/.cache/pip
+  ocr:
+    build: ./AI/server/ocr
+    image: alphaMail/ocr:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - OCR_SECRET=${OCR_SECRET}
+      - OCR_API_URL=${OCR_API_URL}
+
+  mcp-server:
+    build: ./AI/server/mcp-server
+    image: alphaMail/mcp-server:latest
+    ports:
+      - "8000:8000"
+
+  mcp-client:
+    build: ./AI/server/mcp-client
+    image: alphaMail/mcp-client:latest
+    ports:
+      - "8001:8001"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+
+  chatbot:
+    build: ./AI/CHATBOT/services
+    image: alphaMail/chatbot:latest
+    ports:
+      - "5001:5001"
 
 volumes:
   pip-cache: {}

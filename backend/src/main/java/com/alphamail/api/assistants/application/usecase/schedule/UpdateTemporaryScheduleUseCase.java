@@ -2,8 +2,8 @@ package com.alphamail.api.assistants.application.usecase.schedule;
 
 import com.alphamail.api.assistants.domain.entity.TemporarySchedule;
 import com.alphamail.api.assistants.domain.repository.TemporaryScheduleRepository;
-import com.alphamail.api.assistants.presentation.dto.TemporaryScheduleResponse;
-import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryScheduleRequest;
+import com.alphamail.api.assistants.presentation.dto.schedule.TemporaryScheduleResponse;
+import com.alphamail.api.assistants.presentation.dto.schedule.UpdateTemporaryScheduleRequest;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ public class UpdateTemporaryScheduleUseCase {
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
         TemporarySchedule updateTemporarySchedule = temporarySchedule.update(updateTemporaryScheduleRequest);
-
 
         return TemporaryScheduleResponse.from(temporaryScheduleRepository.save(updateTemporarySchedule));
     }

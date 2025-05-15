@@ -1,17 +1,21 @@
 package com.alphamail.api.email.infrastructure.repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.infrastructure.entity.EmailEntity;
 import com.alphamail.api.email.infrastructure.mapper.EmailMapper;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 
 import lombok.RequiredArgsConstructor;
 
@@ -81,6 +85,61 @@ public class EmailRepositoryImpl implements EmailRepository {
 			emailJpaRepository.delete(email);
 		}
 		return emails.size();
+	}
+
+	@Override
+	public List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId) {
+
+		return emailJpaRepository.findByThreadIdAndUserUserIdOrderByReceivedDateTimeAsc(threadId, userId)
+			.stream()
+			.map(entity -> new EmailThreadItem(
+				entity.getEmailId(),
+				entity.getSender(),
+				entity.getSubject(),
+				entity.getSentDateTime() != null ? entity.getSentDateTime() : entity.getReceivedDateTime(),
+				entity.getOriginalFolderId()
+			))
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public Email findBySesMessageId(String sesMessageId) {
+		return emailJpaRepository.findBySesMessageId(sesMessageId)
+			.map(emailMapper::toDomain)
+			.orElse(null);
+	}
+
+	@Override
+	public void updateMessageIdAndThreadId(Integer emailId, String sesMessageId, String newThreadId) {
+		emailJpaRepository.updateMessageIdAndThreadId(emailId, sesMessageId, newThreadId);
+	}
+
+	@Override
+	public void updateMessageId(Integer emailId, String sesMessageId) {
+		emailJpaRepository.updateMessageId(emailId, sesMessageId);
+	}
+
+	@Override
+	public void updateSesMessageId(Integer emailId, String sesMessageId) {
+		emailJpaRepository.updateSesMessageId(emailId, sesMessageId);
+	}
+
+	@Override
+	public void updateMessageIdThreadIdAndStatus(Integer emailId, String messageId, String threadId,
+		EmailStatus status) {
+		emailJpaRepository.updateMessageIdThreadIdAndStatus(emailId, messageId, threadId, status);
+	}
+
+	@Override
+	public void updateThreadId(Integer emailId, String threadId) {
+		emailJpaRepository.updateThreadId(emailId, threadId);
+	}
+
+	@Override
+	public Email findByMessageId(String messageId) {
+		return emailJpaRepository.findByMessageId(messageId)
+			.map(emailMapper::toDomain)
+			.orElse(null);
 	}
 
 	@Override

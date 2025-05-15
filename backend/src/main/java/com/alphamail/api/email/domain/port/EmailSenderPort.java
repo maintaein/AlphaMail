@@ -9,5 +9,5 @@ import com.alphamail.api.email.domain.entity.EmailAttachment;
 
 public interface EmailSenderPort {
 
-	void send(Email email, List<MultipartFile> multipartFiles);
+	String send(Email email, List<MultipartFile> multipartFiles);
 }

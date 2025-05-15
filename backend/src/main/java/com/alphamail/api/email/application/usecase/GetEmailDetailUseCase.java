@@ -1,5 +1,6 @@
 package com.alphamail.api.email.application.usecase;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.domain.repository.EmailAttachmentRepository;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
+import com.alphamail.api.email.presentation.dto.EmailThreadItem;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.NotFoundException;
 
@@ -31,12 +33,18 @@ public class GetEmailDetailUseCase {
 		// email 상세보기 가져오기
 		List<EmailAttachment> attachments = emailAttachmentRepository.findAllByEmailId(emailId);
 
+
+		List<EmailThreadItem> threadList = Collections.emptyList();
+		if(email.hasValidThreadId()) {
+			threadList = emailRepository.findByThreadIdAndUserId(email.getThreadId(), userId);
+		}
+
 		// 읽음 표시가 필요한 경우에만 업데이트
 		if (email.getReadStatus() == null || !email.getReadStatus()) {
 			email = emailRepository.save(email.markAsRead());
 		}
 
-		return EmailDetailResponse.from(email, attachments);
+		return EmailDetailResponse.from(email, attachments, threadList);
 
 	}
 }
