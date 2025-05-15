@@ -43,7 +43,7 @@ def date(
     - 이메일에 회의, 약속, 행사 등 일정이 포함된 경우.
     - 날짜(start, end) 정보가 명확히 존재할 것.
     - 일정 정보를 외부 시스템에 전송하는 것이 목적임.
-    - user_email은 받은 사람의 이메일임. 
+    - user_email은 받은 사람의 이메일임.
     """
     try:
         logger.info(f"일정 생성 요청: {title} ({startTime} ~ {endTime})")
@@ -70,7 +70,6 @@ def date(
             
         return {
             "message": """형식은 반드시 아래 JSON 구조를 따르세요:
-
         {
         "reply": "여기에 한 문단으로 작성한 요약이 들어갑니다...",
         "ids": [temporaryScheduleId]
