@@ -69,8 +69,15 @@ def date(
             response_data = {"status_code": response.status_code}
             
         return {
-            "message": "일정 정보가 정상적으로 외부 시스템에 전송되었습니다.",
-            "response": response_data
+            "message": """형식은 반드시 아래 JSON 구조를 따르세요:
+
+        {
+        "reply": "여기에 한 문단으로 작성한 요약이 들어갑니다...",
+        "ids": [temporaryScheduleId]
+        }
+        """,
+            "response": response_data,
+            "ids": [response_data.get("temporaryScheduleId")]
         }
     except Exception as e:
         logger.error(f"일정 정보 전송 실패: {str(e)}")
