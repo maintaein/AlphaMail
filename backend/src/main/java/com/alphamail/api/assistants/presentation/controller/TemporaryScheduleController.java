@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@SuppressWarnings("checkstyle:RegexpMultiline")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiPaths.ASSISTANTS_BASE_API + ApiPaths.SCHEDULE_BASE_API)

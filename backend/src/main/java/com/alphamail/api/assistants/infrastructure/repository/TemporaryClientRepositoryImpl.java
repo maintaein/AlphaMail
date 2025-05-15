@@ -1,5 +1,7 @@
 package com.alphamail.api.assistants.infrastructure.repository;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Repository;
 
 import com.alphamail.api.assistants.domain.entity.TemporaryClient;
@@ -21,5 +23,16 @@ public class TemporaryClientRepositoryImpl implements TemporaryClientRepository 
 		TemporaryClientEntity entity = temporaryClientEntityMapper.toEntity(temporaryClient);
 		TemporaryClientEntity savedEntity = temporaryClientJpaRepository.save(entity);
 		return temporaryClientEntityMapper.toDomain(savedEntity);
+	}
+
+	@Override
+	public void deleteById(Integer temporaryClientId) {
+		temporaryClientJpaRepository.deleteById(temporaryClientId);
+	}
+
+	@Override
+	public Optional<TemporaryClient> findById(Integer temporaryClientId) {
+		return temporaryClientJpaRepository.findById(temporaryClientId)
+			.map(temporaryClientEntityMapper::toDomain);
 	}
 }
