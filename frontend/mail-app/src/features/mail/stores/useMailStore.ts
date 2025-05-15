@@ -9,18 +9,29 @@ export interface MailAttachment {
 }
 
 interface MailState {
+  // 기존 상태
   currentFolder?: number;
   currentPage: number;
   sortOrder: number;
   searchKeyword: string;
   selectedMails: string[];
-    attachments: MailAttachment[];
+  attachments: MailAttachment[];
   
+  // 메일 작성 관련 상태 추가
+  recipients: string[];
+  subject: string;
+  content: string;
+  threadId: string | null;
+  inReplyTo: number | null;
+  references: string[];
+  isLoading: boolean;
+  
+  // 기존 액션
   setCurrentFolder: (folderId?: number) => void;
   setCurrentPage: (page: number) => void;
   setSortOrder: (order: number) => void;
   setSearchKeyword: (keyword: string) => void;
-  clearSearchKeyword: () => void;  // 새로 추가
+  clearSearchKeyword: () => void;
   selectMail: (id: string) => void;
   unselectMail: (id: string) => void;
   selectAllMails: (ids: string[]) => void;
@@ -28,9 +39,20 @@ interface MailState {
   addAttachment: (file: File) => void;
   removeAttachment: (id: string) => void;
   clearAttachments: () => void;
+  
+  // 메일 작성 관련 액션 추가
+  setRecipients: (recipients: string[]) => void;
+  setSubject: (subject: string) => void;
+  setContent: (content: string) => void;
+  setThreadId: (threadId: string | null) => void;
+  setInReplyTo: (inReplyTo: number | null) => void;
+  setReferences: (references: string[]) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  resetComposeState: () => void;
 }
 
 export const useMailStore = create<MailState>((set) => ({
+  // 기존 상태
   currentFolder: 1,
   currentPage: 1,
   sortOrder: 0,
@@ -38,10 +60,20 @@ export const useMailStore = create<MailState>((set) => ({
   selectedMails: [],
   attachments: [],
   
+  // 메일 작성 관련 상태 추가
+  recipients: [],
+  subject: '',
+  content: '',
+  threadId: null,
+  inReplyTo: null,
+  references: [],
+  isLoading: false,
+  
+  // 기존 액션
   setCurrentFolder: (folderId) => set({ 
     currentFolder: folderId,
     currentPage: 1,
-    searchKeyword: '',  // 폴더 변경 시 검색어 초기화
+    searchKeyword: '',
     selectedMails: []
   }),
   
@@ -95,5 +127,30 @@ export const useMailStore = create<MailState>((set) => ({
     attachments: state.attachments.filter(attachment => attachment.id !== id)
   })),
   
-  clearAttachments: () => set({ attachments: [] })
+  clearAttachments: () => set({ attachments: [] }),
+  
+  // 메일 작성 관련 액션 추가
+  setRecipients: (recipients) => set({ recipients }),
+  
+  setSubject: (subject) => set({ subject }),
+  
+  setContent: (content) => set({ content }),
+  
+  setThreadId: (threadId) => set({ threadId }),
+  
+  setInReplyTo: (inReplyTo) => set({ inReplyTo }),
+  
+  setReferences: (references) => set({ references }),
+  
+  setIsLoading: (isLoading) => set({ isLoading }),
+  
+  resetComposeState: () => set({ 
+    recipients: [],
+    subject: '',
+    content: '',
+    threadId: null,
+    inReplyTo: null,
+    references: [],
+    attachments: []
+  })
 }));

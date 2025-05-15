@@ -4,18 +4,6 @@ import { MAIL_QUERY_KEYS } from '../constants/queryKeys';
 import { FolderResponse, SendMailRequest } from '../types/mail';
 import { toast } from 'react-toastify';
 
-// const logMutation = (name: string, variables: any) => {
-//   console.log(`🔄 뮤테이션 시작: ${name}`, { 변수: variables });
-// };
-
-// const logMutationSuccess = (name: string, data: any) => {
-//   console.log(`✅ 뮤테이션 성공: ${name}`, { 결과: data });
-// };
-
-// const logMutationError = (name: string, error: any) => {
-//   console.error(`❌ 뮤테이션 실패: ${name}`, { 오류: error });
-// };
-
   export const useMail = () => {
     const queryClient = useQueryClient();
     
@@ -47,7 +35,7 @@ import { toast } from 'react-toastify';
         enabled: !!id,
       });
     };
-    
+      
     // 메일 읽음 상태 변경 뮤테이션
     const markAsRead = useMutation({
       mutationFn: ({ ids }: { ids: string[] }) => 

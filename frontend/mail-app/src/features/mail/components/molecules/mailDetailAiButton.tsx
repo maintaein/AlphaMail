@@ -43,7 +43,7 @@ export const MailDetailAiButton: React.FC<MailDetailAiButtonProps> = ({
             fill="white"
           />
         </svg>
-        AI 어시스턴트
+        AI 요약
       </button>
       
       {/* 번역 버튼 */}

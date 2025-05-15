@@ -9,6 +9,8 @@ import { useMail } from '../../hooks/useMail';
 import { Spinner } from '@/shared/components/atoms/spinner';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
+import AiPageTemplate from './aiPageTemplate';
+import { useAiStore } from '../../stores/useAiStore';
 
 interface MailDetailTemplateProps {
   source?: 'inbox' | 'sent' | 'trash';
@@ -20,6 +22,11 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   const location = useLocation();
   const { useMailDetail, moveMailToTrash, downloadAttachment } = useMail();
   const { setTitle } = useHeaderStore();
+  const { 
+    isAiAssistantOpen, 
+    openAiAssistant, 
+    closeAiAssistant 
+  } = useAiStore();
 
   // 메일 상세 정보 조회
   const { data, isLoading, isError, error } = useMailDetail(id || '');
@@ -69,20 +76,10 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   
   // 답장 핸들러
   const handleReply = () => {
-    if (!data) return;
+    if (!data || !id) return;
     
-    // 제목에 RE: 접두사 추가 (이미 있으면 추가하지 않음)
-    const subject = data.subject.startsWith('RE:') ? data.subject : `RE: ${data.subject}`;
-    
-    navigate('/mail/write', {
-      state: {
-        to: [data.sender],
-        subject,
-        inReplyTo: data.messageId, // messageId를 inReplyTo로 사용
-        references: data.references || [], // references 그대로 전달
-        threadId: data.threadId
-      }
-    });
+    // 메일 작성 페이지로 이동하면서 reply 쿼리 파라미터로 메일 ID 전달
+    navigate(`/mail/write?reply=${id}`);
   };
     
   const handleDelete = () => {
@@ -116,6 +113,16 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
       attachmentId,
       fileName
     });
+  };
+  
+  // AI 어시스턴트 열기
+  const handleAiAssistant = () => {
+    openAiAssistant();
+  };
+  
+  // AI 어시스턴트 닫기
+  const handleCloseAiAssistant = () => {
+    closeAiAssistant();
   };
   
   if (isLoading) {
@@ -164,7 +171,7 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
   const displayDate = data.emailType === 'SENT' ? data.sentDateTime : data.receivedDateTime;
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow overflow-auto">
+    <div className={`flex flex-col h-full bg-white rounded-lg shadow overflow-auto ${isAiAssistantOpen ? 'mr-[400px]' : ''}`}>
       {/* 메일 상세 헤더 */}
       <MailDetailHeader
         onBack={handleBack}
@@ -179,7 +186,7 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
         sender={data.sender}
         recipients={data.recipients}
         receivedDateTime={displayDate}
-        onAiAssistant={() => console.log('AI 어시스턴트 실행')}
+        onAiAssistant={handleAiAssistant}
         onTranslate={() => console.log('번역 실행')}      
       />
       
@@ -206,6 +213,15 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
           threadMails={data.threadEmails}
         />
       )}
+
+      {/* AI 어시스턴트 */}
+      <AiPageTemplate 
+        isOpen={isAiAssistantOpen} 
+        onClose={handleCloseAiAssistant} 
+        mode="summary" // 메일 상세 페이지에서는 summary 모드 사용
+        mailContent={data.bodyText} // 메일 내용 전달      
+      />
+
     </div>
   );
 };

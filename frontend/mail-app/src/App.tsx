@@ -34,11 +34,11 @@ const AppLayout = () => {
     <div className="flex h-screen">
       <NavBar />
       {showSidebar && <SideBar type={sidebarType} />}
-      <main className="flex-1 overflow-auto flex flex-col">
-        <Header>
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <Header className="flex-shrink-0">
           <HeaderContent />
         </Header>
-        <div className="flex-1">
+        <div className="flex-1 overflow-auto">
           <Router />
         </div>
       </main>

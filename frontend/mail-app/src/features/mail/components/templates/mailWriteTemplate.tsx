@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MailWriteHeader } from '../organisms/mailWriteHeader';
 import { MailWriteForm } from '../organisms/mailWriteForm';
@@ -11,6 +11,8 @@ import { toast } from 'react-toastify';
 import { useMailStore } from '../../stores/useMailStore';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
+import AiPageTemplate from './aiPageTemplate';
+import { useAiStore } from '../../stores/useAiStore';
 
 const FONT_OPTIONS = [
   { value: 'pretendard', label: '프리텐다드' },
@@ -34,6 +36,11 @@ const MailWriteTemplate: React.FC = () => {
   const { sendMail } = useMail();
   const { attachments, clearAttachments } = useMailStore();
   const lastToastIdRef = useRef<string | number | null>(null);
+  const { 
+    isAiAssistantOpen, 
+    openAiAssistant, 
+    closeAiAssistant 
+  } = useAiStore();
 
   const [to, setTo] = useState<string[]>([]);
   const [subject, setSubject] = useState<string>('');
@@ -49,13 +56,13 @@ const MailWriteTemplate: React.FC = () => {
   const replyToId = queryParams.get('reply');
   const mailId = replyToId
 
-// 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
-const { data: originalMail } = useQuery({
-  queryKey: ['mail', mailId],
-  queryFn: () => mailService.getMailDetail(mailId!),
-  enabled: !!mailId, // mailId가 있을 때만 쿼리 활성화
-  staleTime: 0, // 항상 최신 데이터 사용
-  refetchOnMount: 'always', // 컴포넌트 마운트 시 항상 다시 가져오기
+  // 답장 또는 전달 메일 ID가 있을 때만 원본 메일 정보 가져오기
+  const { data: originalMail } = useQuery({
+    queryKey: ['mail', mailId],
+    queryFn: () => mailService.getMailDetail(mailId!),
+    enabled: !!mailId, // mailId가 있을 때만 쿼리 활성화
+    staleTime: 0, // 항상 최신 데이터 사용
+    refetchOnMount: 'always', // 컴포넌트 마운트 시 항상 다시 가져오기
 });
   
 // 스레드 검색 - 같은 발신자/수신자와의 이메일 스레드 찾기
@@ -118,6 +125,7 @@ const { data: threadInfo } = useQuery({
     return format(date, 'yyyy년 M월 d일 (E) a h:mm', { locale: ko });
   };
   
+  // 원본 메일 정보로 폼 초기화
   useEffect(() => {
     if (originalMail && replyToId) {
       // 답장 모드
@@ -195,12 +203,12 @@ const { data: threadInfo } = useQuery({
     }
     }, [sendMail.isPending, showLoading]);
 
-    // 컴포넌트 언마운트 시 첨부파일 상태 초기화
-    useEffect(() => {
-      return () => {
-        clearAttachments();
-      };
-    }, [clearAttachments]);
+  // 컴포넌트 언마운트 시 첨부파일 상태 초기화
+  useEffect(() => {
+    return () => {
+      clearAttachments();
+    };
+  }, [clearAttachments]);
 
   const handleSend = () => {
     // 유효성 검사
@@ -307,13 +315,16 @@ const { data: threadInfo } = useQuery({
   };
 
   const handleAiAssistant = () => {
-    console.log('AI 어시스턴트 실행');
+    openAiAssistant();
+  };
+  
+  const handleCloseAiAssistant = () => {
+    closeAiAssistant();
   };
 
   
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow">
-      <MailWriteHeader
+   <div className={`flex flex-col h-full bg-white rounded-lg shadow overflow-auto ${isAiAssistantOpen ? 'mr-[400px]' : ''}`}>      <MailWriteHeader
         onSend={handleSend}
         onCancel={handleCancel}
         onAiAssistant={handleAiAssistant}
@@ -342,6 +353,13 @@ const { data: threadInfo } = useQuery({
                 </div>
             </div>
         )}
+
+        {/* AI 어시스턴트 */}
+        <AiPageTemplate 
+          isOpen={isAiAssistantOpen} 
+          onClose={handleCloseAiAssistant}
+          mode="template"
+        />
     </div>
   );
 };
