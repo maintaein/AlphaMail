@@ -97,37 +97,33 @@ class MCPClientManager:
             await self.initialize()
                 
         try:
-            # 에이전트에 쿼리 전송
-            response = await self.agent.ainvoke({"messages": [HumanMessage(content=query)]})
             
-            # 도구 호출 처리
-            tool_calls = []
+            json_instruction = """
+반드시 아래 JSON 형식으로만 답변하세요. 
+자유로운 설명이나 불필요한 텍스트는 절대 포함하지 마세요.
+
+예시:
+{
+  "reply": "여기에 한 문단으로 작성한 요약이 들어갑니다...",
+  "ids": [일정ID 또는 관련 ID]
+}
+"""
+            prompt = json_instruction + "\n" + query
+ 
+            # 에이전트에 쿼리 전송
+            response = await self.agent.ainvoke({"messages": [HumanMessage(content=prompt)]})
             
             for msg in response.get("messages", []):
                 if hasattr(msg, 'tool_calls') and msg.tool_calls:
                     for call in msg.tool_calls:
-                        tool_call = {
-                            "name": call['name'],
-                            "args": call['args']
-                        }
-                        
-                        try:
-                            # 해당 도구 찾기
-                            tool = next((t for t in self.tools if t.name == call['name']), None)
-                            if tool:
-                                server_response = await tool.coroutine(call['args'])
-                                tool_call["result"] = server_response
-                            else:
-                                tool_call["error"] = f"도구 '{call['name']}'을(를) 찾을 수 없습니다."
-                        except Exception as e:
-                            tool_call["error"] = f"도구 호출 오류: {str(e)}"
-                            
-                        tool_calls.append(tool_call)
-            
-            return {
-                "response": response,
-                "tool_calls": tool_calls
-            }
+                        tool = next((t for t in self.tools if t.name == call['name']), None)
+                        if tool:
+                            server_response = await tool.coroutine(call['args'])
+                            return server_response  # 결과만 바로 반환
+                        else:
+                            return {"error": f"도구 '{call['name']}'을(를) 찾을 수 없습니다."}
+            # 툴 호출이 없으면 LLM의 원래 답변 반환
+            return response
                 
         except Exception as e:
             logger.error(f"쿼리 처리 오류: {str(e)}")
@@ -150,3 +146,6 @@ class MCPClientManager:
             if not self.sse_connected:
                 await self.connect_sse()
             await asyncio.sleep(5)  # 5초마다 체크
+
+    def call_tool(self, args):  # 또는 def call_tool(**kwargs):
+        return mcp_tool(**args)
