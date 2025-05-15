@@ -31,7 +31,7 @@ public class VectorSearchClient {
 		HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
 		ResponseEntity<List> response = restTemplate.exchange(
-			"http://localhost:5001/api/vector/search",
+			"http://chatbot:5001/api/vector/search",
 			HttpMethod.POST,
 			request,
 			List.class
