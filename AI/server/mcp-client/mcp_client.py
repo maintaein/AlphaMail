@@ -146,6 +146,3 @@ class MCPClientManager:
             if not self.sse_connected:
                 await self.connect_sse()
             await asyncio.sleep(5)  # 5초마다 체크
-
-    def call_tool(self, args):  # 또는 def call_tool(**kwargs):
-        return mcp_tool(**args)

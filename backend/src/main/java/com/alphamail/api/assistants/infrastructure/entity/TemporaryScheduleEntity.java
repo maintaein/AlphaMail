@@ -26,7 +26,7 @@ public class TemporaryScheduleEntity extends BaseTimeEntity {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "email_id", nullable = false)  // 이 부분 수정 필요
+    @JoinColumn(name = "email_id")  // 이 부분 수정 필요
     private EmailEntity emailEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
