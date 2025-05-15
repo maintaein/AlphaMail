@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.assistants.domain.entity.TemporaryClient;
 import com.alphamail.api.assistants.domain.repository.TemporaryClientRepository;
-import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryClientRequest;
+import com.alphamail.api.assistants.presentation.dto.client.UpdateTemporaryClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientResponse;
 import com.alphamail.common.exception.ErrorMessage;
 import com.alphamail.common.exception.ForbiddenException;

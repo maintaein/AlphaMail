@@ -15,7 +15,7 @@ import com.alphamail.api.assistants.application.usecase.client.DeleteTemporaryCl
 import com.alphamail.api.assistants.application.usecase.client.GetTemporaryClientUseCase;
 import com.alphamail.api.assistants.application.usecase.client.RegisterTemporaryClientUseCase;
 import com.alphamail.api.assistants.application.usecase.client.UpdateTemporaryClientUseCase;
-import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryClientRequest;
+import com.alphamail.api.assistants.presentation.dto.client.UpdateTemporaryClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.RegisterClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientResponse;

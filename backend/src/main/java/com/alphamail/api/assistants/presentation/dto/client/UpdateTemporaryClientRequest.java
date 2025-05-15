@@ -1,6 +1,4 @@
-package com.alphamail.api.assistants.presentation.dto;
-
-import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
+package com.alphamail.api.assistants.presentation.dto.client;
 
 public record UpdateTemporaryClientRequest(
 	String licenseNum,

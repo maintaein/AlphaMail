@@ -1,6 +1,6 @@
 package com.alphamail.api.assistants.domain.entity;
 
-import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryClientRequest;
+import com.alphamail.api.assistants.presentation.dto.client.UpdateTemporaryClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientRequest;
 
 import lombok.AllArgsConstructor;
