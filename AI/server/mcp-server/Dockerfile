@@ -12,5 +12,4 @@ COPY . .
 
 # FastAPI 서버 포트 오픈
 EXPOSE 8000
-
 CMD ["python", "mcpserver.py"]
