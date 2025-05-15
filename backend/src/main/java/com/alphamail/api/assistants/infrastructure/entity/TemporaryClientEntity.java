@@ -11,11 +11,17 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor  // JPA 필수
+@AllArgsConstructor // Builder 패턴에 필요
 @Table(name = "temporary_schedule")
+@Builder
 public class TemporaryClientEntity extends BaseTimeEntity {
 
 	@Id
