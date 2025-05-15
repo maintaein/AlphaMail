@@ -3,6 +3,9 @@ package com.alphamail.api.erp.application.usecase.quote;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alphamail.api.chatbot.domain.common.VectorizableDocument;
+import com.alphamail.api.chatbot.infrastructure.adapter.QuoteVectorAdapter;
+import com.alphamail.api.chatbot.infrastructure.vector.VectorUpsertClient;
 import com.alphamail.api.erp.application.dto.RegistResultDto;
 import com.alphamail.api.erp.domain.entity.Client;
 import com.alphamail.api.erp.domain.entity.Quote;
@@ -28,6 +31,7 @@ public class RegistQuoteUseCase {
 	private final CompanyReader companyReader;
 	private final GroupReader groupReader;
 	private final ClientReader clientReader;
+	private final VectorUpsertClient vectorUpsertClient;
 
 	public RegistResultDto execute(RegistQuoteRequest request) {
 		User user = userReader.findById(request.userId());
@@ -44,6 +48,9 @@ public class RegistQuoteUseCase {
 		if (savedQuote == null) {
 			return RegistResultDto.saveFailed();
 		}
+
+		VectorizableDocument doc = new QuoteVectorAdapter(savedQuote);
+		vectorUpsertClient.upsert(doc);
 
 		return RegistResultDto.saveSuccess(savedQuote.getQuoteId());
 	}

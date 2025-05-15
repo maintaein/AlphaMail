@@ -32,6 +32,7 @@ import com.alphamail.api.erp.presentation.dto.purchaseorder.RegistPurchaseOrderR
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.api.global.dto.RemoveAllErpRequest;
+import com.alphamail.common.annotation.Auth;
 import com.alphamail.common.constants.ApiPaths;
 
 import lombok.RequiredArgsConstructor;
@@ -86,7 +87,8 @@ public class PurchaseOrderController {
 	}
 
 	@PostMapping(ApiPaths.ORDERS_BASE_API)
-	public ResponseEntity<?> regist(@RequestBody RegistPurchaseOrderRequest request) {
+	public ResponseEntity<?> regist(@Auth Integer userId, @RequestBody RegistPurchaseOrderRequest request) {
+
 		RegistResultDto result = registPurchaseOrderUseCase.execute(request);
 
 		if (!result.isDone()) {

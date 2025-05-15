@@ -1,4 +1,4 @@
-package com.alphamail.api.chatbot.infrastructure.adapter;
+package com.alphamail.api.chatbot.infrastructure.vector;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,10 +20,16 @@ public class VectorSearchClient {
 
 	private final RestTemplate restTemplate;
 
-	public List<String> searchByEmbedding(Integer userId, String query) {
+	public List<Map<String, String>> searchByEmbedding(String documentType, Integer ownerId, Integer userId, String query) {
+		Map<String, Object> where = Map.of(
+			"owner_id", ownerId,
+			"user_id", userId,
+			"document_type", documentType
+		);
+
 		Map<String, Object> body = Map.of(
 			"query", query,
-			"user_id", userId
+			"where", where
 		);
 
 		HttpHeaders headers = new HttpHeaders();

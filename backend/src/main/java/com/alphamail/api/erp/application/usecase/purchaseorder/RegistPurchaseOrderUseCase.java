@@ -3,6 +3,9 @@ package com.alphamail.api.erp.application.usecase.purchaseorder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alphamail.api.chatbot.domain.common.VectorizableDocument;
+import com.alphamail.api.chatbot.infrastructure.adapter.PurchaseOrderVectorAdapter;
+import com.alphamail.api.chatbot.infrastructure.vector.VectorUpsertClient;
 import com.alphamail.api.erp.application.dto.RegistResultDto;
 import com.alphamail.api.erp.domain.entity.Client;
 import com.alphamail.api.erp.domain.entity.PurchaseOrder;
@@ -30,6 +33,7 @@ public class RegistPurchaseOrderUseCase {
 	private final GroupReader groupReader;
 	private final ClientReader clientReader;
 	private final CompanyReader companyReader;
+	private final VectorUpsertClient vectorUpsertClient;
 
 	public RegistResultDto execute(RegistPurchaseOrderRequest request) {
 		User user = userReader.findById(request.userId());
@@ -46,6 +50,9 @@ public class RegistPurchaseOrderUseCase {
 		if (savedOrder == null) {
 			return RegistResultDto.saveFailed();
 		}
+
+		VectorizableDocument doc = new PurchaseOrderVectorAdapter(savedOrder);
+		vectorUpsertClient.upsert(doc);
 
 		return RegistResultDto.saveSuccess(savedOrder.getPurchaseOrderId());
 	}

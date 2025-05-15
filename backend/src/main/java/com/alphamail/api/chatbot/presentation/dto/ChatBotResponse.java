@@ -1,12 +1,10 @@
 package com.alphamail.api.chatbot.presentation.dto;
 
-import com.alphamail.api.chatbot.application.dto.ChatBotResult;
+import java.util.List;
 
 public record ChatBotResponse(
 	String reply,
-	boolean requiresFollowUp
+	List<Integer> ids,
+	String type
 ) {
-	public static ChatBotResponse from(ChatBotResult result) {
-		return new ChatBotResponse(result.reply(), result.requiresFollowUp());
-	}
 }

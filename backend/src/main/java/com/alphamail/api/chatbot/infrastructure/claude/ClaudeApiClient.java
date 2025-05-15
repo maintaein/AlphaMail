@@ -1,4 +1,4 @@
-package com.alphamail.api.chatbot.infrastructure.adapter;
+package com.alphamail.api.chatbot.infrastructure.claude;
 
 import java.util.HashMap;
 import java.util.List;
