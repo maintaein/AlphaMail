@@ -2,11 +2,15 @@ package com.alphamail.api.assistants.domain.entity;
 
 import com.alphamail.api.assistants.presentation.dto.TemporaryClientRequest;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TemporaryClient {
 
 	private Integer id;

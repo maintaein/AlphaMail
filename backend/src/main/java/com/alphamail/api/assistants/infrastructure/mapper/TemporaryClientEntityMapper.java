@@ -13,7 +13,7 @@ public interface TemporaryClientEntityMapper {
 	@Mapping(source = "userId", target = "user", qualifiedByName = "toUserEntity")
 	TemporaryClientEntity toEntity(TemporaryClient domain);
 
-	// 엔티티를 도메인 객체로 변환
-	@Mapping(source = "user.id", target = "userId")
+	// user.userId를 참조하도록 수정
+	@Mapping(source = "user.userId", target = "userId")
 	TemporaryClient toDomain(TemporaryClientEntity entity);
 }
