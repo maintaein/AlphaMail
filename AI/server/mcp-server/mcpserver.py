@@ -28,11 +28,14 @@ mcp = FastMCP("AlphaMail MCP Server")
 # === 도구 정의 ===
 @mcp.tool()
 def date(
-    start: Annotated[str, Field(description="일정 시작 일자 (예: '2025-05-10T10:00:00')")],
-    end: Annotated[str, Field(description="일정 종료 일자 (예: '2024-05-11T11:30:00')")],
-    user_email : Annotated[str, Field(description="받은 사람의 이메일 (예:'test@alphamail.my')")],
-    title: Annotated[Optional[str], Field(description="일정 제목", default=None)] = None,
-    description: Annotated[Optional[str], Field(description="일정 설명", default=None)] = None
+
+    startTime: Annotated[str, Field(description="일정 시작 일자 (예: '2025-05-10T10:00:00')")],
+    endTime: Annotated[str, Field(description="일정 종료 일자 (예: '2024-05-11T11:30:00')")],
+    userEmail : Annotated[str, Field(description="받은 사람의 이메일 (예:'test@alphamail.my')")],
+    emailId : Annotated[str, Field(description="이메일 아이디 (예:'123'), 메일 아이디 emailId : 로 값이 들어옴")],
+    name: Annotated[Optional[str], Field(description="일정 제목", default=None)] = None,
+    description: Annotated[Optional[str], Field(description="일정 설명", default=None)] = None,
+    title: Annotated[Optional[str], Field(description="전체적인 AI가 만든 제목임 일정 제목은 간단하지만 이 title은 좀 더 길게 만들어짐", default=None)] = None
 ):
     """
     메일 본문에서 일정 관련 날짜 및 제목 정보를 추출하여 일정을 생성합니다.
@@ -48,11 +51,13 @@ def date(
         response = httpx.post(
             f"{ALPHAMAIL_BASE_URL}/api/assistants/schedules",
             json={
-                "name" : title,
-                "start": start,
-                "end": end,
+                "name" : name,
+                "startTime": startTime,
+                "endTime": endTime,
                 "description": description,
-                "userEmail" : user_email
+                "userEmail" : userEmail,
+                "emailId" : emailId,
+                "title" : title
             },
             timeout=REQUEST_TIMEOUT
         )
