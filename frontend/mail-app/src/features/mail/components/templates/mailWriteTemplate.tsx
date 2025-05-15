@@ -13,6 +13,7 @@ import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
 import AiPageTemplate from './aiPageTemplate';
 import { useAiStore } from '../../stores/useAiStore';
+import { useUser } from '@/features/auth/hooks/useUser'; // useUser 훅 임포트
 
 const FONT_OPTIONS = [
   { value: 'pretendard', label: '프리텐다드' },
@@ -26,6 +27,8 @@ const FONT_OPTIONS = [
 ];
 
 const MailWriteTemplate: React.FC = () => {
+
+  const { data: userData } = useUser();
 
   const MAX_EMAIL_LENGTH = 254; // RFC 5321 기준
   const MAX_SUBJECT_LENGTH = 120; // 제목 최대 길이
@@ -237,7 +240,7 @@ const { data: threadInfo } = useQuery({
 
     // 메일 전송 데이터 준비 
     const mailData: SendMailRequest = {
-      sender: 'test@alphamail.my', 
+      sender: userData?.email || '',
       recipients: to,
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 

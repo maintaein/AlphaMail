@@ -8,6 +8,7 @@ import { useMailStore } from '../../stores/useMailStore';
 import { Mail, MailListRow } from '../../types/mail';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 import { useNavigate } from 'react-router-dom';
+import { useFolders } from '../../hooks/useFolders';
 
 const SentMailTemplate: React.FC = () => {
   // 보낸 메일함은 folderId가 2
@@ -21,16 +22,27 @@ const SentMailTemplate: React.FC = () => {
     unselectMail, 
     selectAllMails, 
     clearSelection,
-    setCurrentFolder
+    setCurrentFolder,
+    getFolderIdByType,
+    folderLoading
   } = useMailStore();
   
-  // 컴포넌트 마운트 시 현재 폴더를 보낸 메일함(2)으로 설정
-  useEffect(() => {
-    setCurrentFolder(2);
-  }, [setCurrentFolder]);
+    // 폴더 정보 로드
+    const { isLoading: isFoldersLoading } = useFolders();
+  
+    // 보낸 메일함 ID 가져오기
+    const sentFolderId = getFolderIdByType('sent');
+    
+    // 컴포넌트 마운트 시 현재 폴더를 보낸 메일함으로 설정
+    useEffect(() => {
+      if (sentFolderId) {
+        setCurrentFolder(sentFolderId);
+      }
+    }, [sentFolderId, setCurrentFolder]);
+
   
   const { useMailList, moveToTrash } = useMail();
-  const { data, isLoading, error, refetch } = useMailList( 2, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList( sentFolderId, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -117,7 +129,7 @@ const SentMailTemplate: React.FC = () => {
         folderType="sent"
       />
       
-      {isLoading ? (
+      {isLoading || isFoldersLoading || folderLoading ? (
         <div className="flex justify-center items-center h-[200px]">
           <Typography variant="body">로딩 중...</Typography>
         </div>

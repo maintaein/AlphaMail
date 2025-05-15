@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useSidebarStore } from '../stores/useSidebarStore';
 import { cn } from '../utils/cn';
@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { useMailStore } from '@/features/mail/stores/useMailStore';
 import { FolderResponse } from '@/features/mail/types/mail';
 import { useMail } from '@/features/mail/hooks/useMail';
+import { useUser } from '@/features/auth/hooks/useUser';
+import { QueryClient } from '@tanstack/react-query';
 
 interface SideBarProps {
   type: 'mail' | 'work';
@@ -29,23 +31,52 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
       setLoadingFolders
     } = useSidebarStore();
   
-    const { setCurrentFolder } = useMailStore();
+    const { setCurrentFolder, resetFolderState } = useMailStore();
+  
+    const { data: userData } = useUser();
+    const prevUserIdRef = useRef<number | undefined>(undefined);
   
     // 폴더 목록 가져오기 (여기로 이동)
     const { useFolders } = useMail();
-    const { data: foldersData, isLoading } = useFolders();
+    const { data: foldersData, isLoading, refetch } = useFolders();
     
-    // 폴더 데이터 로딩 처리
-    useEffect(() => {
-      if (type === 'mail') {
-        setLoadingFolders(isLoading);
+      // 사용자 변경 감지 및 폴더 데이터 리셋
+      useEffect(() => {
+        const currentUserId = userData?.id;
         
-        if (foldersData) {
-          console.log('폴더 목록 응답:', foldersData);
-          setFolders(foldersData);
+        if (currentUserId !== prevUserIdRef.current) {
+          console.log('사용자 변경 감지:', prevUserIdRef.current, '->', currentUserId);
+          
+          // 이전 사용자 ID가 있었다면 (로그아웃 후 로그인이 아닌 사용자 전환)
+          if (prevUserIdRef.current !== undefined) {
+            resetFolderState();
+            
+            // React Query 캐시에서 이전 폴더 데이터 제거
+            const queryClient = new QueryClient();
+            queryClient.removeQueries({ queryKey: ['folders'] });
+            
+            // 강제로 폴더 데이터 재조회
+            setTimeout(() => {
+              refetch();
+            }, 100);
+          }
         }
+        
+        prevUserIdRef.current = currentUserId;
+      }, [userData?.id, resetFolderState, refetch]);
+        
+  // 폴더 데이터 로딩 처리
+  useEffect(() => {
+    if (type === 'mail') {
+      setLoadingFolders(isLoading);
+      
+      if (foldersData) {
+        console.log('폴더 목록 응답:', foldersData);
+        setFolders(foldersData);
       }
-    }, [foldersData, isLoading, setFolders, setLoadingFolders, type]);
+    }
+  }, [foldersData, isLoading, setFolders, setLoadingFolders, type]);
+
     
     const getFolderDisplayName = (folderName: string) => {
       switch(folderName) {

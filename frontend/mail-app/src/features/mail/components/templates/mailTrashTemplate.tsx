@@ -8,6 +8,7 @@ import { useMailStore } from '../../stores/useMailStore';
 import { Mail, MailListRow } from '../../types/mail';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 import { useNavigate } from 'react-router-dom';
+import { useFolders } from '../../hooks/useFolders';
 
 const MailTrashTemplate: React.FC = () => {
   // 휴지통은 folderId가 3
@@ -21,16 +22,26 @@ const MailTrashTemplate: React.FC = () => {
     unselectMail, 
     selectAllMails, 
     clearSelection,
-    setCurrentFolder
+    setCurrentFolder,
+    getFolderIdByType,
+    folderLoading
   } = useMailStore();
   
-  // 컴포넌트 마운트 시 현재 폴더를 휴지통(3)으로 설정
+  // 폴더 정보 로드
+  const { isLoading: isFoldersLoading } = useFolders();
+  
+  // 휴지통 ID 가져오기
+  const trashFolderId = getFolderIdByType('trash');
+  
+  // 컴포넌트 마운트 시 현재 폴더를 휴지통으로 설정
   useEffect(() => {
-    setCurrentFolder(3);
-  }, [setCurrentFolder]);
+    if (trashFolderId) {
+      setCurrentFolder(trashFolderId);
+    }
+  }, [trashFolderId, setCurrentFolder]);
   
   const { useMailList, emptyTrash } = useMail();
-  const { data, isLoading, error, refetch } = useMailList(3, currentPage, sortOrder, searchKeyword);
+  const { data, isLoading, error, refetch } = useMailList(trashFolderId, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
   const [allSelected, setAllSelected] = useState(false);
@@ -72,7 +83,7 @@ const MailTrashTemplate: React.FC = () => {
   const handleEmptyTrash = () => {
     // 확인 대화상자 표시
     if (window.confirm('휴지통의 모든 메일을 영구적으로 삭제하시겠습니까?')) {
-      emptyTrash.mutate({ folderId: 3 }, {
+      emptyTrash.mutate({ folderId: trashFolderId }, {
         onSuccess: () => {
           // 삭제 성공 후 메일 목록 다시 가져오기
           refetch();
@@ -130,7 +141,7 @@ const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
         
       </div>
               
-      {isLoading ? (
+      {isLoading || isFoldersLoading || folderLoading ? (
         <div className="flex justify-center items-center h-[200px]">
           <Typography variant="body">로딩 중...</Typography>
         </div>

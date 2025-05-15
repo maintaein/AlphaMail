@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { FolderResponse } from '../types/mail';
 
 export interface MailAttachment {
   id: string; 
@@ -26,6 +27,10 @@ interface MailState {
   references: string[];
   isLoading: boolean;
   
+  // 폴더 관련 상태 추가
+  folders: FolderResponse[];
+  folderLoading: boolean;
+  
   // 기존 액션
   setCurrentFolder: (folderId?: number) => void;
   setCurrentPage: (page: number) => void;
@@ -49,6 +54,11 @@ interface MailState {
   setReferences: (references: string[]) => void;
   setIsLoading: (isLoading: boolean) => void;
   resetComposeState: () => void;
+
+  setFolders: (folders: FolderResponse[]) => void;
+  setFolderLoading: (loading: boolean) => void;
+  getFolderIdByType: (type: 'inbox' | 'sent' | 'trash') => number | undefined;
+  resetFolderState: () => void;
 }
 
 export const useMailStore = create<MailState>((set) => ({
@@ -69,6 +79,9 @@ export const useMailStore = create<MailState>((set) => ({
   references: [],
   isLoading: false,
   
+  folders: [],
+  folderLoading: false,
+
   // 기존 액션
   setCurrentFolder: (folderId) => set({ 
     currentFolder: folderId,
@@ -152,5 +165,29 @@ export const useMailStore = create<MailState>((set) => ({
     inReplyTo: null,
     references: [],
     attachments: []
-  })
+  }),
+
+  resetFolderState: () => set({ 
+    folders: [],
+    currentFolder: undefined,
+    folderLoading: false
+  }),
+
+  setFolders: (folders) => set({ folders }),
+  setFolderLoading: (loading) => set({ folderLoading: loading }),
+  getFolderIdByType: (type: 'inbox' | 'sent' | 'trash') => {
+    const folders: FolderResponse[] = useMailStore.getState().folders;
+    
+    // 폴더 타입에 따라 시스템 폴더 찾기
+    switch (type) {
+      case 'inbox':
+        return folders.find(folder => folder.folderName === 'INBOX')?.id;
+      case 'sent':
+        return folders.find(folder => folder.folderName === 'SENT')?.id;
+      case 'trash':
+        return folders.find(folder => folder.folderName === 'TRASH')?.id;
+      default:
+        return undefined;
+    }
+  }
 }));

@@ -14,22 +14,27 @@ const MailPage: React.FC = () => {
   
   // 컴포넌트 마운트 시 초기 설정
   useEffect(() => {
+    const { getFolderIdByType } = useMailStore.getState();
+    
     // URL 경로에 따라 적절한 폴더와 타이틀 설정
     if (path === '/mail') {
       setActiveItem("받은 메일함");
       setTitle("받은 메일함");
-      setCurrentFolder(1);
+      const inboxId = getFolderIdByType('inbox');
+      if (inboxId) setCurrentFolder(inboxId);
     } else if (path === '/mail/sent') {
       setActiveItem("보낸 메일함");
       setTitle("보낸 메일함");
-      setCurrentFolder(2);
+      const sentId = getFolderIdByType('sent');
+      if (sentId) setCurrentFolder(sentId);
     } else if (path === '/mail/trash') {
       setActiveItem("휴지통");
       setTitle("휴지통");
-      setCurrentFolder(3);
+      const trashId = getFolderIdByType('trash');
+      if (trashId) setCurrentFolder(trashId);
     }
   }, [path, setActiveItem, setCurrentFolder, setTitle]);
-
+  
   return (
     <div>
       <MainTemplate />

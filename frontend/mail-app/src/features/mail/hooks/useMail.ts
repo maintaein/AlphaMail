@@ -3,20 +3,27 @@ import { mailService } from '../services/mailService';
 import { MAIL_QUERY_KEYS } from '../constants/queryKeys';
 import { FolderResponse, SendMailRequest } from '../types/mail';
 import { toast } from 'react-toastify';
+import { useUser } from '@/features/auth/hooks/useUser';
 
   export const useMail = () => {
     const queryClient = useQueryClient();
+    const { data: userData } = useUser();
+    const userId = userData?.id;
     
     const useFolders = () => {
       return useQuery({
-        queryKey: MAIL_QUERY_KEYS.folders(),
+        queryKey: [...MAIL_QUERY_KEYS.folders(), userId],
         queryFn: () => mailService.getFolders(),
         staleTime: 30* 60 * 1000,
+        enabled: !!userId,
       });
     };
 
     // useQuery 직접 호출
     const useMailList = (folderId?: number, page: number = 1, sort: number = 0, keyword?: string) => {
+      const { data: userData } = useUser();
+      const userId = userData?.id;    
+      
       return useQuery({
         queryKey: MAIL_QUERY_KEYS.mailList(folderId, page, sort, keyword),
         queryFn: () => mailService.getMailList(folderId, page, 15, sort, keyword),
@@ -24,6 +31,7 @@ import { toast } from 'react-toastify';
         staleTime: 0,
         refetchOnMount: 'always',
         refetchOnWindowFocus: true,
+        enabled: !!userId && folderId !== undefined,
       });
     };
     
