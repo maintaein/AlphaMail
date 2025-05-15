@@ -39,6 +39,8 @@ def date(
     사용 조건:
     - 이메일에 회의, 약속, 행사 등 일정이 포함된 경우.
     - 날짜(start, end) 정보가 명확히 존재할 것.
+    - 일정 정보를 외부 시스템에 전송하는 것이 목적임.
+    - user_email은 받은 사람의 이메일임. 
     """
     try:
         logger.info(f"일정 생성 요청: {title} ({start} ~ {end})")
@@ -56,9 +58,14 @@ def date(
         )
         response.raise_for_status()
         logger.info("일정 정보 전송 성공")
+        try:
+            response_data = response.json()
+        except:
+            response_data = {"status_code": response.status_code}
+            
         return {
             "message": "일정 정보가 정상적으로 외부 시스템에 전송되었습니다.",
-            "response": response.json()
+            "response": response_data
         }
     except Exception as e:
         logger.error(f"일정 정보 전송 실패: {str(e)}")
@@ -154,7 +161,7 @@ if __name__ == "__main__":
         logger.info("FastMCP의 SSE run() 메서드를 사용합니다.")
         mcp.run(transport="sse", host=HOST, port=PORT)
         logger.info("메인 프로세스를 유지합니다...")
-   
+
         while True:
             logger.info("서버 실행 중...")
             time.sleep(30)
