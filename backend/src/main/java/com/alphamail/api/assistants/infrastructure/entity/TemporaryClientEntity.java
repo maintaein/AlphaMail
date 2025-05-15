@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor  // JPA 필수
 @AllArgsConstructor // Builder 패턴에 필요
-@Table(name = "temporary_schedule")
+@Table(name = "temporary_client")
 @Builder
 public class TemporaryClientEntity extends BaseTimeEntity {
 

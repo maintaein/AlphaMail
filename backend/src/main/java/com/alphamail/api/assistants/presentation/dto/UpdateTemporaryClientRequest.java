@@ -1,7 +1,8 @@
 package com.alphamail.api.assistants.presentation.dto;
 
-public record TemporaryClientRequest(
-	Integer id,
+import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
+
+public record UpdateTemporaryClientRequest(
 	String licenseNum,
 	String address,
 	String corpName,
@@ -13,3 +14,4 @@ public record TemporaryClientRequest(
 	String businessLicense
 ) {
 }
+

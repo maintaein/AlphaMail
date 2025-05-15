@@ -42,8 +42,6 @@ def date(
     사용 조건:
     - 이메일에 회의, 약속, 행사 등 일정이 포함된 경우.
     - 날짜(start, end) 정보가 명확히 존재할 것.
-    - 일정 정보를 외부 시스템에 전송하는 것이 목적임.
-    - user_email은 받은 사람의 이메일임.
     """
     try:
         logger.info(f"일정 생성 요청: {title} ({startTime} ~ {endTime})")
@@ -53,7 +51,7 @@ def date(
             json={
                 "name" : name,
                 "startTime": startTime,
-                "endTime": endTime,
+                "end": end,
                 "description": description,
                 "userEmail" : userEmail,
                 "emailId" : emailId,
@@ -69,14 +67,8 @@ def date(
             response_data = {"status_code": response.status_code}
             
         return {
-            "message": """형식은 반드시 아래 JSON 구조를 따르세요:
-        {
-        "reply": "여기에 한 문단으로 작성한 요약이 들어갑니다...",
-        "ids": [temporaryScheduleId]
-        }
-        """,
-            "response": response_data,
-            "ids": [response_data.get("temporaryScheduleId")]
+            "message": "일정 정보가 정상적으로 외부 시스템에 전송되었습니다.",
+            "response": response_data
         }
     except Exception as e:
         logger.error(f"일정 정보 전송 실패: {str(e)}")

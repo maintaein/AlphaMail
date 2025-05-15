@@ -1,6 +1,7 @@
 package com.alphamail.api.assistants.domain.entity;
 
-import com.alphamail.api.assistants.presentation.dto.TemporaryClientRequest;
+import com.alphamail.api.assistants.presentation.dto.UpdateTemporaryClientRequest;
+import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientRequest;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,23 @@ public class TemporaryClient {
 	public static TemporaryClient from(TemporaryClientRequest request, Integer userId) {
 		return TemporaryClient.builder()
 			.userId(userId)
+			.licenseNum(request.licenseNum())
+			.address(request.address())
+			.corpName(request.corpName())
+			.representative(request.representative())
+			.businessType(request.businessType())
+			.businessItem(request.businessItem())
+			.email(request.email())
+			.phoneNumber(request.phoneNumber())
+			.businessLicense(request.businessLicense())
+			.build();
+	}
+
+	// 업데이트 용 정적 팩토리 메서드 추가 (record 형식에 맞게 수정)
+	public static TemporaryClient update(UpdateTemporaryClientRequest request, TemporaryClient existingClient) {
+		return TemporaryClient.builder()
+			.id(existingClient.getId())
+			.userId(existingClient.getUserId())
 			.licenseNum(request.licenseNum())
 			.address(request.address())
 			.corpName(request.corpName())
