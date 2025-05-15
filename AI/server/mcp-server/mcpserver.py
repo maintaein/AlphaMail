@@ -46,7 +46,7 @@ def date(
     - user_email은 받은 사람의 이메일임. 
     """
     try:
-        logger.info(f"일정 생성 요청: {title} ({start} ~ {end})")
+        logger.info(f"일정 생성 요청: {title} ({startTime} ~ {endTime})")
         logger.info(f"endpoint url : {ALPHAMAIL_BASE_URL}")
         response = httpx.post(
             f"{ALPHAMAIL_BASE_URL}/api/assistants/schedules",
