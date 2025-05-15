@@ -51,7 +51,7 @@ def date(
             json={
                 "name" : name,
                 "startTime": startTime,
-                "end": end,
+                "endTime": endTime,
                 "description": description,
                 "userEmail" : userEmail,
                 "emailId" : emailId,
