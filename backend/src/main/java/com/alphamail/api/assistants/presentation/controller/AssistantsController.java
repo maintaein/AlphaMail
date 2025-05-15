@@ -36,9 +36,7 @@ public class AssistantsController {
 
 	@PostMapping("/vector/test")
 	public ResponseEntity<Void> saveVectorCB(@RequestBody SendEmailRequest sendEmailRequest, @Auth Integer userId) {
-
 		saveVectorDBUseCase.execute("thread_id_001", userId, sendEmailRequest.bodyText());
-
 		return ResponseEntity.ok().build();
 	}
 

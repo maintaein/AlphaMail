@@ -36,7 +36,7 @@ public class TemporaryClientResponse {
 			.representative(temporaryClient.getRepresentative())
 			.businessType(temporaryClient.getBusinessType())
 			.businessItem(temporaryClient.getBusinessItem())
-			.email(temporaryClient.getEmail())
+			.email(temporaryClient.getClientEmail())
 			.phoneNumber(temporaryClient.getPhoneNumber())
 			.businessLicense(temporaryClient.getBusinessLicense())
 			.build();

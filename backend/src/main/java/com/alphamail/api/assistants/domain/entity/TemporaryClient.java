@@ -2,6 +2,7 @@ package com.alphamail.api.assistants.domain.entity;
 
 import com.alphamail.api.assistants.presentation.dto.client.UpdateTemporaryClientRequest;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientRequest;
+import com.alphamail.api.email.domain.entity.Email;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +16,10 @@ import lombok.NoArgsConstructor;
 public class TemporaryClient {
 
 	private Integer id;
+
+	private String title;
+
+	private Email email;
 
 	private Integer userId;
 
@@ -30,25 +35,27 @@ public class TemporaryClient {
 
 	private String businessItem;
 
-	private String email;
+	private String clientEmail;
 
 	private String phoneNumber;
 
 	private String businessLicense;
 
 	// 정적 팩토리 메서드 추가
-	public static TemporaryClient from(TemporaryClientRequest request, Integer userId) {
+	public static TemporaryClient from(TemporaryClientRequest request, Integer userId, Email email) {
 		return TemporaryClient.builder()
 			.userId(userId)
+			.title(request.corpName() + "의 임시 거래처 작성서")
 			.licenseNum(request.licenseNum())
 			.address(request.address())
 			.corpName(request.corpName())
 			.representative(request.representative())
 			.businessType(request.businessType())
 			.businessItem(request.businessItem())
-			.email(request.email())
 			.phoneNumber(request.phoneNumber())
 			.businessLicense(request.businessLicense())
+			.email(email)
+			.clientEmail(request.email())
 			.build();
 	}
 
@@ -57,13 +64,15 @@ public class TemporaryClient {
 		return TemporaryClient.builder()
 			.id(existingClient.getId())
 			.userId(existingClient.getUserId())
+			.clientEmail(request.email())
+			.title(existingClient.title)
 			.licenseNum(request.licenseNum())
 			.address(request.address())
 			.corpName(request.corpName())
 			.representative(request.representative())
 			.businessType(request.businessType())
 			.businessItem(request.businessItem())
-			.email(request.email())
+			.email(existingClient.email)
 			.phoneNumber(request.phoneNumber())
 			.businessLicense(request.businessLicense())
 			.build();

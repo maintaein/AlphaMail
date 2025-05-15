@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.alphamail.api.assistants.domain.entity.TemporaryClient;
 import com.alphamail.api.assistants.domain.repository.TemporaryClientRepository;
+import com.alphamail.api.assistants.domain.service.EmailReader;
 import com.alphamail.api.assistants.presentation.dto.client.TemporaryClientResponse;
 import com.alphamail.api.assistants.presentation.dto.client.UpdateTemporaryClientRequest;
 import com.alphamail.common.exception.ErrorMessage;
@@ -22,6 +23,7 @@ public class UpdateTemporaryClientUseCase {
 
 	public TemporaryClientResponse execute(UpdateTemporaryClientRequest updateTemporaryClientRequest, Integer userId,
 		Integer temporaryClientId) {
+
 		TemporaryClient existingClient = temporaryClientRepository.findById(temporaryClientId)
 			.orElseThrow(() -> new NotFoundException(
 				ErrorMessage.RESOURCE_NOT_FOUND));

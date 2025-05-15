@@ -1,9 +1,11 @@
 package com.alphamail.api.assistants.infrastructure.entity;
 
+import com.alphamail.api.email.infrastructure.entity.EmailEntity;
 import com.alphamail.api.user.infrastructure.entity.UserEntity;
 import com.alphamail.common.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,8 +34,15 @@ public class TemporaryClientEntity extends BaseTimeEntity {
 	@JoinColumn(name = "user_id")
 	private UserEntity user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "email_id", nullable = false)
+	private EmailEntity emailEntity;
+
 	@Column(name = "license_num", columnDefinition = "VARCHAR(255)")
 	private String licenseNum;
+
+	@Column(name = "title", length = 255, nullable = false)
+	private String title;
 
 	@Column(name = "address", columnDefinition = "VARCHAR(255)")
 	private String address;
@@ -50,8 +59,8 @@ public class TemporaryClientEntity extends BaseTimeEntity {
 	@Column(name = "business_item", columnDefinition = "VARCHAR(255)")
 	private String businessItem;
 
-	@Column(name = "email", columnDefinition = "VARCHAR(255)")
-	private String email;
+	@Column(name = "clientEmail", columnDefinition = "VARCHAR(255)")
+	private String clientEmail;
 
 	@Column(name = "phone_number", columnDefinition = "VARCHAR(13)")
 	private String phoneNumber;

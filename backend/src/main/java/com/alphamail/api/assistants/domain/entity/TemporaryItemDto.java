@@ -22,6 +22,7 @@ public class TemporaryItemDto {
 	private String title;
 	private Integer userId;
 	private String userName;
+	private Integer emailId; // 추가된 emailId 필드
 
 	public enum TemporaryItemType {
 		PURCHASE_ORDER, QUOTE, CLIENT, SCHEDULE
@@ -35,13 +36,19 @@ public class TemporaryItemDto {
 		String title = (String) result[3];
 		Integer userId = ((Number) result[4]).intValue();
 
+		// emailId 값 처리 (result[5]에 해당)
+		Integer emailId = null;
+		if (result.length > 5 && result[5] != null) {
+			emailId = ((Number) result[5]).intValue();
+		}
+
 		return TemporaryItemDto.builder()
 			.id(id)
 			.type(type)
 			.createdAt(createdAt)
 			.title(title)
 			.userId(userId)
+			.emailId(emailId) // 추가된 emailId 필드 설정
 			.build();
 	}
-
 }
