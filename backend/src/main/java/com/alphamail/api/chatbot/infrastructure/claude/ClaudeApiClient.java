@@ -55,4 +55,35 @@ public class ClaudeApiClient {
 			return "Claude 응답실패: " + e.getMessage();
 		}
 	}
+
+	// 시스템 프롬프트를 지원하는 새로운 메서드 추가
+	public String askClaudeWithSystemPrompt(String systemPrompt, String userPrompt) {
+		try {
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			headers.set("x-api-key", apiKey);
+			headers.set("anthropic-version", "2023-06-01");
+
+			Map<String, Object> request = new HashMap<>();
+			request.put("model", "claude-3-5-sonnet-20241022");
+			request.put("max_tokens", 1500);
+			request.put("temperature", 0.7);
+
+			// System 프롬프트와 User 프롬프트를 분리하여 전송
+			request.put("messages", List.of(
+				Map.of("role", "system", "content", systemPrompt),
+				Map.of("role", "user", "content", userPrompt)
+			));
+
+			HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
+
+			ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, entity, String.class);
+
+			JsonNode root = objectMapper.readTree(response.getBody());
+			return root.get("content").get(0).get("text").asText();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Claude 응답실패: " + e.getMessage();
+		}
+	}
 }
