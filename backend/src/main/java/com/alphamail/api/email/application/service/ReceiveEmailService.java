@@ -35,16 +35,16 @@ public class ReceiveEmailService {
 
 	public void excute(ReceiveEmailRequest request) {
 
-		if(request.attachments().get(0)!=null) {
-
-			for(AttachmentRequest attachment : request.attachments()) {
-				if(attachment.filename().contains("사업자 등록증")||
-					attachment.filename().contains("사업자등록증")){
-
-					//ocrusecase 작성
-				}
-			}
-		}
+//		if(request.attachments().get(0)!=null) {
+//
+//			for(AttachmentRequest attachment : request.attachments()) {
+//				if(attachment.filename().contains("사업자 등록증")||
+//					attachment.filename().contains("사업자등록증")){
+//
+//					//ocrusecase 작성
+//				}
+//			}
+//		}
 
 		log.info("이메일 수신 시작 - messageId: {}, inReplyTo: {}, references: {}",
 			request.messageId(), request.inReplyTo(), request.references());
