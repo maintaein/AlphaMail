@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alphamail.api.email.domain.entity.Email;
-import com.alphamail.api.email.domain.entity.EmailAttachment;
 import com.alphamail.api.email.domain.port.EmailSenderPort;
-import com.alphamail.api.email.presentation.dto.SendEmailRequest;
 
 import lombok.RequiredArgsConstructor;
 

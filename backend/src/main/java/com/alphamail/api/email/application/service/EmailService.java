@@ -2,13 +2,13 @@ package com.alphamail.api.email.application.service;
 
 import java.util.List;
 
+import com.alphamail.api.email.application.usecase.SendEmailUseCase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alphamail.api.email.application.usecase.SaveEmailUseCase;
 import com.alphamail.api.email.application.usecase.SaveSendAttachmentUseCase;
-import com.alphamail.api.email.application.usecase.SendEmailUseCase;
 import com.alphamail.api.email.application.usecase.UpdateEmailUseCase;
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;

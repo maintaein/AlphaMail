@@ -1,6 +1,6 @@
 package com.alphamail.api.assistants.presentation.dto.ai;
 
-import com.alphamail.api.assistants.domain.entity.EmailVector;
+import com.alphamail.api.email.domain.entity.EmailVector;
 
 public record EmailVectorResponse(
         String status,

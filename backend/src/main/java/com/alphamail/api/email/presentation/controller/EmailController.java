@@ -1,6 +1,5 @@
 package com.alphamail.api.email.presentation.controller;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.core.io.InputStreamResource;
@@ -8,12 +7,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,7 +29,7 @@ import com.alphamail.api.email.application.usecase.EmptyMailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
-import com.alphamail.api.email.application.usecase.ReceiveEmailUseCase;
+import com.alphamail.api.email.application.service.ReceiveEmailService;
 import com.alphamail.api.email.presentation.dto.AttachmentDownloadResponse;
 import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
@@ -60,7 +55,7 @@ public class EmailController {
 	private final GetEmailDetailUseCase getEmailDetailUseCase;
 	private final DeleteMailsUseCase deleteMailsUseCase;
 	private final DeleteDetailUseCase deleteDetailUseCase;
-	private final ReceiveEmailUseCase receiveEmailUseCase;
+	private final ReceiveEmailService receiveEmailService;
 	private final DownloadAttachmentUseCase downloadAttachmentUseCase;
 	private final EmptyMailUseCase emptyMailUseCase;
 
@@ -87,7 +82,7 @@ public class EmailController {
 	//SES에서 Lambda를 통해 Springboot로 Email 수신하는 API
 	@PostMapping("/ses")
 	public ResponseEntity<Void> receiveEmail(@RequestBody ReceiveEmailRequest receiveEmailRequest) {
-		receiveEmailUseCase.excute(receiveEmailRequest);
+		receiveEmailService.excute(receiveEmailRequest);
 		return ResponseEntity.ok().build();
 	}
 

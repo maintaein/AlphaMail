@@ -1,4 +1,4 @@
-package com.alphamail.api.assistants.infrastructure.dto;
+package com.alphamail.api.email.infrastructure.dto;
 
 public record EmailVectorResponseDTO(
         String status,
