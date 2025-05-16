@@ -27,6 +27,8 @@ export const Router = () => {
           <HomePage />
         </ProtectedRoute>
       } />
+      
+      {/* Mail Routes */}
       <Route path="/mail/*" element={
         <ProtectedRoute>
           <MailPage />
@@ -39,16 +41,22 @@ export const Router = () => {
       <Route path="/mail/trash/:id" element={<MailDetailTemplate source="trash" />} />
       <Route path="/mail/write" element={<MailWriteTemplate />} />
       <Route path="/mail/result" element={<MailResultTemplate />} />
+      
+      {/* Schedule Routes */}
       <Route path="/schedule/*" element={
         <ProtectedRoute>
           <SchedulePage />
         </ProtectedRoute>
       } />
+      
+      {/* Work Routes */}
       <Route path="/work/*" element={
         <ProtectedRoute>
           <WorkPage />
         </ProtectedRoute>
       } />
+      
+      {/* Group Management Routes */}
       <Route path="/group" element={<GroupManagePage />} />
       <Route path="/search-test" element={<SearchTest />} />
       
