@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { productService } from '../../../services/productService';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import { Input } from '@/shared/components/atoms/input';
 import { Button } from '@/shared/components/atoms/button';
+import { TooltipPortal } from '@/shared/components/atoms/TooltipPortal';
 
 interface ProductDetailTemplateProps {
   onBack?: () => void;
@@ -39,6 +40,21 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // input refs
+  const nameRef = useRef<HTMLInputElement>(null);
+  const standardRef = useRef<HTMLInputElement>(null);
+  const inboundPriceRef = useRef<HTMLInputElement>(null);
+  const outboundPriceRef = useRef<HTMLInputElement>(null);
+  const stockRef = useRef<HTMLInputElement>(null);
+
+  // 말풍선 위치 상태
+  const [tooltip, setTooltip] = useState<{
+    key: string;
+    message: string;
+    position: { top: number; left: number };
+  } | null>(null);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -68,6 +84,91 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     fetchProductDetail();
   }, [id, userInfo?.companyId]);
 
+  useEffect(() => {
+    if (!isSubmitted) {
+      setTooltip(null);
+      return;
+    }
+    // 우선순위: name > standard > inboundPrice > outboundPrice > stock
+    if (!formData.name.trim() || formData.name.length > 255) {
+      const rect = nameRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'name',
+        message: !formData.name.trim() ? '품목명을 입력해 주세요.' : '255자 이하로 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    }
+    if (!formData.standard.trim()) {
+      const rect = standardRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'standard',
+        message: '규격을 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    }
+    if (
+      formData.inboundPrice === undefined ||
+      formData.inboundPrice === null ||
+      String(formData.inboundPrice).trim() === '' ||
+      isNaN(Number(formData.inboundPrice))
+    ) {
+      const rect = inboundPriceRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'inboundPrice',
+        message: '입고단가를 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    } else if (Number(formData.inboundPrice) < 0 || Number(formData.inboundPrice) > 9223372036854775808) {
+      const rect = inboundPriceRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'inboundPrice',
+        message: '0 ~ 9223372036854775808 사이의 금액을 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    }
+    if (
+      formData.outboundPrice === undefined ||
+      formData.outboundPrice === null ||
+      String(formData.outboundPrice).trim() === '' ||
+      isNaN(Number(formData.outboundPrice))
+    ) {
+      const rect = outboundPriceRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'outboundPrice',
+        message: '출고단가를 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    } else if (Number(formData.outboundPrice) < 0 || Number(formData.outboundPrice) > 9223372036854775808) {
+      const rect = outboundPriceRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'outboundPrice',
+        message: '0 ~ 9223372036854775808 사이의 금액을 입력해 주세요.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    }
+    if (
+      formData.stock !== undefined &&
+      formData.stock !== null &&
+      String(formData.stock).trim() !== '' &&
+      (!/^-?\d+$/.test(String(formData.stock)) || Number(formData.stock) < 0 || Number(formData.stock) > 2100000000)
+    ) {
+      const rect = stockRef.current?.getBoundingClientRect();
+      if (rect) setTooltip({
+        key: 'stock',
+        message: '0 ~ 2,100,000,000 사이의 값만 입력할 수 있습니다.',
+        position: { top: rect.top + window.scrollY, left: rect.left + window.scrollX + rect.width / 2 }
+      });
+      return;
+    }
+    setTooltip(null);
+  }, [isSubmitted, formData]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -76,6 +177,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
         ? Number(value) 
         : value
     }));
+    setTooltip(null);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -133,6 +235,48 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitted(true);
+    // 유효성 검사
+    const errors: Record<string, string> = {};
+    if (!formData.name.trim()) {
+      errors.name = '품목명을 입력해 주세요.';
+    } else if (formData.name.length > 255) {
+      errors.name = '255자 이하로 입력해 주세요.';
+    }
+    if (!formData.standard.trim()) {
+      errors.standard = '규격을 입력해 주세요.';
+    }
+    if (
+      formData.inboundPrice === undefined ||
+      formData.inboundPrice === null ||
+      String(formData.inboundPrice).trim() === '' ||
+      isNaN(Number(formData.inboundPrice))
+    ) {
+      errors.inboundPrice = '입고단가를 입력해 주세요.';
+    } else if (Number(formData.inboundPrice) < 0 || Number(formData.inboundPrice) > 9223372036854775808) {
+      errors.inboundPrice = '0 ~ 9223372036854775808 사이의 금액을 입력해 주세요.';
+    }
+    if (
+      formData.outboundPrice === undefined ||
+      formData.outboundPrice === null ||
+      String(formData.outboundPrice).trim() === '' ||
+      isNaN(Number(formData.outboundPrice))
+    ) {
+      errors.outboundPrice = '출고단가를 입력해 주세요.';
+    } else if (Number(formData.outboundPrice) < 0 || Number(formData.outboundPrice) > 9223372036854775808) {
+      errors.outboundPrice = '0 ~ 9223372036854775808 사이의 금액을 입력해 주세요.';
+    }
+    if (
+      formData.stock !== undefined &&
+      formData.stock !== null &&
+      String(formData.stock).trim() !== '' &&
+      (!/^-?\d+$/.test(String(formData.stock)) || Number(formData.stock) < 0 || Number(formData.stock) > 2100000000)
+    ) {
+      errors.stock = '0 ~ 2,100,000,000 사이의 값만 입력할 수 있습니다.';
+    }
+    if (Object.keys(errors).length > 0) {
+      return;
+    }
     try {
       if (id && id !== 'new') {
         updateMutation.mutate(formData);
@@ -188,27 +332,35 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   <Typography variant="body" className="text-center">품목명<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2" colSpan={3}>
-                  <Input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="품목명을 입력하세요"
-                    size="large"
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      ref={nameRef}
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      onFocus={() => setTooltip(null)}
+                      placeholder="품목명을 입력하세요"
+                      size="large"
+                    />
+                  </div>
                 </td>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
                   <Typography variant="body" className="text-center">규격<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
-                  <Input
-                    type="text"
-                    name="standard"
-                    value={formData.standard}
-                    onChange={handleInputChange}
-                    placeholder="규격을 입력하세요"
-                    size="large"
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      ref={standardRef}
+                      type="text"
+                      name="standard"
+                      value={formData.standard}
+                      onChange={handleInputChange}
+                      onFocus={() => setTooltip(null)}
+                      placeholder="규격을 입력하세요"
+                      size="large"
+                    />
+                  </div>
                 </td>
               </tr>
               {/* 2행: 입고단가, 출고단가, 재고 */}
@@ -217,12 +369,14 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   <Typography variant="body" className="text-center">입고단가<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
-                  <div className="flex items-center">
+                  <div className="relative flex items-center">
                     <Input
+                      ref={inboundPriceRef}
                       type="number"
                       name="inboundPrice"
                       value={formData.inboundPrice || ''}
                       onChange={handleInputChange}
+                      onFocus={() => setTooltip(null)}
                       placeholder="0"
                       size="large"
                       className="text-right"
@@ -234,12 +388,14 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   <Typography variant="body" className="text-center">출고단가<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
-                  <div className="flex items-center">
+                  <div className="relative flex items-center">
                     <Input
+                      ref={outboundPriceRef}
                       type="number"
                       name="outboundPrice"
                       value={formData.outboundPrice || ''}
                       onChange={handleInputChange}
+                      onFocus={() => setTooltip(null)}
                       placeholder="0"
                       size="large"
                       className="text-right"
@@ -251,15 +407,19 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   <Typography variant="body" className="text-center">재고</Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
-                  <Input
-                    type="number"
-                    name="stock"
-                    value={formData.stock || ''}
-                    onChange={handleInputChange}
-                    placeholder="0"
-                    size="large"
-                    className="text-right"
-                  />
+                  <div className="relative flex items-center">
+                    <Input
+                      ref={stockRef}
+                      type="number"
+                      name="stock"
+                      value={formData.stock || ''}
+                      onChange={handleInputChange}
+                      onFocus={() => setTooltip(null)}
+                      placeholder="0"
+                      size="large"
+                      className="text-right"
+                    />
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -308,6 +468,16 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
         </div>
       </form>
+
+      {/* Portal로 말풍선 렌더링 */}
+      {tooltip && (
+        <TooltipPortal position={tooltip.position}>
+          <div className="bg-red-500 text-white text-xs rounded px-3 py-1 relative shadow" style={{ transform: 'translateX(-50%) translateY(-100%)' }}>
+            {tooltip.message}
+            <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-red-500" />
+          </div>
+        </TooltipPortal>
+      )}
     </div>
   );
 }; 
