@@ -2,27 +2,25 @@ import React from 'react';
 import { Product } from '../../../types/product';
 import { ProductSearchBar } from '../organisms/productSearchBar';
 import { ProductTable } from '../organisms/productTable';
-import { ProductDetailTemplate } from './productDetailTemplate';
 import { productService } from '../../../services/productService';
 import { useProductStore } from '../../../stores/productStore';
 import { usePagedProducts } from '../../../hooks/usePagedProducts';
 import { useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/shared/components/atoms/button';
+import { Typography } from '@/shared/components/atoms/Typography';
 
 interface ProductManagementTemplateProps {
   onAddProduct?: () => void;
-  onProductClick?: (product: Product) => void;
 }
 
 export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps> = ({ 
-  onAddProduct,
-  onProductClick,
 }) => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const {
     keyword,
     setKeyword,
-    selectedProduct,
-    setSelectedProduct,
     selectedProductIds,
     toggleProductSelection,
     setSelectedProductIds
@@ -43,15 +41,11 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
   };
 
   const handleProductClick = (product: Product) => {
-    if (onProductClick) {
-      onProductClick(product);
-    } else {
-      setSelectedProduct(product);
-    }
+    navigate(`/work/products/${product.id}`);
   };
 
-  const handleBack = () => {
-    setSelectedProduct(null);
+  const handleAddProduct = () => {
+    navigate('/work/products/new');
   };
 
   const handleDelete = async () => {
@@ -83,15 +77,6 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
   if (isLoading) return <div>로딩 중...</div>;
   if (error) return <div>에러가 발생했습니다.</div>;
 
-  if (selectedProduct && !onProductClick) {
-    return (
-      <ProductDetailTemplate
-        product={selectedProduct}
-        onBack={handleBack}
-      />
-    );
-  }
-
   return (
     <div className="p-4">
       <div className="mb-4">
@@ -103,22 +88,24 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
       <div className="bg-white rounded-lg shadow">
         <div className="p-4">
           <div className="flex justify-between items-center mb-4">
-            <button 
-              onClick={onAddProduct}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+            <Button
+              onClick={handleAddProduct}
+              variant="text"
+              size="large"
+              className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
             >
-              상품 등록
-            </button>
-            <div className="space-x-2">
-              <button className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50">
-                출력
-              </button>
-              <button 
+              <span className="text-2xl font-bold leading-none relative -top-[-1px]">+</span>
+              <Typography variant="titleSmall" className="leading-none">상품 등록하기</Typography>
+            </Button>
+            <div className="flex gap-2">
+              <Button
                 onClick={handleDelete}
-                className="px-4 py-2 bg-white border rounded-md hover:bg-gray-50"
+                variant="text"
+                size="small"
+                className="min-w-[110px] h-[40px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
               >
-                삭제
-              </button>
+                <Typography variant="titleSmall">삭제</Typography>
+              </Button>
             </div>
           </div>
           <ProductTable

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
-import { Product } from '../../../types/product';
 import { productService } from '../../../services/productService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 
 interface ProductDetailTemplateProps {
-  product?: Product;
   onBack?: () => void;
 }
 
@@ -23,10 +21,10 @@ interface ProductDetailForm {
 }
 
 export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({ 
-  product, 
   onBack
 }) => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const queryClient = useQueryClient();
   const { data: userInfo } = useUserInfo();
   const [formData, setFormData] = useState<ProductDetailForm>({
@@ -42,12 +40,12 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
   useEffect(() => {
     const fetchProductDetail = async () => {
-      if (!product?.id) return;
+      if (!id || id === 'new') return;
       
       try {
         setIsLoading(true);
         setError(null);
-        const productDetail = await productService.getProduct(product.id.toString());
+        const productDetail = await productService.getProduct(id);
         setFormData({
           name: productDetail.name,
           standard: productDetail.standard,
@@ -66,7 +64,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     };
 
     fetchProductDetail();
-  }, [product?.id]);
+  }, [id, userInfo?.companyId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -89,9 +87,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
   const createMutation = useMutation({
     mutationFn: (data: ProductDetailForm) => 
-      productService.createProduct(
-        data
-      ),
+      productService.createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ 
         queryKey: ['products'],
@@ -100,7 +96,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
       if (onBack) {
         onBack();
       } else {
-        navigate('/products');
+        navigate('/work/products');
       }
     },
     onError: (error) => {
@@ -111,8 +107,8 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
   const updateMutation = useMutation({
     mutationFn: (data: ProductDetailForm) => 
-      productService.updateProduct(product!.id.toString(), {
-        id: product!.id,
+      productService.updateProduct(id!, {
+        id: Number(id),
         ...data,
         companyId: userInfo?.companyId || 0
       }),
@@ -124,7 +120,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
       if (onBack) {
         onBack();
       } else {
-        navigate('/products');
+        navigate('/work/products');
       }
     },
     onError: (error) => {
@@ -136,7 +132,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (product) {
+      if (id && id !== 'new') {
         updateMutation.mutate(formData);
       } else {
         createMutation.mutate(formData);
@@ -159,7 +155,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex justify-between items-center mb-6">
         <Typography variant="titleLarge">
-          {product ? '상품 상세' : '상품 등록'}
+          {id && id !== 'new' ? '상품 상세' : '상품 등록'}
         </Typography>
         {onBack && (
           <button
@@ -264,7 +260,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
             type="submit"
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
-            {product ? '수정' : '등록'}
+            {id && id !== 'new' ? '수정' : '등록'}
           </button>
         </div>
       </form>
