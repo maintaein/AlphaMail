@@ -4,6 +4,7 @@ import { productService } from '../../../services/productService';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
+import { Input } from '@/shared/components/atoms/input';
 
 interface ProductDetailTemplateProps {
   onBack?: () => void;
@@ -154,7 +155,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex justify-between items-center mb-6">
-        <Typography variant="titleLarge">
+        <Typography variant="titleMedium">
           {id && id !== 'new' ? '상품 상세' : '상품 등록'}
         </Typography>
         {onBack && (
@@ -168,61 +169,104 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          {/* 상품 정보 입력 섹션 */}
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">품목명</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">규격</label>
-              <input
-                type="text"
-                name="standard"
-                value={formData.standard}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">재고</label>
-              <input
-                type="number"
-                name="stock"
-                value={formData.stock}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">입고단가</label>
-              <input
-                type="number"
-                name="inboundPrice"
-                value={formData.inboundPrice}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">출고단가</label>
-              <input
-                type="number"
-                name="outboundPrice"
-                value={formData.outboundPrice}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-          </div>
+        {/* 표 스타일 입력폼 */}
+        <div className="overflow-x-auto">
+          <table className="w-full border-separate border-spacing-0">
+            <colgroup>
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '220px' }} />
+              <col style={{ width: '120px' }} />
+              <col style={{ width: '220px' }} />
+              <col style={{ width: '80px' }} />
+              <col style={{ width: '120px' }} />
+            </colgroup>
+            <tbody>
+              {/* 1행: 품목명(3칸), 규격(2칸) */}
+              <tr>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body" bold className="text-center">품목명<span className="text-red-500 ml-1">*</span></Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2" colSpan={3}>
+                  <Input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="품목명을 입력하세요"
+                    size="large"
+                  />
+                </td>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body" bold className="text-center">규격<span className="text-red-500 ml-1">*</span></Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2">
+                  <Input
+                    type="text"
+                    name="standard"
+                    value={formData.standard}
+                    onChange={handleInputChange}
+                    placeholder="규격을 입력하세요"
+                    size="large"
+                  />
+                </td>
+              </tr>
+              {/* 2행: 입고단가, 출고단가, 재고 */}
+              <tr>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body" bold className="text-center">입고단가<span className="text-red-500 ml-1">*</span></Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2">
+                  <div className="flex items-center">
+                    <Input
+                      type="number"
+                      name="inboundPrice"
+                      value={formData.inboundPrice || ''}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      size="large"
+                      className="text-right"
+                    />
+                    <Typography variant="body" className="ml-2 text-gray-500">원</Typography>
+                  </div>
+                </td>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body" bold className="text-center">출고단가<span className="text-red-500 ml-1">*</span></Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2">
+                  <div className="flex items-center">
+                    <Input
+                      type="number"
+                      name="outboundPrice"
+                      value={formData.outboundPrice || ''}
+                      onChange={handleInputChange}
+                      placeholder="0"
+                      size="large"
+                      className="text-right"
+                    />
+                    <Typography variant="body" className="ml-2 text-gray-500">원</Typography>
+                  </div>
+                </td>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body" bold className="text-center">재고</Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2">
+                  <Input
+                    type="number"
+                    name="stock"
+                    value={formData.stock || ''}
+                    onChange={handleInputChange}
+                    placeholder="0"
+                    size="large"
+                    className="text-right"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
+        {/* 이미지 업로드 섹션 */}
+        <div className="grid grid-cols-2 gap-6">
           {/* 이미지 업로드 섹션 */}
           <div className="space-y-4">
             <div>
