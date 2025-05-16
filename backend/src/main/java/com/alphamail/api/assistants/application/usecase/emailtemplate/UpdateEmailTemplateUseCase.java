@@ -32,7 +32,7 @@ public class UpdateEmailTemplateUseCase {
 
 		List<EmailTemplateField> updatedFields = EmailTemplateField.fromUpdateRequests(request.fields());
 
-		String htmlContent = generatorUseCase.generateHtmlContent(request.title(), updatedFields);
+		String htmlContent = generatorUseCase.generateHtmlContent(request.title(), updatedFields, request.userPrompt());
 
 		template.update(request.title(), updatedFields, htmlContent);
 

@@ -24,7 +24,7 @@ public class CreateEmailTemplateUseCase {
 	public AIEmailTemplateResponse execute(AIEmailTemplateCreateRequest request, Integer userId) {
 		List<EmailTemplateField> fields = EmailTemplateField.fromCreateRequests(request.fields());
 
-		String htmlContent = generatorUseCase.generateHtmlContent(request.title(), fields);
+		String htmlContent = generatorUseCase.generateHtmlContent(request.title(), fields, request.userPrompt());
 
 		EmailTemplate emailTemplate = EmailTemplate.createFromRequest(userId, request, htmlContent);
 		EmailTemplate saved = emailTemplateRepository.save(emailTemplate);

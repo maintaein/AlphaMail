@@ -5,7 +5,7 @@ import java.util.List;
 public record AIEmailTemplateCreateRequest(
 	String title,
 	List<TemplateField> fields,
-	String generatedContent
+	String userPrompt
 ) {
 	public record TemplateField(
 		String fieldName,  // 필드 이름 (예: "메일 목적", "업무명", "요청 사항" 등)

@@ -45,7 +45,6 @@ public class EmailTemplateController {
 		return ResponseEntity.ok(response);
 	}
 
-
 	@PostMapping
 	public ResponseEntity<AIEmailTemplateResponse> createEmailTemplate(
 		@RequestBody AIEmailTemplateCreateRequest request,

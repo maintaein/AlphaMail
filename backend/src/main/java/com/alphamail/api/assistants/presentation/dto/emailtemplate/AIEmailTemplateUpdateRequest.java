@@ -5,7 +5,7 @@ import java.util.List;
 public record AIEmailTemplateUpdateRequest(
 	String title,
 	List<AIEmailTemplateFieldRequest> fields,
-	String context
+	String userPrompt
 ) {
 	public record AIEmailTemplateFieldRequest(String fieldName, String fieldValue) {
 	}

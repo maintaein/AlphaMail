@@ -1,5 +1,6 @@
 package com.alphamail.api.assistants.application.usecase.emailtemplate;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -8,16 +9,25 @@ import com.alphamail.api.assistants.domain.entity.EmailTemplateField;
 import com.alphamail.api.chatbot.infrastructure.claude.ClaudeApiClient;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClaudeEmailTemplateGeneratorUseCase {
 	private final ClaudeApiClient claudeApiClient;
 
-	public String generateHtmlContent(String title, List<EmailTemplateField> fields) {
-		String systemPrompt = buildSystemPrompt();
-		String userPrompt = buildUserPrompt(title, fields);
-		return claudeApiClient.askClaudeWithSystemPrompt(systemPrompt, userPrompt);
+	public String generateHtmlContent(String title, List<EmailTemplateField> fields, String userSentence) {
+		try {
+			String systemPrompt = buildSystemPrompt();
+			String userPrompt = buildUserPrompt(title,
+				fields != null ? fields : Collections.emptyList(),
+				userSentence != null ? userSentence : "");
+			return claudeApiClient.askClaudeWithSystemPrompt(systemPrompt, userPrompt);
+		} catch (Exception e) {
+			log.error("이메일 템플릿 생성 중 오류 발생", e);
+			throw new RuntimeException("이메일 템플릿을 생성할 수 없습니다", e);
+		}
 	}
 
 	private String buildSystemPrompt() {
@@ -34,15 +44,17 @@ public class ClaudeEmailTemplateGeneratorUseCase {
 			""";
 	}
 
-	private String buildUserPrompt(String title, List<EmailTemplateField> fields) {
+	private String buildUserPrompt(String title, List<EmailTemplateField> fields, String userSentence) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("이메일 제목: ").append(title).append("\n\n");
-		if (fields != null && !fields.isEmpty()) {
+		if (!fields.isEmpty()) {
 			sb.append("제공된 정보:\n");
 			for (EmailTemplateField f : fields) {
 				sb.append("- ").append(f.getFieldName()).append(": ").append(f.getFieldValue()).append("\n");
 			}
 		}
+		sb.append("유저의 Prompt:\n");
+		sb.append(userSentence);
 		return sb.toString();
 	}
 }
