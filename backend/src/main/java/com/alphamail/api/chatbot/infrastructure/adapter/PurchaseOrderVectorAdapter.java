@@ -24,8 +24,8 @@ public class PurchaseOrderVectorAdapter implements VectorizableDocument {
 			""".formatted(
 			purchaseOrder.getOrderNo(),
 			purchaseOrder.getClient().getCorpName(),
-			purchaseOrder.getCreatedAt(),
-			purchaseOrder.getDeliverAt()
+			formatDateTime(purchaseOrder.getCreatedAt()),
+			formatDateTime(purchaseOrder.getDeliverAt())
 		);
 	}
 

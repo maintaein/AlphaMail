@@ -23,7 +23,7 @@ public class ScheduleSummarizePromptHandler implements SummarizePromptHandler{
 	}
 
 	@Override
-	public String generateReply(String query, List<Map<String, String>> docs) {
-		return prompt.generateAnswer(getDocumentType(), query, docs);
+	public String generateReply(String query, String timezone, List<Map<String, String>> docs) {
+		return prompt.generateAnswer(getDocumentType(), query, timezone, docs);
 	}
 }

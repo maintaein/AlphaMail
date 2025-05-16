@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.alphamail.api.chatbot.domain.common.VectorizableDocument;
-import com.alphamail.api.schedule.domain.entity.Schedule;
 
 import lombok.RequiredArgsConstructor;
 

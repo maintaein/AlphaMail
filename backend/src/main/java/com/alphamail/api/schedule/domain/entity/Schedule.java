@@ -25,6 +25,7 @@ public class Schedule {
 	private LocalDateTime endTime;
 	private Boolean isDone;
 	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 
 
 	public static Schedule create(CreateScheduleRequest request, Integer userId) {

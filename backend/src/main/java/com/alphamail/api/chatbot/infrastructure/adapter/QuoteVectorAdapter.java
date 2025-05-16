@@ -27,7 +27,7 @@ public class QuoteVectorAdapter implements VectorizableDocument {
 			quote.getClient().getCorpName(),
 			quote.getManager(),
 			quote.getShippingAddress(),
-			quote.getCreatedAt()
+			formatDateTime(quote.getCreatedAt())
 		);
 	}
 

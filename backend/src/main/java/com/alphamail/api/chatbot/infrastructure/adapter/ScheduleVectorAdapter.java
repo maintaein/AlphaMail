@@ -25,8 +25,8 @@ public class ScheduleVectorAdapter implements VectorizableDocument {
 			""".formatted(
 			schedule.getName(),
 			schedule.getDescription(),
-			schedule.getStartTime(),
-			schedule.getEndTime(),
+			formatDateTime(schedule.getStartTime()),
+			formatDateTime(schedule.getEndTime()),
 			schedule.getIsDone() ? "완료" : "미완료"
 		);
 	}

@@ -5,5 +5,5 @@ import java.util.Map;
 
 public interface SummarizePromptHandler {
 	String getDocumentType();
-	String generateReply(String query, List<Map<String, String>> docs);
+	String generateReply(String query, String timezone, List<Map<String, String>> docs);
 }

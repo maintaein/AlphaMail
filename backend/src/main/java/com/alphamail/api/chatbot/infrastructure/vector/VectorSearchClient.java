@@ -1,5 +1,7 @@
 package com.alphamail.api.chatbot.infrastructure.vector;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +39,7 @@ public class VectorSearchClient {
 		HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
 		ResponseEntity<List> response = restTemplate.exchange(
-			"http://chatbot:5001/api/vector/search",
+			"http://localhost:5001/api/vector/search",
 			HttpMethod.POST,
 			request,
 			List.class

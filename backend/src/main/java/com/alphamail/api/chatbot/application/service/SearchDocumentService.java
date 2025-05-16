@@ -24,12 +24,12 @@ public class SearchDocumentService {
 	private final ObjectMapper objectMapper;
 	private final Map<String, SummarizePromptHandler> handlerMap;
 
-	public ChatBotResponse execute(String documentType, Integer ownerId, Integer userId, String message) {
+	public ChatBotResponse execute(String documentType, Integer ownerId, Integer userId, String message, String timezone) {
 		List<Map<String, String>> matched = vectorSearchClient.searchByEmbedding(documentType, ownerId, userId, message);
 
 		SummarizePromptHandler handler = handlerMap.get(documentType);
 
-		String claudeResponse = handler.generateReply(message, matched);
+		String claudeResponse = handler.generateReply(message, timezone, matched);
 		try {
 			ClaudeReply parsed = objectMapper.readValue(claudeResponse, ClaudeReply.class);
 
