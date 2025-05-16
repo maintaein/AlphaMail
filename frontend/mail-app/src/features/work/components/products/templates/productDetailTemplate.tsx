@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import { Input } from '@/shared/components/atoms/input';
+import { Button } from '@/shared/components/atoms/button';
 
 interface ProductDetailTemplateProps {
   onBack?: () => void;
@@ -184,7 +185,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
               {/* 1행: 품목명(3칸), 규격(2칸) */}
               <tr>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-                  <Typography variant="body" bold className="text-center">품목명<span className="text-red-500 ml-1">*</span></Typography>
+                  <Typography variant="body" className="text-center">품목명<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2" colSpan={3}>
                   <Input
@@ -197,7 +198,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   />
                 </td>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-                  <Typography variant="body" bold className="text-center">규격<span className="text-red-500 ml-1">*</span></Typography>
+                  <Typography variant="body" className="text-center">규격<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
                   <Input
@@ -213,7 +214,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
               {/* 2행: 입고단가, 출고단가, 재고 */}
               <tr>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-                  <Typography variant="body" bold className="text-center">입고단가<span className="text-red-500 ml-1">*</span></Typography>
+                  <Typography variant="body" className="text-center">입고단가<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
                   <div className="flex items-center">
@@ -230,7 +231,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   </div>
                 </td>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-                  <Typography variant="body" bold className="text-center">출고단가<span className="text-red-500 ml-1">*</span></Typography>
+                  <Typography variant="body" className="text-center">출고단가<span className="text-red-500 ml-1">*</span></Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
                   <div className="flex items-center">
@@ -247,7 +248,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
                   </div>
                 </td>
                 <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-                  <Typography variant="body" bold className="text-center">재고</Typography>
+                  <Typography variant="body" className="text-center">재고</Typography>
                 </td>
                 <td className="bg-white border border-[#E5E5E5] px-2">
                   <Input
@@ -291,21 +292,20 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
         </div>
 
         <div className="flex justify-end space-x-2">
-          {onBack && (
-            <button
-              type="button"
-              onClick={onBack}
-              className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              취소
-            </button>
-          )}
-          <button
+        <Button
+            variant="primary"
             type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
             {id && id !== 'new' ? '수정' : '등록'}
-          </button>
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onBack ? onBack : () => navigate('/work/products')}
+          >
+            취소
+          </Button>
+
         </div>
       </form>
     </div>
