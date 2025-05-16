@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.chatbot.application.dto.ClaudeClassification;
+import com.alphamail.api.chatbot.application.service.RegistScheduleService;
 import com.alphamail.api.chatbot.application.service.SearchDocumentService;
 import com.alphamail.api.chatbot.domain.dto.DocumentTypes;
 import com.alphamail.api.chatbot.infrastructure.prompt.ClassifyIntentPrompt;
@@ -31,6 +32,7 @@ public class ChatBotController {
 	private final SearchDocumentService searchDocumentService;
 	private final UserReader userReader;
 	private final GroupReader groupReader;
+	private final RegistScheduleService registScheduleService;
 
 	@PostMapping("/message")
 	public ResponseEntity<ChatBotResponse> handleMessage(@Auth Integer userId, @RequestBody ChatBotRequest request) {
@@ -38,11 +40,9 @@ public class ChatBotController {
 		String timezone = request.timezone();
 
 		ClaudeClassification task = classifyIntentPrompt.determineTask(message);
-		log.info("🚨claude가 변환한 사용자 메시지: {}", task.message());
 
 		if (task.type().startsWith("1")) {
-			return ResponseEntity.ok().build();
-			// return ResponseEntity.ok(registScheduleService.execute(userId, message));
+			return ResponseEntity.ok(registScheduleService.execute(userId, message));
 		} else if (task.type().startsWith("2")) {
 			return ResponseEntity.ok(
 				searchDocumentService.execute(DocumentTypes.SCHEDULE, userId, userId, task.message(), timezone));

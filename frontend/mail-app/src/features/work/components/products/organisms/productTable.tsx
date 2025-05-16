@@ -1,6 +1,7 @@
 import { Product } from '../../../types/product';
 import { ProductTableRow } from '../molecules/productTableRow';
-import { Pagination } from '../molecules/pagination';
+import { Typography } from '@/shared/components/atoms/Typography';
+import { Button } from '@/shared/components/atoms/button';
 
 interface ProductTableProps {
   products: Product[];
@@ -28,67 +29,93 @@ export const ProductTable: React.FC<ProductTableProps> = ({
     return <div>데이터 형식이 올바르지 않습니다.</div>;
   }
 
-  // 페이지당 상품 수 (기본값 10)
-  const itemsPerPage = 10;
-  // 현재 페이지의 시작 인덱스
-  const startIndex = (currentPage - 1) * itemsPerPage;
-
   return (
     <div>
-      <div className="mb-4 flex justify-end items-center">
-        <div className="text-sm text-gray-600">
-          총 {totalCount}개의 상품
-        </div>
-      </div>
-
-      <div className="mt-4 overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gray-50">
+      <table className="min-w-full border">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="p-2">
+              <Typography variant="body" bold>선택</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>순번</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>품목명</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>규격</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>재고</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>매입가</Typography>
+            </th>
+            <th className="p-2">
+              <Typography variant="body" bold>판매가</Typography>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.length > 0 ? (
+            products.map((product, idx) => (
+              <ProductTableRow
+                key={product.id}
+                product={{
+                  ...product,
+                  isSelected: selectedProductIds.has(product.id)
+                }}
+                sequenceNumber={String(idx + 1).padStart(4, '0')}
+                onSelect={onSelectProduct || (() => {})}
+                onProductClick={onProductClick}
+              />
+            ))
+          ) : (
             <tr>
-              <th className="p-4 text-left">선택</th>
-              <th className="p-4 text-left">순번</th>
-              <th className="p-4 text-left">품목명</th>
-              <th className="p-4 text-center">규격</th>
-              <th className="p-4 text-center">재고</th>
-              <th className="p-4 text-right">매입가</th>
-              <th className="p-4 text-right">판매가</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.length > 0 ? (
-              products.map((product, index) => {
-                // 역순 순번 계산 (전체 개수 - (현재 페이지 시작 인덱스 + 현재 인덱스))
-                const sequenceNumber = totalCount - (startIndex + index);
-                console.log('Rendering product:', product);
-                return (
-                  <ProductTableRow
-                    key={product.id}
-                    product={{
-                      ...product,
-                      isSelected: selectedProductIds.has(product.id)
-                    }}
-                    sequenceNumber={sequenceNumber}
-                    onSelect={onSelectProduct || (() => {})}
-                    onProductClick={onProductClick}
-                  />
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={7} className="p-4 text-center">
+              <td colSpan={7} className="p-4 text-center">
+                <Typography variant="body" color="text-gray-500">
                   상품이 없습니다.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+                </Typography>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={pageCount}
-        onPageChange={onPageChange}
-      />
+      {/* Pagination */}
+      <div className="flex justify-center items-center mt-4">
+        <Button
+          variant="ghost"
+          size="small"
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          &lt;
+        </Button>
+        {[...Array(pageCount)].map((_, i) => (
+          <Button
+            key={i}
+            variant="ghost"
+            size="small"
+            onClick={() => onPageChange(i + 1)}
+            className={currentPage === i + 1 ? 'font-bold underline' : ''}
+          >
+            {i + 1}
+          </Button>
+        ))}
+        <Button
+          variant="ghost"
+          size="small"
+          disabled={currentPage === pageCount}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          &gt;
+        </Button>
+        <Typography variant="body" className="ml-4">
+          총 {totalCount}개
+        </Typography>
+      </div>
     </div>
   );
 }; 
