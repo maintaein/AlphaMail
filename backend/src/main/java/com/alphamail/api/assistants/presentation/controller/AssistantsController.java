@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alphamail.api.assistants.application.usecase.SaveVectorDBUseCase;
+
 import com.alphamail.api.assistants.application.usecase.assistant.GetAIAssistantUseCase;
 import com.alphamail.api.assistants.domain.entity.TemporaryItemDto;
-import com.alphamail.api.assistants.presentation.dto.SendEmailRequest;
 import com.alphamail.common.annotation.Auth;
 import com.alphamail.common.constants.ApiPaths;
 
@@ -23,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(ApiPaths.ASSISTANTS_BASE_API)
 public class AssistantsController {
 
-	private final SaveVectorDBUseCase saveVectorDBUseCase;
 	private final GetAIAssistantUseCase getAIAssistantUseCase;
 
 	@GetMapping
@@ -32,10 +30,5 @@ public class AssistantsController {
 		return ResponseEntity.ok(temporaryItems);
 	}
 
-	@PostMapping("/vector/test")
-	public ResponseEntity<Void> saveVectorCB(@RequestBody SendEmailRequest sendEmailRequest, @Auth Integer userId) {
-		saveVectorDBUseCase.execute("thread_id_001", userId, sendEmailRequest.bodyText());
-		return ResponseEntity.ok().build();
-	}
 
 }
