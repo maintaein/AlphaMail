@@ -11,6 +11,7 @@ public final class ApiPaths {
 	public static final String CLIENTS_BASE_API = "/clients";
 	public static final String ASSISTANTS_BASE_API = "/api/assistants";
 	public static final String SCHEDULE_BASE_API = "/schedules";
+	public static final String EMAIL_TEMPLATE_BASE_API = "/email-templates";
 
 	// CLAUDE 관련
 	public static final String CLAUDE_API_URL = "https://api.claude.com/v1/messages";

@@ -27,6 +27,8 @@ public enum ErrorMessage {
 	CURRENT_PASSWORD_MISMATCH("현재 비밀번호가 일치하지 않습니다"),
 	SAME_AS_CURRENT_PASSWORD("새 비밀번호는 현재 비밀번호와 달라야 합니다"),
 	PASSWORD_EMPTY("비밀번호는 빈 값일 수 없습니다"),
+	CLAUDE_API_ERROR("Claude API 호출 중 오류가 발생했습니다"),
+
 
 	// 401 Unauthorized 관련 오류 (UnauthorizedException)
 	UNAUTHORIZED("인증에 실패했습니다"),

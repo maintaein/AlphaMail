@@ -2,7 +2,7 @@ package com.alphamail.api.assistants.presentation.dto.emailtemplate;
 
 import java.util.List;
 
-public record AIEmailTemplateRequest(
+public record AIEmailTemplateCreateRequest(
 	String title,
 	List<TemplateField> fields,
 	String generatedContent
