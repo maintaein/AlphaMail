@@ -37,7 +37,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/login", "/api/users", "/api/mails/ses",
 					"/api/assistants/schedules", "/api/assistants/purchase-orders",
-					"/api/assistants/quotes", "/api/ses/webhooks").permitAll()
+					"/api/assistants/quotes", "/api/ses/webhooks","/test/**").permitAll()
 				.anyRequest().authenticated()
 			)
 
