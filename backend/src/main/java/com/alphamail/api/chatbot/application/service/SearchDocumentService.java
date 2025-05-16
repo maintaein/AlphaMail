@@ -37,9 +37,9 @@ public class SearchDocumentService {
 			List<Integer> ids = parsed.ids().stream()
 				.map(Integer::parseInt)
 				.toList();
-			return new ChatBotResponse(reply, ids, documentType);
+			return new ChatBotResponse(reply, ids, documentType, null);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("JSON 파싱 실패", e);
+			return ChatBotResponse.defaultResponse();
 		}
 	}
 }

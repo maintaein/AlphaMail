@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Component;
 
 import com.alphamail.api.chatbot.application.dto.ClaudeClassification;
-import com.alphamail.api.chatbot.domain.dto.DocumentTypes;
 import com.alphamail.api.chatbot.infrastructure.claude.ClaudeApiClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
