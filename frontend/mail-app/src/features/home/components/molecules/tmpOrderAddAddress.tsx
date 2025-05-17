@@ -7,10 +7,6 @@ export const TmpOrderAddAddress: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { address, setAddress } = useTmpOrderStore();
 
-  const handleSearchClick = () => {
-    setIsModalOpen(true);
-  };
-
   const handleAddressSelect = (data: {
     address: string;
     zonecode: string;
@@ -35,7 +31,6 @@ export const TmpOrderAddAddress: React.FC = () => {
       <AddressInput
         value={address}
         onChange={setAddress}
-        onSearchClick={handleSearchClick}
         className="w-full !h-8 !text-sm !rounded-none"
       />
       
