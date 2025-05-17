@@ -157,7 +157,7 @@ def createTemporaryPurchaseOrder(
         logger.info(f"임시 발주 요청(모든 필드 포함): {payload}")
 
         response = httpx.post(
-            f"{ALPHAMAIL_BASE_URL}/api/assistants/purchase-orders/temporary",
+            f"{ALPHAMAIL_BASE_URL}/api/assistants/purchase-orders",
             json=payload,
             timeout=REQUEST_TIMEOUT
         )
@@ -243,7 +243,7 @@ def createTemporaryQuote(
         logger.info(f"임시 견적 요청(모든 필드 포함): {payload}")
 
         response = httpx.post(
-            f"{ALPHAMAIL_BASE_URL}/api/assistants/quotes/temporary",
+            f"{ALPHAMAIL_BASE_URL}/api/assistants/quotes",
             json=payload,
             timeout=REQUEST_TIMEOUT
         )
