@@ -7,8 +7,6 @@ dotenv.config();
 const OCR_SECRET = process.env.OCR_SECRET;
 const OCR_API_URL = process.env.OCR_API_URL;
 
-console.log('OCR_API_URL:', OCR_API_URL);
-console.log('OCR_SECRET:', OCR_SECRET);
 
 export function requestWithFile(fileStream, format, name, userId) {
   const message = {
@@ -39,11 +37,11 @@ export function mapBizLicenseToSimpleFormat(data) {
   const getText = field => result?.[field]?.[0]?.text?.trim() || '';
 
   return {
-    거래처명: getText('companyName') || getText('corpName'),
-    대표자명: getText('repName'),
-    '사업자 번호': getText('registerNumber'),
-    업태: getText('bisType'),
-    종목: getText('bisItem'),
-    주소: getText('bisAddress') || getText('bisArea') || getText('headAddress')
+    corpName: getText('companyName') || getText('corpName'),
+    representative: getText('repName'),
+    licenseNum: getText('registerNumber'),
+    businessType: getText('bisType'),
+    businessItem: getText('bisItem'),
+    address: getText('bisAddress') || getText('bisArea') || getText('headAddress')
   };
 }

@@ -19,16 +19,13 @@ import lombok.RequiredArgsConstructor;
 public class CreateTemporaryClientUseCase {
 
 	private final TemporaryClientRepository temporaryClientRepository;
-	private final LoadUserPort loadUserPort;
 	private final EmailReader emailReader;
 
-	public void execute(TemporaryClientRequest temporaryClientRequest) {
+	public void execute(TemporaryClientRequest temporaryClientRequest, Integer userId) {
 
-		UserId userId = loadUserPort.loadUserIdByEmail(temporaryClientRequest.receivedEmail());
+		Email email = emailReader.findByIdAndUserId(temporaryClientRequest.emailId(), userId);
 
-		Email email = emailReader.findByIdAndUserId(temporaryClientRequest.emailId(), userId.getValue());
-
-		TemporaryClient temporaryClient = TemporaryClient.from(temporaryClientRequest, userId.getValue(), email);
+		TemporaryClient temporaryClient = TemporaryClient.from(temporaryClientRequest, userId, email);
 
 		temporaryClientRepository.save(temporaryClient);
 

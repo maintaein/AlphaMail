@@ -29,17 +29,11 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping(ApiPaths.ASSISTANTS_BASE_API + ApiPaths.CLIENTS_BASE_API)
 public class TemporaryClientController {
 
-	private final CreateTemporaryClientUseCase createTemporaryClientUseCase;
 	private final RegisterTemporaryClientUseCase registerTemporaryClientUseCase;
 	private final GetTemporaryClientUseCase getTemporaryClientUseCase;
 	private final UpdateTemporaryClientUseCase updateTemporaryClientUseCase;
 	private final DeleteTemporaryClientUseCase deleteTemporaryClientUseCase;
 
-	@PostMapping
-	public ResponseEntity<Void> addTemporaryClient(@RequestBody TemporaryClientRequest temporaryClientRequest) {
-		createTemporaryClientUseCase.execute(temporaryClientRequest);
-		return ResponseEntity.ok().build();
-	}
 
 	@GetMapping("/{temporaryClientId}")
 	public ResponseEntity<TemporaryClientResponse> getTemporaryClient(

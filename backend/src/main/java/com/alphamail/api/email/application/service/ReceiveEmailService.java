@@ -1,10 +1,16 @@
 package com.alphamail.api.email.application.service;
 
+import java.io.InputStream;
 import java.util.List;
 
+import com.alphamail.api.assistants.application.usecase.client.CreateTemporaryClientUseCase;
 import com.alphamail.api.email.application.usecase.ai.EmailMCPUseCase;
 import com.alphamail.api.email.application.usecase.ai.EmailVectorUseCase;
+import com.alphamail.api.email.domain.entity.EmailOCR;
+import com.alphamail.api.email.domain.repository.EmailOCRRespository;
 import com.alphamail.api.email.presentation.dto.AttachmentRequest;
+import com.alphamail.api.email.presentation.dto.VectorDBRequest;
+import com.alphamail.api.global.s3.service.S3Service;
 import org.springframework.stereotype.Service;
 
 import com.alphamail.api.email.domain.entity.Email;
@@ -19,6 +25,7 @@ import com.alphamail.api.user.domain.valueobject.UserId;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -29,73 +36,97 @@ public class ReceiveEmailService {
 	private final LoadUserPort loadUserPort;
 	private final EmailFolderRepository emailFolderRepository;
 	private final EmailAttachmentRepository emailAttachmentRepository;
-
+	private final EmailOCRRespository emailOCRRespository;
+	private final S3Service s3Service;
 	private final EmailMCPUseCase emailMCPUseCase;
 	private final EmailVectorUseCase emailVectorUseCase;
+	private final CreateTemporaryClientUseCase createTemporaryClientUseCase;
 
 	public void excute(ReceiveEmailRequest request) {
-
-//		if(request.attachments().get(0)!=null) {
-//
-//			for(AttachmentRequest attachment : request.attachments()) {
-//				if(attachment.filename().contains("사업자 등록증")||
-//					attachment.filename().contains("사업자등록증")){
-//
-//					//ocrusecase 작성
-//				}
-//			}
-//		}
-
 		log.info("이메일 수신 시작 - messageId: {}, inReplyTo: {}, references: {}",
-			request.messageId(), request.inReplyTo(), request.references());
+				request.messageId(), request.inReplyTo(), request.references());
 
-
-		String recipientEmail = request.actualRecipient();
-		UserId userId = loadUserPort.loadUserIdByEmail(recipientEmail);
+		UserId userId = loadUserPort.loadUserIdByEmail(request.actualRecipient());
 		Integer folderId = emailFolderRepository.getInboxFolderId(userId.getValue());
 
-		String threadId = null;
-
-		// inReplyTo를 사용해 원본 이메일 찾기
-		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
-			log.info("inReplyTo에서 원본 이메일 찾기: {}", request.inReplyTo());
-			Email originalEmail = emailRepository.findByMessageId(request.inReplyTo());
-			if (originalEmail != null && originalEmail.getThreadId() != null) {
-				threadId = originalEmail.getThreadId();
-				log.info("원본 이메일에서 스레드 ID 찾음: {}", threadId);
-			}
-		}
-
-		// 원본 이메일을 찾지 못한 경우에만 새로 계산
-		if (threadId == null) {
-			ThreadId calculatedThreadId = ThreadId.fromEmailHeaders(
-				request.references(),
-				request.inReplyTo(),
-				request.messageId()
-			);
-			threadId = calculatedThreadId.getValue();
-			log.info("계산된 스레드 ID 사용: {}", threadId);
-		}
-
-		//(비동기) 여기서 벡터 DB 저장 UserId & threadId & 메일 내용 조합해서 전달
-		emailVectorUseCase.execute(request,userId.getValue(), threadId).subscribe();
+		String threadId = resolveThreadId(request);
+		emailVectorUseCase.execute(VectorDBRequest.fromReceiveEmailRequest(request), userId.getValue(), threadId)
+				.onErrorContinue((error, item) -> {
+					log.warn("벡터 저장 실패 : {}", item,error);
+				})
+				.subscribe();
 
 		Email email = Email.createForReceiving(request, userId.getValue(), folderId, threadId);
-		log.info("이메일 객체 생성: threadId={}", email.getThreadId());
-
 		Email savedEmail = emailRepository.save(email);
 		log.info("이메일 저장 완료: emailId={}", savedEmail.getEmailId());
 
-		//(비동기) 여기서 MCP 호출 request에 있는 내용 조합 & emailId=105, userEmail=test3@alphamail.my
-		emailMCPUseCase.execute(request,savedEmail.getEmailId()).subscribe();
+		Mono.fromRunnable(() -> {
+			try {
+				processAttachments(request.attachments(), savedEmail, userId);
+			} catch (Exception e) {
+				log.error("첨부파일 처리 중 오류 발생", e);
+			}
+		}).subscribe();
+		emailMCPUseCase.execute(request, savedEmail.getEmailId())
+				.onErrorContinue((error, item) -> {
+					log.warn("MCP 호출 실패 : {}", item,error);
+				})
+				.subscribe();
 
 		List<EmailAttachment> emailAttachmentList = EmailAttachment.createAttachments(
-			request.attachments(),
-			savedEmail.getEmailId()
-		);
-
+				request.attachments(), savedEmail.getEmailId());
 		if (!emailAttachmentList.isEmpty()) {
 			emailAttachmentRepository.saveAll(emailAttachmentList);
 		}
 	}
+
+	private String resolveThreadId(ReceiveEmailRequest request) {
+		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
+			log.info("inReplyTo에서 원본 이메일 찾기: {}", request.inReplyTo());
+			Email original = emailRepository.findByMessageId(request.inReplyTo());
+			if (original != null && original.getThreadId() != null) {
+				log.info("원본 이메일에서 스레드 ID 찾음: {}", original.getThreadId());
+				return original.getThreadId();
+			}
+		}
+		return ThreadId.fromEmailHeaders(request.references(), request.inReplyTo(), request.messageId()).getValue();
+	}
+
+	private void processAttachments(List<AttachmentRequest> attachments, Email savedEmail, UserId userId) {
+		if (attachments == null || attachments.isEmpty()) return;
+		for (AttachmentRequest attachment :  attachments) {
+			if (isBusinessLicense(attachment.filename()) && isSupportedFileType(attachment.contentType())) {
+				try {
+					InputStream downloadFile = s3Service.downloadFile(attachment.s3Key());
+					emailOCRRespository.registOCR(downloadFile, attachment.filename(), attachment.contentType().split("/")[1],userId.getValue().toString())
+							.onErrorContinue((error, item) -> {
+								log.warn("OCR 호출 실패 : {}", item,error);
+							})
+							.subscribe(emailOCR -> {
+								log.info("OCR 호출 성공 : {}", emailOCR.toString());
+								if (emailOCR.success()) {
+									createTemporaryClientUseCase.execute(
+											EmailOCR.toTemporaryClientRequest(
+													emailOCR, savedEmail.getEmailId(), savedEmail.getSender(), attachment.s3Key()
+											),
+											userId.getValue()
+									);
+								}
+							});
+				} catch (Exception e) {
+					log.error("첨부파일 OCR 처리 중 오류 발생", e);
+				}
+			}
+		}
+	}
+
+	private boolean isBusinessLicense(String filename) {
+		return filename.contains("사업자 등록증") || filename.contains("사업자등록증");
+	}
+
+	private boolean isSupportedFileType(String contentType) {
+		String type = contentType.split("/")[1];
+		return List.of("pdf", "jpg", "jpeg", "png", "tiff").contains(type);
+	}
 }
+

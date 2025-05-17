@@ -2,6 +2,7 @@ package com.alphamail.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
@@ -11,6 +12,7 @@ public class WebClientConfig {
     public WebClient ocrWebClient() {
         return WebClient.builder()
                 .baseUrl("http://ocr:3000")
+                .defaultHeader("Content-Type", MediaType.MULTIPART_FORM_DATA_VALUE)
                 .build();
     }
 

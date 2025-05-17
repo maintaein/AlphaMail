@@ -3,7 +3,6 @@ package com.alphamail.api.email.infrastructure.repository.ai;
 import com.alphamail.api.email.domain.entity.EmailVector;
 import com.alphamail.api.email.domain.repository.EmailVectorRepository;
 import com.alphamail.api.email.infrastructure.dto.EmailVectorResponseDTO;
-import com.alphamail.api.assistants.presentation.dto.ai.EmailVectorRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -17,7 +16,7 @@ public class EmailVectorRepositoryImpl implements EmailVectorRepository {
     private final WebClient ragWebClient;
 
     @Autowired
-    public EmailVectorRepositoryImpl(@Qualifier("ragWebClient")WebClient ragWebClient) {
+    public EmailVectorRepositoryImpl(@Qualifier("ragWebClient") WebClient ragWebClient) {
         this.ragWebClient = ragWebClient;
     }
 

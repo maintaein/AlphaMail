@@ -15,5 +15,5 @@ app.use('/ocr', ocrRoutes);
 // 서버 시작
 const PORT = 3000;
 app.listen(PORT, async () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });

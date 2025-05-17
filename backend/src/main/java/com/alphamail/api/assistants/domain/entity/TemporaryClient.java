@@ -52,7 +52,7 @@ public class TemporaryClient {
 			.representative(request.representative())
 			.businessType(request.businessType())
 			.businessItem(request.businessItem())
-			.phoneNumber(request.phoneNumber())
+			.phoneNumber(null)
 			.businessLicense(request.businessLicense())
 			.email(email)
 			.clientEmail(request.email())

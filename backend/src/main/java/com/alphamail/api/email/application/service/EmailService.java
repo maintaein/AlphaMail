@@ -1,23 +1,23 @@
 package com.alphamail.api.email.application.service;
 
-import java.util.List;
-
-import com.alphamail.api.email.application.usecase.SendEmailUseCase;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.alphamail.api.email.application.usecase.SaveEmailUseCase;
 import com.alphamail.api.email.application.usecase.SaveSendAttachmentUseCase;
+import com.alphamail.api.email.application.usecase.SendEmailUseCase;
 import com.alphamail.api.email.application.usecase.UpdateEmailUseCase;
+import com.alphamail.api.email.application.usecase.ai.EmailVectorUseCase;
 import com.alphamail.api.email.domain.entity.Email;
 import com.alphamail.api.email.domain.entity.EmailStatus;
 import com.alphamail.api.email.domain.repository.EmailRepository;
 import com.alphamail.api.email.domain.valueobject.ThreadId;
 import com.alphamail.api.email.presentation.dto.SendEmailRequest;
-
+import com.alphamail.api.email.presentation.dto.VectorDBRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,12 +26,14 @@ public class EmailService {
 	private final SaveEmailUseCase saveEmailUseCase;
 	private final SendEmailUseCase sendEmailUseCase;
 	private final UpdateEmailUseCase updateEmailUseCase;
+	private final EmailVectorUseCase emailVectorUseCase;
 	private final SaveSendAttachmentUseCase saveSendAttachmentUseCase;
 	private final EmailRepository emailRepository;
 
 	@Transactional
 	public void sendEmail(SendEmailRequest request, List<MultipartFile> attachments, Integer userId) {
 		String threadId = null;
+
 
 		// 답장인 경우 원본 이메일의 스레드 ID 찾기
 		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
@@ -41,6 +43,10 @@ public class EmailService {
 				threadId = originalEmail.getThreadId();
 				log.info("원본 이메일에서 스레드 ID 찾음: {}", threadId);
 			}
+		}
+
+		if (threadId != null) {
+			saveVectorAsync(request, userId, threadId);
 		}
 
 		Email email = saveEmailUseCase.execute(request, userId);
@@ -76,6 +82,8 @@ public class EmailService {
 				);
 				threadId = calculatedThreadId.getValue();
 				log.info("새 이메일 메시지 ID에서 스레드 ID 계산: {}", threadId);
+
+				saveVectorAsync(request, userId, threadId);
 			}
 
 			emailRepository.updateMessageIdThreadIdAndStatus(
@@ -91,5 +99,12 @@ public class EmailService {
 			throw e;
 		}
 	}
+
+	private void saveVectorAsync(SendEmailRequest request, Integer userId, String threadId) {
+		emailVectorUseCase.execute(VectorDBRequest.fromSendEmailRequest(request), userId, threadId)
+				.onErrorContinue((error, item) -> log.warn("벡터 저장 실패 : {}", item, error))
+				.subscribe();
+	}
+
 
 }

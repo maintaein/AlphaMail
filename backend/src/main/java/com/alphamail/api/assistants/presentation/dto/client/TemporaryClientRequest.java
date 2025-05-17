@@ -9,10 +9,8 @@ public record TemporaryClientRequest(
 	String businessItem,
 	//상대방 이메일
 	String email,
-	String phoneNumber,
 	// s3에 등록될 사진
 	String businessLicense,
-	String receivedEmail,
 	Integer emailId
 
 ) {
