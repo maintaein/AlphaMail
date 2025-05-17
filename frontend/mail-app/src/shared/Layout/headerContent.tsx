@@ -3,11 +3,14 @@ import { useLocation } from 'react-router-dom';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 import { SearchBar } from '@/shared/components/searchBar';
+import { useUser } from '@/features/auth/hooks/useUser';
 
 export const HeaderContent: React.FC = () => {
   const location = useLocation();
   const path = location.pathname;
   const { title, subtitle, mailStats } = useHeaderStore();
+  const {data: userData} = useUser();
+  const userName = userData?.name;
   
   const isSearchablePath = path === '/mail' || path === '/mail/sent' || path === '/schedule';
 
@@ -15,7 +18,7 @@ export const HeaderContent: React.FC = () => {
   if (path === '/') {
     return (
       <Typography variant="titleSmall" className="text-[#606060]">
-        김싸피님 오늘 업무도 파이팅하세요
+        {userName}님 오늘 업무도 파이팅하세요
       </Typography>
     );
   } else if (path.startsWith('/mail')) {

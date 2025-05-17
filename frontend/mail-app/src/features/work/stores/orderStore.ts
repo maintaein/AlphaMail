@@ -160,4 +160,4 @@ export const useOrderStore = create<OrderStore>((set) => ({
         products: state.formData.products.filter((_, i) => i !== index),
       },
     })),
-})); 
+}));

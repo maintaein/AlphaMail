@@ -1,49 +1,29 @@
-import { Button } from '@/shared/components/atoms/button';
-import { Input } from '@/shared/components/atoms/input';
-import { Typography } from '@/shared/components/atoms/Typography';
+import { HomeAiTemplate } from '@/features/home/components/templates/homeAiTemplate';
+import { HomeScheduleBox } from '@/features/home/components/organisms/homeScheduleBox';
+import { HomeUnreadMailBox } from '@/features/home/components/organisms/homeUnreadMailBox';
 
 const HomePage = () => {
   return (
-    <div className="p-8 space-y-12 bg-background">
-      {/* Buttons */}
-      <section>
-        <Typography variant="titleMedium">Buttons</Typography>
-        <div className="mt-4 flex flex-wrap gap-4">
-          <Button size="small" variant="primary">적용</Button>
-          <Button size="small" variant="secondary">닫기</Button>
-          <Button size="small" variant="text">닫기</Button>
-          <Button size="large" variant="primary">메일 쓰기</Button>
-          <Button size="large" variant="secondary">메일 쓰기</Button>
+    <div className="p-8 bg-[#F6F7F7] min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* AI 어시스턴트 (왼쪽 큰 박스) */}
+        <div className="lg:col-span-2">
+          <HomeAiTemplate />
         </div>
-      </section>
-
-      {/* Inputs */}
-      <section>
-        <Typography variant="titleMedium">Inputs</Typography>
-        <div className="mt-4 flex flex-col gap-4 max-w-sm">
+        
+        {/* 오른쪽 컬럼 (오늘의 일정 + 안읽은 메일) */}
+        <div className="flex flex-col gap-6">
+          {/* 오늘의 일정 */}
           <div>
-            <Typography variant="body" bold>Default Input (h-40)</Typography>
-            <Input placeholder="Default input" variant="default" size="medium" />
+            <HomeScheduleBox />
           </div>
+          
+          {/* 안읽은 메일 */}
           <div>
-            <Typography variant="body" bold>Boxed Input (h-30)</Typography>
-            <Input placeholder="Boxed input" variant="boxed" size="small" />
+            <HomeUnreadMailBox />
           </div>
         </div>
-      </section>
-
-      {/* Typography */}
-      <section>
-        <Typography variant="titleMedium">Typography</Typography>
-        <div className="mt-4 space-y-2">
-          <Typography variant="titleLarge">23px Light – Title Large</Typography>
-          <Typography variant="titleMedium">20px Light – Title Medium</Typography>
-          <Typography variant="titleSmall">16px Light – Title Small</Typography>
-          <Typography variant="body">14px Light – Body text</Typography>
-          <Typography variant="caption">13px Medium – Caption (inactive info)</Typography>
-          <Typography variant="body" bold>14px Bold – e.g. active tab</Typography>
-        </div>
-      </section>
+      </div>
     </div>
   );
 };

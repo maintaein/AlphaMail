@@ -29,7 +29,7 @@ const logApiError = (method: string, endpoint: string, error: Record<string, unk
 // 메일 서비스 클래스
 export const mailService = {
   // 메일 목록 조회
-  async getMailList(folderId?: number, page: number = 1, size: number = 15, sort: number = 0, keyword?: string): Promise<MailListResponse> {
+  async getMailList(folderId?: number, page: number = 1, size: number = 15, sort: number = 0, keyword?: string, readStatus?: boolean): Promise<MailListResponse> {
     const params = new URLSearchParams();
     params.append('page', String(page - 1)); // API는 0부터 시작하는 페이지 인덱스 사용
     params.append('size', String(size));
@@ -44,6 +44,10 @@ export const mailService = {
         params.append('folderId', String(folderId));
     }
     
+    if (readStatus) {
+        params.append('readStatus', String(readStatus));
+    }
+
     const endpoint = `/api/mails`;
     logApiCall('GET', endpoint, { params: Object.fromEntries(params) });
     

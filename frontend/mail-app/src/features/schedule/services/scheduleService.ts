@@ -118,6 +118,37 @@ export const scheduleService = {
       };
     });
   },
+
+  getSchedulesForDay: (startOfDay: Date, endOfDay: Date) => {
+    const startDateString = toISOStringWithoutZ(startOfDay);
+    const endDateString = toISOStringWithoutZ(endOfDay);
+
+    console.log('scheduleService - 오늘의 일정 요청:', {
+      startTime: startDateString,
+      endTime: endDateString
+    });
+
+    return api.get<ScheduleResponse>('/api/schedules', {
+      params: { 
+        startTime: startDateString, 
+        endTime: endDateString
+      }
+    }).then((response: AxiosResponse<ScheduleResponse>) => {
+      console.log('오늘의 일정 응답:', response.data);
+      
+      const schedules: Schedule[] = (response.data?.schedules || []).map(item => ({
+        id: String(item.id),
+        name: item.name,
+        created_at: new Date(item.createdAt + 'Z'),
+        start_time: new Date(item.startTime + 'Z'),
+        end_time: new Date(item.endTime + 'Z'),
+        is_done: item.isDone,
+        description: item.description
+      }));
+      
+      return { data: schedules };
+    });
+  },
   // 스케줄 생성
   createSchedule: async (schedule: CreateScheduleRequest): Promise<Schedule> => {
     const requestData = {
