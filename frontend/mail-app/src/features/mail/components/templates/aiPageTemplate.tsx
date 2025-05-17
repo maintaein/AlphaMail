@@ -4,7 +4,7 @@ import AiTemplateList from '../organisms/aiTemplateList';
 import AiSummary from '../organisms/aiSummary';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useAiStore } from '../../stores/useAiStore';
-import AiSendPrompt from '../molecules/aiSendPrompt';
+// import AiSendPrompt from '../molecules/aiSendPrompt';
 
 interface AiPageTemplateProps {
   isOpen: boolean;
@@ -88,14 +88,7 @@ const AiPageTemplate: React.FC<AiPageTemplateProps> = ({
           <div className="flex-1 overflow-auto">
             <AiTemplateList />
           </div>
-          <div className="border-t border-gray-200 bg-white fixed right-0 z-10" 
-               style={{ width: '400px', bottom: '0' }}>
-            <AiSendPrompt onSend={(prompt) => {
-              console.log(`프롬프트 전송: ${prompt}`);
-              // 실제 구현에서는 AI API 호출 로직 추가
-            }} />
-          </div>
-          <div className="h-24"></div>
+          <div className="h-14"></div>
         </div>
       )}
     </div>

@@ -6,7 +6,7 @@ interface AiLoadingProps {
   message?: string;
 }
 
-const AiLoading: React.FC<AiLoadingProps> = () => {
+const AiLoading: React.FC<AiLoadingProps> = ({ message = "메일 스레드 요약 중..." }) => {
   return (
     <div className="flex flex-col items-center justify-start h-full p-6 pt-20">
       <img 
@@ -15,7 +15,7 @@ const AiLoading: React.FC<AiLoadingProps> = () => {
         className="w-120 h-90"
       />
       <Typography variant="titleSmall" color="#ADADAD" className="mt-2 text-center">
-        메일 스레드 요약 중...
+        {message}
       </Typography>
     </div>
   );

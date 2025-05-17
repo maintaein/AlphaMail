@@ -44,10 +44,11 @@ export const mailService = {
         params.append('folderId', String(folderId));
     }
     
-    if (readStatus) {
+    // readStatus가 undefined가 아닐 때만 파라미터에 추가 (true/false 모두 처리)
+    if (readStatus !== undefined) {
         params.append('readStatus', String(readStatus));
     }
-
+  
     const endpoint = `/api/mails`;
     logApiCall('GET', endpoint, { params: Object.fromEntries(params) });
     
@@ -63,7 +64,7 @@ export const mailService = {
       throw error;
     }
   },
-  
+    
   // 메일 상세 조회
   async getMailDetail(id: string | number): Promise<MailDetailResponse> {
     const endpoint = `/api/mails/${id}`;

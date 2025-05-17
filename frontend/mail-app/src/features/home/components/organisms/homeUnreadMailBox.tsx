@@ -9,13 +9,19 @@ import { ArrowPathIcon as RefreshIcon } from '@heroicons/react/24/outline';
 
 export const HomeUnreadMailBox: React.FC = () => {
   const { data: unreadMailsData, isLoading, error } = useUnreadMails(10);
-  const unreadMails = unreadMailsData?.data || [];
-  const totalCount = unreadMailsData?.totalCount || 0;
+  // readStatus가 false인 메일만 필터링
+  const unreadMails = unreadMailsData?.data 
+    ? unreadMailsData.data.filter(mail => mail.readStatus === false) 
+    : [];
+  
+  // 필터링된 메일 수를 totalCount로 사용
+  const totalCount = unreadMails.length;
+  
   const navigate = useNavigate();
   
   // 메일 상세 페이지로 이동
   const handleMailClick = (mailId: string) => {
-    navigate(`/mail/detail/${mailId}`);
+    navigate(`/mail/${mailId}`);
   };
   
   // 날짜 포맷팅 함수

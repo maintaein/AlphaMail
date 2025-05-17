@@ -11,4 +11,7 @@ export const MAIL_QUERY_KEYS = {
       ['mail-attachment', mailId, attachmentId],
 
     stats: 'mail-stats',
+
+    emailTemplates: () => ['email-templates'],
+    emailTemplate: (id: number) => ['email-template', id],  
   };

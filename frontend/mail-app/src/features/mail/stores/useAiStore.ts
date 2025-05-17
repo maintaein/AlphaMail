@@ -1,10 +1,5 @@
 import { create } from 'zustand';
 
-interface TemplateItem {
-    id: string;
-    title: string;
-  }
-  
 interface AiState {
   // AI 어시스턴트 상태
   isAiAssistantOpen: boolean;
@@ -17,10 +12,10 @@ interface AiState {
   isTranslating: boolean;
   translatedContent: string | null;
   
-    // 템플릿 관련 상태
-  templates: TemplateItem[];
+  // 템플릿 관련 상태
   selectedTemplateId: string | null;
   isAddingNewTemplate: boolean;
+  isEditing: boolean;
 
   // 액션
   openAiAssistant: () => void;
@@ -33,9 +28,8 @@ interface AiState {
   clearTranslatedContent: () => void;
   selectTemplate: (id: string) => void;
   clearSelectedTemplate: () => void;
-  addTemplate: (template: TemplateItem) => void;
-  deleteTemplate: (id: string) => void;
   setAddingNewTemplate: (isAdding: boolean) => void;
+  setIsEditing: (isEditing: boolean) => void;
 }
 
 export const useAiStore = create<AiState>((set) => ({
@@ -48,26 +42,9 @@ export const useAiStore = create<AiState>((set) => ({
     isAddingNewTemplate: false,
     
     // 템플릿 초기 상태
-    templates: [
-      {
-        id: '1',
-        title: '계재보고서용 템플릿',
-      },
-      {
-        id: '2',
-        title: '내가 만든 템플릿',
-      },
-      {
-        id: '3',
-        title: '계재보고서용 템플릿',
-      },
-      {
-        id: '4',
-        title: '내가 만든 템플릿',
-      }
-    ],
     selectedTemplateId: null,
-    
+    isEditing: false,
+
     // 액션
     openAiAssistant: () => set({ isAiAssistantOpen: true }),
     closeAiAssistant: () => set({ isAiAssistantOpen: false }),
@@ -83,11 +60,6 @@ export const useAiStore = create<AiState>((set) => ({
     // 템플릿 관련 액션
     selectTemplate: (id) => set({ selectedTemplateId: id }),
     clearSelectedTemplate: () => set({ selectedTemplateId: null }),
-    addTemplate: (template) => set((state) => ({ 
-      templates: [...state.templates, template] 
-    })),
-    deleteTemplate: (id) => set((state) => ({ 
-      templates: state.templates.filter(template => template.id !== id) 
-    })),
     setAddingNewTemplate: (isAdding: boolean) => set({ isAddingNewTemplate: isAdding }),
+    setIsEditing: (isEditing: boolean) => set({ isEditing }),
 }));

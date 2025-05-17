@@ -54,7 +54,7 @@ const AiTemplateCell: React.FC<AiTemplateCellProps> = ({
         </div>
         
         <div className="text-center">
-            <Typography variant="titleSmall">
+            <Typography variant="body">
             {title}
             </Typography>
         </div>

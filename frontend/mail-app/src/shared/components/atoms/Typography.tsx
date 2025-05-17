@@ -1,4 +1,5 @@
 import { cn } from '@/shared/utils/cn';
+import React from 'react';
 
 interface TypographyProps {
   children: React.ReactNode;
@@ -6,9 +7,17 @@ interface TypographyProps {
   bold?: boolean,
   color?: string;
   className?: string;
+  as?: React.ElementType; // 새로운 prop 추가: 렌더링할 HTML 요소 지정
 }
 
-export const Typography = ({ children, variant = 'body', bold, color, className}: TypographyProps) => {
+export const Typography = ({ 
+  children, 
+  variant = 'body', 
+  bold, 
+  color, 
+  className,
+  as: Component = 'p' // 기본값을 p로 유지
+}: TypographyProps) => {
   const baseStyle = color ? 'font-pretendard' : 'text-gray-900 font-pretendard';
   
   const variantStyle = {
@@ -22,8 +31,8 @@ export const Typography = ({ children, variant = 'body', bold, color, className}
   const fontWeightStyle = bold ? 'font-bold' : 'font-light';
 
   return (
-    <p className={cn(baseStyle, variantStyle, fontWeightStyle, color, className)}>
+    <Component className={cn(baseStyle, variantStyle, fontWeightStyle, color, className)}>
       {children}
-    </p>
+    </Component>
   );
 };

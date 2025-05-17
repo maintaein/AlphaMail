@@ -7,6 +7,8 @@ interface AiTemplateItemProps {
     onLabelChange: (label: string) => void;
     onDelete?: () => void;
     showDeleteButton?: boolean;
+    maxLabelLength?: number;
+    maxValueLength?: number;
   }
 
 const AiTemplateItem: React.FC<AiTemplateItemProps> = ({ 
@@ -15,8 +17,24 @@ const AiTemplateItem: React.FC<AiTemplateItemProps> = ({
     onChange, 
     onLabelChange,
     onDelete,
-    showDeleteButton = true
+    showDeleteButton = true,
+    maxLabelLength = 10,
+    maxValueLength = 100
   }) => {
+    const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newLabel = e.target.value;
+        if (newLabel.length <= maxLabelLength) {
+            onLabelChange(newLabel);
+        }
+    };
+
+    const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newValue = e.target.value;
+        if (newValue.length <= maxValueLength) {
+            onChange(newValue);
+        }
+    };
+
     return (
         <div className="bg-white rounded-lg p-2 pr-2 mb-2 border border-gray-200">
             <div className="flex items-center">
@@ -24,17 +42,18 @@ const AiTemplateItem: React.FC<AiTemplateItemProps> = ({
                 <input
                 type="text"
                 value={label}
-                onChange={(e) => onLabelChange && onLabelChange(e.target.value)}
-                className="w-full outline-none text-sm font-bold text-gray-700"
+                placeholder="주제"
+                onChange={handleLabelChange}
+                className="w-full outline-none text-sm font-bold text-gray-600 font-pretendard"
                 />
             </div>
             <div className="flex-1 border-l border-gray-200 pl-4">
                 <input
                 type="text"
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={handleValueChange}
                 placeholder="내용을 입력해주세요"
-                className="w-full outline-none text-sm text-gray-600"
+                className="w-full outline-none text-sm text-gray-600 font-pretendard"
                 />
             </div>
             {showDeleteButton && onDelete && (
