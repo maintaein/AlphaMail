@@ -97,34 +97,32 @@ class MCPClientManager:
             await self.initialize()
                 
         try:
-            
-            json_instruction = """
-반드시 아래 JSON 형식으로만 답변하세요. 
-자유로운 설명이나 불필요한 텍스트는 절대 포함하지 마세요.
+            # 쿼리 변수명 수정
+            response = await self.agent.ainvoke({"messages": [HumanMessage(content=query)]})
 
-예시:
-{
-  "reply": "여기에 한 문단으로 작성한 요약이 들어갑니다...",
-  "ids": [일정ID 또는 관련 ID]
-}
-"""
-            prompt = json_instruction + "\n" + query
- 
-            # 에이전트에 쿼리 전송
-            response = await self.agent.ainvoke({"messages": [HumanMessage(content=prompt)]})
-            
+            # 항상 일정한 반환 구조 유지
+            result = {
+                "tool_results": [],
+                "llm_response": response
+            }
+
             for msg in response.get("messages", []):
                 if hasattr(msg, 'tool_calls') and msg.tool_calls:
                     for call in msg.tool_calls:
                         tool = next((t for t in self.tools if t.name == call['name']), None)
                         if tool:
                             server_response = await tool.coroutine(call['args'])
-                            return server_response  # 결과만 바로 반환
+                            result["tool_results"].append({
+                                "tool": call['name'],
+                                "result": server_response
+                            })
                         else:
-                            return {"error": f"도구 '{call['name']}'을(를) 찾을 수 없습니다."}
-            # 툴 호출이 없으면 LLM의 원래 답변 반환
-            return response
-                
+                            result["tool_results"].append({
+                                "tool": call['name'],
+                                "error": f"도구 '{call['name']}'을(를) 찾을 수 없습니다."
+                            })
+            return result
+
         except Exception as e:
             logger.error(f"쿼리 처리 오류: {str(e)}")
             return {

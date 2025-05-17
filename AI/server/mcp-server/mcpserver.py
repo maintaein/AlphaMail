@@ -42,6 +42,10 @@ def date(
     사용 조건:
     - 이메일에 회의, 약속, 행사 등 일정이 포함된 경우.
     - 날짜(start, end) 정보가 명확히 존재할 것.
+
+    이메일 본문은 HTML 형식(태그 포함)으로 들어옵니다.  
+    HTML 태그는 무시하고, 실제 텍스트 내용에서 정보를 추출해 아래 필드에 맞게 JSON 구조로 채워주세요.
+
     """
     try:
         logger.info(f"일정 생성 요청: {title} ({startTime} ~ {endTime})")
@@ -79,43 +83,92 @@ def date(
         }
 
 @mcp.tool()
-def orderRequest(
-    company: Annotated[str, Field(description="발주 대상 거래처 회사명")],
-    contactName: Annotated[str, Field(description="담당자 이름")],
-    contactEmail: Annotated[str, Field(description="담당자 이메일 주소")],
-    paymentTerms: Annotated[str, Field(description="결제 조건 (예: 선불, 후불, 30일 내 결제 등)")],
-    deliveryAddress: Annotated[str, Field(description="배송 주소")],
-    deliveryDate: Annotated[str, Field(description="배송 예정일 (예: '2024-05-15')")],
-    items: Annotated[List[dict], Field(description="발주 품목 목록 (예: [{'name': '프린터', 'quantity': 2}])")]
+def createTemporaryPurchaseOrder(
+    title: Annotated[str, Field(description="발주 제목 (LLM이 생성, 필수)")],
+    userEmail: Annotated[str, Field(description="사용자 이메일(필수, 숫자여도 str로 변환)")],
+    emailId: Annotated[str, Field(description="이메일 ID(필수, 숫자여도 str로 변환)")],
+    clientName: Annotated[Optional[str], Field(description="거래처명")] = None,
+    deliverAt: Annotated[Optional[str], Field(description="배송 예정일 (ISO8601, 예: '2024-05-15T12:00:00')")] = None,
+    shippingAddress: Annotated[Optional[str], Field(description="배송 주소")] = None,
+    manager: Annotated[Optional[str], Field(description="담당자명")] = None,
+    managerNumber: Annotated[Optional[str], Field(description="담당자 연락처")] = None,
+    paymentTerm: Annotated[Optional[str], Field(description="결제 조건")] = None,
+    products: Annotated[Optional[List[dict]], Field(description="발주 상품 목록 (예: [{'productName': '상품명', 'count': 2}])")] = None
 ):
     """
-    이메일에서 발주 요청 정보를 구조화하여 추출합니다.
-    사용 조건:
-    - 메일 본문에 품목 주문, 수량, 배송 정보 등이 명시되어 있는 경우.
+    [사용 조건]
+    - 이메일 본문에 상품 발주, 주문 요청, 구매 요청 등 실제로 거래처에 물품을 주문하는 내용이 포함되어 있을 때 사용하세요.
+    - 품목, 수량, 배송지, 결제 조건 등 발주서에 필요한 정보가 일부라도 명확히 존재할 때 사용하세요.
+
+    [프롬프트]
+    이메일 본문에서 임시 발주서 생성에 필요한 정보를 추출해 아래 필드에 맞게 채워주세요.
+
+    - 모든 필드는 반드시 포함해야 하며, 값이 없으면 null로 채워야 합니다.
+    - userEmail은 userEmail = test@alphamail.my 이런식으로 주어집니다.
+    - emailId는 숫자입니다 
+    - title, userEmail, emailId는 반드시 생성 또는 추출해서 값이 들어가야 합니다.
+    - 나머지 필드는 이메일에 정보가 없으면 null로 채웁니다.
+    - products는 [{productName, count}] 형태의 리스트로, 각 항목도 값이 없으면 null로 채웁니다.
+    - 날짜, 숫자 등은 최대한 원본 형식(ISO8601 등)에 맞춰주세요.
+
+    이메일 본문은 HTML 형식(태그 포함)으로 들어옵니다.  
+    HTML 태그는 무시하고, 실제 텍스트 내용에서 정보를 추출해 아래 필드에 맞게 JSON 구조로 채워주세요.
+
+    예시:
+    {
+      "title": "A사 프린터 발주",
+      "userEmail": "user@email.com",
+      "emailId": "123",
+      "clientName": "A사",
+      "deliverAt": "2024-05-15T12:00:00",
+      "shippingAddress": null,
+      "manager": null,
+      "managerNumber": null,
+      "paymentTerm": null,
+      "products": [
+        {"productName": "프린터", "count": 2},
+        {"productName": "토너", "count": null}
+      ]
+    }
+
+    반드시 위 지침을 지켜 JSON 구조로 정보를 추출하세요.
     """
     try:
-        logger.info(f"발주 요청: {company}, 품목 수: {len(items)}")
+        payload = {
+            "title": title if title is not None else None,
+            "userEmail": str(userEmail) if userEmail is not None else None,
+            "emailId": str(emailId) if emailId is not None else None,
+            "clientName": clientName if clientName is not None else None,
+            "deliverAt": deliverAt if deliverAt is not None else None,
+            "shippingAddress": shippingAddress if shippingAddress is not None else None,
+            "manager": manager if manager is not None else None,
+            "managerNumber": managerNumber if managerNumber is not None else None,
+            "paymentTerm": paymentTerm if paymentTerm is not None else None,
+            "products": None
+        }
+        # products 리스트도 각 아이템에서 None/빈 값은 null로 변환
+        if products is not None:
+            filtered_products = []
+            for p in products:
+                filtered = {k: (v if v is not None and v != "" else None) for k, v in p.items()}
+                filtered_products.append(filtered)
+            payload["products"] = filtered_products
+
+        logger.info(f"임시 발주 요청(모든 필드 포함): {payload}")
+
         response = httpx.post(
-            f"{ALPHAMAIL_BASE_URL}/api/erp/purchase-orders",
-            json={
-                "company": company,
-                "contactName": contactName,
-                "contactEmail": contactEmail,
-                "paymentTerms": paymentTerms,
-                "deliveryAddress": deliveryAddress,
-                "deliveryDate": deliveryDate,
-                "items": items
-            },
+            f"{ALPHAMAIL_BASE_URL}/api/assistants/purchase-orders/temporary",
+            json=payload,
             timeout=REQUEST_TIMEOUT
         )
         response.raise_for_status()
-        logger.info("발주 정보 전송 성공")
+        logger.info("임시 발주 정보 전송 성공")
         return {
-            "message": "발주 정보가 정상적으로 외부 시스템에 전송되었습니다.",
+            "message": "임시 발주 정보가 정상적으로 외부 시스템에 전송되었습니다.",
             "response": response.json()
         }
     except Exception as e:
-        logger.error(f"발주 정보 전송 실패: {str(e)}")
+        logger.error(f"임시 발주 정보 전송 실패: {str(e)}")
         return {
             "message": f"외부 시스템 전송 중 오류가 발생했습니다: {str(e)}",
             "error": True,
@@ -123,35 +176,85 @@ def orderRequest(
         }
 
 @mcp.tool()
-def estimateRequest(
-    items: Annotated[List[dict], Field(description="견적 요청 품목 목록 (예: [{'name': '노트북', 'quantity': 5}])")],
-    company: Annotated[Optional[str], Field(description="요청 업체명", default=None)] = None,
-    deliveryAddress: Annotated[Optional[str], Field(description="납품 요청 주소", default=None)] = None
+def createTemporaryQuote(
+    title: Annotated[str, Field(description="견적 제목 (LLM이 생성, 필수)")],
+    userEmail: Annotated[str, Field(description="사용자 이메일(필수, 예: test@alphamail.my)")],
+    emailId: Annotated[int, Field(description="이메일 ID(필수, 숫자)")],
+    clientName: Annotated[Optional[str], Field(description="거래처명")] = None,
+    shippingAddress: Annotated[Optional[str], Field(description="배송 주소")] = None,
+    manager: Annotated[Optional[str], Field(description="담당자명")] = None,
+    managerNumber: Annotated[Optional[str], Field(description="담당자 연락처")] = None,
+    products: Annotated[Optional[List[dict]], Field(description="견적 상품 목록 (예: [{'productName': '상품명', 'count': 2}])")] = None
 ):
     """
-    이메일에서 견적 요청 관련 정보를 추출합니다.
-    사용 조건:
-    - 품목에 대한 가격 견적을 요청하는 내용이 포함되어 있을 경우.
+    [사용 조건]
+    - 이메일 본문에 상품 견적 요청, 가격 문의, 견적서 요청 등 거래처에 견적을 요청하는 내용이 포함되어 있을 때 사용하세요.
+    - 품목, 수량, 요청자 정보 등 견적서에 필요한 정보가 일부라도 명확히 존재할 때 사용하세요.
+
+    [프롬프트]
+    이메일 본문에서 임시 견적서 생성에 필요한 정보를 추출해 아래 필드에 맞게 채워주세요.
+
+    - 모든 필드는 반드시 포함해야 하며, 값이 없으면 null로 채워야 합니다.
+    - userEmail은 userEmail = test@alphamail.my 이런식으로 주어집니다.
+    - emailId은 emailId = 123 이런식으로 주어집니다 이는 숫자입니다.
+    - title, userEmail, emailId는 반드시 생성 또는 추출해서 값이 들어가야 합니다.
+    - 나머지 필드는 이메일에 정보가 없으면 null로 채웁니다.
+    - products는 [{productName, count}] 형태의 리스트로, 각 항목도 값이 없으면 null로 채웁니다.
+
+    이메일 본문은 HTML 형식(태그 포함)으로 들어옵니다.  
+    HTML 태그는 무시하고, 실제 텍스트 내용에서 정보를 추출해 아래 필드에 맞게 JSON 구조로 채워주세요.
+
+    예시:
+    {
+      "title": "A사 견적 요청",
+      "userEmail": "test@alphamail.my",
+      "emailId": 123,
+      "clientName": "A사",
+      "shippingAddress": null,
+      "manager": null,
+      "managerNumber": null,
+      "products": [
+        {"productName": "노트북", "count": 5},
+        {"productName": "마우스", "count": null}
+      ]
+    }
+
+    반드시 위 지침을 지켜 JSON 구조로 정보를 추출하세요.
     """
     try:
-        logger.info(f"견적 요청: 업체: {company}, 품목 수: {len(items)}")
+        payload = {
+            "title": title if title is not None else None,
+            "userEmail": userEmail if userEmail is not None else None,
+            "emailId": emailId if emailId is not None else None,
+            "clientName": clientName if clientName is not None else None,
+            "shippingAddress": shippingAddress if shippingAddress is not None else None,
+            "manager": manager if manager is not None else None,
+            "managerNumber": managerNumber if managerNumber is not None else None,
+            "products": None
+        }
+        # products 리스트도 각 아이템에서 None/빈 값은 null로 변환
+        if products is not None:
+            filtered_products = []
+            for p in products:
+                filtered = {k: (v if v is not None and v != "" else None) for k, v in p.items()}
+                filtered_products.append(filtered)
+            payload["products"] = filtered_products
+
+        logger.info(f"임시 견적 요청(모든 필드 포함): {payload}")
+
         response = httpx.post(
-            f"{ALPHAMAIL_BASE_URL}/api/erp/estimates",
-            json={
-                "company": company,
-                "deliveryAddress": deliveryAddress,
-                "items": items
-            },
+            f"{ALPHAMAIL_BASE_URL}/api/assistants/quotes/temporary",
+            json=payload,
             timeout=REQUEST_TIMEOUT
         )
         response.raise_for_status()
-        logger.info("견적 정보 전송 성공")
+        logger.info("임시 견적 정보 전송 성공")
         return {
-            "message": "견적 정보가 정상적으로 외부 시스템에 전송되었습니다.",
+            "message": "임시 견적 정보가 정상적으로 외부 시스템에 전송되었습니다.",
             "response": response.json()
         }
     except Exception as e:
-        logger.error(f"견적 정보 전송 실패: {str(e)}")
+        logger.error(f"임시 견적 정보 전송 실패: {str(e)}")
         return {
             "message": f"외부 시스템 전송 중 오류가 발생했습니다: {str(e)}",
             "error": True,
