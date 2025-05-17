@@ -26,7 +26,8 @@ public class EmailTemplate {
 	private List<EmailTemplateField> fields; // 필드 목록 추가
 	private LocalDateTime createdAt; // 생성 시간 추가
 
-	public static EmailTemplate createFromRequest(Integer userId, AIEmailTemplateCreateRequest request, String htmlContent) {
+	public static EmailTemplate createFromRequest(Integer userId, AIEmailTemplateCreateRequest request,
+		String htmlContent) {
 		List<EmailTemplateField> fields = request.fields().stream()
 			.map(field -> EmailTemplateField.builder()
 				.fieldName(field.fieldName())
