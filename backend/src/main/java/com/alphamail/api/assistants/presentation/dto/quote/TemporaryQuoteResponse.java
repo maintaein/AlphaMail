@@ -44,7 +44,11 @@ public record TemporaryQuoteResponse(
 
     public record ClientDTO(
             Integer clientId,
-            String clientName
+            String clientName,
+            String licenseNum,
+            String representative,
+            String businessType,
+            String businessItem
     ) {
         public static TemporaryQuoteResponse.ClientDTO from(Client client) {
             if (client == null) {
@@ -52,7 +56,11 @@ public record TemporaryQuoteResponse(
             }
             return new TemporaryQuoteResponse.ClientDTO(
                     client.getClientId(),
-                    client.getCorpName()
+                    client.getCorpName(),
+                    client.getLicenseNum(),
+                    client.getRepresentative(),
+                    client.getBusinessType(),
+                    client.getBusinessItem()
             );
         }
     }

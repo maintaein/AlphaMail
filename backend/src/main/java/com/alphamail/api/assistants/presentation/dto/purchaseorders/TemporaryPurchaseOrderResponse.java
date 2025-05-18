@@ -49,7 +49,11 @@ public record TemporaryPurchaseOrderResponse(
 
     public record ClientDTO(
             Integer clientId,
-            String clientName
+            String clientName,
+            String licenseNum,
+            String representative,
+            String businessType,
+            String businessItem
     ) {
         public static ClientDTO from(Client client) {
             if (client == null) {
@@ -57,7 +61,11 @@ public record TemporaryPurchaseOrderResponse(
             }
             return new ClientDTO(
                     client.getClientId(),
-                    client.getCorpName()
+                    client.getCorpName(),
+                    client.getLicenseNum(),
+                    client.getRepresentative(),
+                    client.getBusinessType(),
+                    client.getBusinessItem()
             );
         }
 
