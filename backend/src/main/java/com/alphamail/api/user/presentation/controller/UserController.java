@@ -1,6 +1,5 @@
 package com.alphamail.api.user.presentation.controller;
 
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alphamail.api.user.application.usecase.ChangePasswordUseCase;
 import com.alphamail.api.user.application.usecase.GetUserInfoUseCase;
+import com.alphamail.api.user.application.usecase.ModifyUserProfileUseCase;
 import com.alphamail.api.user.application.usecase.RegistUserUseCase;
 import com.alphamail.api.user.application.usecase.VerifyPasswordUseCase;
 import com.alphamail.api.user.presentation.dto.ChangePasswordRequest;
 import com.alphamail.api.user.presentation.dto.CreateUserRequest;
+import com.alphamail.api.user.presentation.dto.ModifyUserProfileRequest;
 import com.alphamail.api.user.presentation.dto.PasswordChangeResult;
 import com.alphamail.api.user.presentation.dto.UserInfoResponse;
 import com.alphamail.common.annotation.Auth;
@@ -30,6 +31,7 @@ public class UserController {
 	private final ChangePasswordUseCase changePasswordUseCase;
 	private final GetUserInfoUseCase getUserInfoUseCase;
 	private final VerifyPasswordUseCase verifyPasswordUseCase;
+	private final ModifyUserProfileUseCase modifyUserProfileUseCase;
 
 	@PostMapping
 	public ResponseEntity<Boolean> regist(@RequestBody CreateUserRequest request) {
@@ -65,6 +67,17 @@ public class UserController {
 			return ResponseEntity.badRequest().body(result);
 		}
 
+	}
+
+	@PatchMapping("/me")
+	public ResponseEntity<?> modify(@Auth Integer userId, @RequestBody ModifyUserProfileRequest request) {
+		boolean result = modifyUserProfileUseCase.execute(userId, request);
+
+		if (!result) {
+			return ResponseEntity.badRequest().build();
+		}
+
+		return ResponseEntity.ok().build();
 	}
 
 }

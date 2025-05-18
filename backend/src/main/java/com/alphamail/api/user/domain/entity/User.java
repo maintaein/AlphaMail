@@ -86,4 +86,14 @@ public class User {
 			.deletedAt(this.deletedAt)
 			.build();
 	}
+
+	public void updateProfile(String phoneNum, String image) {
+		if (phoneNum != null) {
+			this.phoneNum = phoneNum;
+		}
+
+		if (image != null) {
+			this.image = image;
+		}
+	}
 }
