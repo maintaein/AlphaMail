@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,9 +31,11 @@ import com.alphamail.api.email.application.usecase.GetEmailDetailUseCase;
 import com.alphamail.api.email.application.usecase.GetEmailListUseCase;
 import com.alphamail.api.email.application.usecase.GetFolderUseCase;
 import com.alphamail.api.email.application.service.ReceiveEmailService;
+import com.alphamail.api.email.application.usecase.RestoreToOriginUseCase;
 import com.alphamail.api.email.presentation.dto.AttachmentDownloadResponse;
 import com.alphamail.api.email.presentation.dto.DeleteMailsRequest;
 import com.alphamail.api.email.presentation.dto.EmailDetailResponse;
+import com.alphamail.api.email.presentation.dto.EmailIdsRestoreRequest;
 import com.alphamail.api.email.presentation.dto.EmailListResponse;
 import com.alphamail.api.email.presentation.dto.EmptyTrashRequest;
 import com.alphamail.api.email.presentation.dto.EmptyTrashResponse;
@@ -58,6 +61,7 @@ public class EmailController {
 	private final ReceiveEmailService receiveEmailService;
 	private final DownloadAttachmentUseCase downloadAttachmentUseCase;
 	private final EmptyMailUseCase emptyMailUseCase;
+	private final RestoreToOriginUseCase restoreToOriginUseCase;
 
 	// 실제 사용자가 첨부파일을 DownLoad하는 API
 	@GetMapping("/{emailId}/attachments/{attachmentId}")
@@ -143,5 +147,11 @@ public class EmailController {
 		Integer deletedCount = emptyMailUseCase.execute(request, userId);
 		return ResponseEntity.ok(new EmptyTrashResponse(deletedCount));
 
+	}
+
+	@PatchMapping("/origin")
+	public ResponseEntity<Boolean> restoreToOrigin(@RequestBody EmailIdsRestoreRequest emailIds, @Auth Integer userId) {
+		boolean success = restoreToOriginUseCase.execute(emailIds.emailIds(), userId);
+		return ResponseEntity.ok(success);
 	}
 }
