@@ -10,19 +10,20 @@ interface AiPageTemplateProps {
   isOpen: boolean;
   onClose: () => void;
   mailContent?: string; // 메일 내용 (선택적)
+  mailId?: number; // 메일 ID 추가
   mode?: 'summary' | 'template'; // 모드 추가: summary(메일 상세) 또는 template(메일 작성)
 }
 
-const AiPageTemplate: React.FC<AiPageTemplateProps> = ({ 
+const AiPageTemplate: React.FC<AiPageTemplateProps> = ({
   isOpen, 
   onClose, 
   mailContent,
+  mailId,
   mode = 'summary'
 }) => {
   // useAiStore에서 필요한 상태와 액션 가져오기
   const { 
     isAnalyzing, 
-    analysisResult, 
     startAnalysis, 
     setAnalysisResult,
     clearAnalysisResult
@@ -79,7 +80,7 @@ const AiPageTemplate: React.FC<AiPageTemplateProps> = ({
           {isAnalyzing ? (
             <AiLoading />
           ) : (
-            <AiSummary aiResponse={analysisResult} />
+            <AiSummary emailId={mailId?.toString() || ''} />
           )}
         </div>
       ) : (

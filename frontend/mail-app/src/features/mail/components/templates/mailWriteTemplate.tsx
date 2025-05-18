@@ -50,8 +50,8 @@ const MailWriteTemplate: React.FC = () => {
   const [content, setContent] = useState<string>('');
   const [showLoading, setShowLoading] = useState(false);
   const [threadId, setThreadId] = useState<string | null>(null);
-  const [inReplyTo, setInReplyTo] = useState<number | null>(null);
-  const [references, setReferences] = useState<string[]>([]);
+  const [inReplyTo, setInReplyTo] = useState<string | null>(null);
+  const [references, setReferences] = useState<string>('');
 
 
   // URL 쿼리 파라미터 파싱
@@ -132,7 +132,10 @@ const { data: threadInfo } = useQuery({
   useEffect(() => {
     if (originalMail && replyToId) {
       // 답장 모드
-      setTo([originalMail.sender]);
+      const emailOnly = originalMail.sender.match(/<([^>]+)>/) ? 
+      originalMail.sender.match(/<([^>]+)>/)?.[1] : originalMail.sender;
+
+      setTo([emailOnly || '']);
   
       const rePrefix = /^RE:\s*/i;
       const newSubject = rePrefix.test(originalMail.subject) 
@@ -160,34 +163,40 @@ const { data: threadInfo } = useQuery({
       `;
       setContent(replyContent);
   
-      setInReplyTo(originalMail.id);
-      
-      // 스레드 ID 및 참조 설정 로직
-      if (originalMail.threadId) {
-        setThreadId(originalMail.threadId);
-        setReferences(originalMail.references 
-          ? [...originalMail.references, originalMail.id.toString()]
-          : [originalMail.id.toString()]);
-      } else if (threadInfo && threadInfo.threadId) {
-        setThreadId(threadInfo.threadId);
-        setReferences([
-          ...threadInfo.references,
-          originalMail.id.toString()
-        ]);
-      } else {
-        setThreadId(String(originalMail.id));
-        setReferences([originalMail.id.toString()]);
+      setInReplyTo(originalMail.messageId || null);
+
+      let refsString = '';
+
+      // 원본 메일의 references가 있으면 먼저 추가
+      if (originalMail.references) {
+        if (Array.isArray(originalMail.references)) {
+          refsString = originalMail.references.join(' ');
+        } else {
+          refsString = originalMail.references;
+        }
       }
+      
+      // 원본 메일의 messageId 추가
+      if (originalMail.messageId) {
+        // 기존 references가 있으면 공백 추가 후 messageId 추가
+        if (refsString) {
+          refsString += ' ' + originalMail.messageId;
+        } else {
+          refsString = originalMail.messageId;
+        }
+      }
+      
+      setReferences(refsString);
   
+      setThreadId(originalMail.threadId || String(originalMail.id));
+
       console.log('답장 모드: 원본 메일 내용 설정 완료', {
         to: [originalMail.sender],
         subject: newSubject,
         content: replyContent.substring(0, 100) + '...',
-        threadId: originalMail.threadId || (threadInfo?.threadId || String(originalMail.id)),
-        inReplyTo: originalMail.id,
-        references: originalMail.references 
-          ? [...originalMail.references, originalMail.id.toString()]
-          : [originalMail.id.toString()]
+        threadId: originalMail.threadId || String(originalMail.id),
+        inReplyTo: originalMail.messageId || null,
+        references: refsString
       });
     }
   }, [originalMail, replyToId, threadInfo]);
@@ -238,19 +247,26 @@ const { data: threadInfo } = useQuery({
       type: attachment.type
     }));
 
+        // 이메일 주소 형식 정리 (모든 수신자에 대해)
+    const cleanedRecipients = to.map(recipient => {
+      // "이름" <이메일> 형식에서 이메일만 추출
+      const emailMatch = recipient.match(/<([^>]+)>/);
+      return emailMatch ? emailMatch[1] : recipient;
+    });
+
     // 메일 전송 데이터 준비 
     const mailData: SendMailRequest = {
       sender: userData?.email || '',
-      recipients: to,
+      recipients: cleanedRecipients,
       subject,
       bodyText: content.replace(/<[^>]*>/g, ''), 
       bodyHtml: content,
-      inReplyTo: inReplyTo ? String(inReplyTo) : null,
-      references: references.length > 0 ? references : undefined,
+      inReplyTo: inReplyTo,
+      references: references,
       attachments: attachmentInfos // 첨부파일 정보 추가
     };
   
-    console.log('Sending mail with recipients:', to);
+    console.log('Sending mail with recipients:', cleanedRecipients);
     console.log('Attachments:', attachments);
     console.log('Thread info:', { threadId, inReplyTo, references });
   

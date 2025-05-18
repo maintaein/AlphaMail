@@ -13,5 +13,6 @@ export const MAIL_QUERY_KEYS = {
     stats: 'mail-stats',
 
     emailTemplates: () => ['email-templates'],
-    emailTemplate: (id: number) => ['email-template', id],  
+    emailTemplate: (id: number) => ['email-template', id],
+    emailSummary: (emailId: string) => ['email-summary', emailId],
   };

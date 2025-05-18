@@ -57,3 +57,12 @@ export const useDeleteEmailTemplate = () => {
     },
   });
 };
+
+// 이메일 AI 요약 관련 훅
+export const useEmailSummary = (emailId: string) => {
+    return useQuery({
+      queryKey: MAIL_QUERY_KEYS.emailSummary(emailId),
+      queryFn: () => aiMailService.getEmailSummary(emailId),
+      enabled: !!emailId, // emailId가 있을 때만 쿼리 실행
+    });
+};

@@ -46,6 +46,7 @@ export interface Mail {
     subject: string;
     dateTime: string;
     originalFolderId: number;
+    folderName: string;
   }
   
   // 메일 상세 조회 응답 타입
@@ -92,7 +93,7 @@ export interface Mail {
     bodyText: string;
     bodyHtml: string;
     inReplyTo?: string | null;
-    references?: string[];
+    references?: string;
     attachments?: {
       name: string;
       size: number;

@@ -22,3 +22,9 @@ export interface EmailTemplateField {
     label?: string;
     value?: string;
 }
+
+export interface EmailSummaryResponse {
+    status: 'success' | 'error';
+    threadId: string;
+    summary: string;
+}

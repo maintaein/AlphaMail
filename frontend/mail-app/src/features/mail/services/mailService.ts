@@ -64,7 +64,7 @@ export const mailService = {
       throw error;
     }
   },
-    
+
   // 메일 상세 조회
   async getMailDetail(id: string | number): Promise<MailDetailResponse> {
     const endpoint = `/api/mails/${id}`;
@@ -201,7 +201,7 @@ export const mailService = {
 
   async sendMail(mailData: SendMailRequest, files?: File[]): Promise<SendMailResponse> {
     const params = new URLSearchParams();
-    const endpoint = `/api/mails?${params.toString()}`;
+    const endpoint = `/api/mails${params.toString() ? `?${params.toString()}` : ''}`;
     
     // FormData 객체 생성
     const formData = new FormData();

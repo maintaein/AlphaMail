@@ -1,4 +1,4 @@
-import { EmailTemplate, EmailTemplateRequest } from '../types/aiMail';
+import { EmailSummaryResponse, EmailTemplate, EmailTemplateRequest } from '../types/aiMail';
 import { api } from '@/shared/lib/axiosInstance';
 
 // 로깅 유틸리티 함수
@@ -118,4 +118,22 @@ export const aiMailService = {
     }
   },
   
+    // 이메일 AI 요약 조회
+    getEmailSummary: async (emailId: string): Promise<EmailSummaryResponse> => {
+        const endpoint = `/api/assistants/email-summarize/${emailId}`;
+        logApiCall('GET', endpoint);
+        
+        try {
+          const response = await api.get(endpoint);
+          logApiResponse('GET', endpoint, response.data, response.status);
+          return response.data;
+        } catch (error) {
+          logApiError('GET', endpoint, error as Record<string, unknown> & { 
+            response?: { status?: number, data?: unknown }, 
+            message?: string 
+          });
+          throw error;
+        }
+    },
+    
 };

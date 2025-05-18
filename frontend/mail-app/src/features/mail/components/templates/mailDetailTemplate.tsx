@@ -219,7 +219,8 @@ const MailDetailTemplate: React.FC<MailDetailTemplateProps> = ({ source }) => {
         isOpen={isAiAssistantOpen} 
         onClose={handleCloseAiAssistant} 
         mode="summary" // 메일 상세 페이지에서는 summary 모드 사용
-        mailContent={data.bodyText} // 메일 내용 전달      
+        mailContent={data.bodyText} // 메일 내용 전달
+        mailId={Number(id)} // 메일 ID 전달
       />
 
     </div>
