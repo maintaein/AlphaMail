@@ -97,7 +97,8 @@ public class EmailRepositoryImpl implements EmailRepository {
 				entity.getSender(),
 				entity.getSubject(),
 				entity.getSentDateTime() != null ? entity.getSentDateTime() : entity.getReceivedDateTime(),
-				entity.getOriginalFolderId()
+				entity.getOriginalFolderId(),
+				entity.getFolder().getName()
 			))
 			.collect(Collectors.toList());
 	}

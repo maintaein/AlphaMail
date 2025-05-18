@@ -7,6 +7,7 @@ public record EmailThreadItem(
 	String sender,
 	String subject,
 	LocalDateTime dateTime,
-	Integer originalFolderId
+	Integer originalFolderId,
+	String folderName
 ) {
 }
