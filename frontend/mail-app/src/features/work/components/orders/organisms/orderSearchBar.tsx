@@ -38,7 +38,7 @@ const OrderSearchBar: React.FC<OrderSearchBarProps> = ({ onSearch }) => {
           <input
             ref={clientRef}
             className="w-[240px] h-[30px] px-2 bg-white text-base placeholder-gray-400 border border-gray-300 focus:outline-none pr-8 rounded-none"
-            placeholder="거래처명/사업자등록번호"
+            placeholder="거래처명"
           />
         </div>
         <div className="flex items-center gap-2">
