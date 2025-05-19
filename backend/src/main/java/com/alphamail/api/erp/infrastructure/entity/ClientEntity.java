@@ -52,6 +52,9 @@ public class ClientEntity extends BaseTimeEntity {
 	@Column(length = 255)
 	private String email;
 
+	@Column(name = "business_business_license_name")
+	private String businessLicenseName;
+
 	@Column(name = "phone_num", length = 13)
 	private String phoneNum;
 

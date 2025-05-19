@@ -25,6 +25,7 @@ public class Client {
 	private String email;
 	private String phoneNum;
 	private String businessLicense;
+	private String businessLicenseName;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime deletedAt;
@@ -42,6 +43,7 @@ public class Client {
 			.email(request.email())
 			.phoneNum(request.phoneNum())
 			.businessLicense(request.businessLicense())
+			.businessLicenseName(request.businessLicenseName())
 			.company(company)
 			.group(group)
 			.build();

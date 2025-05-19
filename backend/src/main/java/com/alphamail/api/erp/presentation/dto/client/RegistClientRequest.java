@@ -11,6 +11,7 @@ public record RegistClientRequest(
 	String businessItem,
 	String email,
 	String phoneNum,
-	String businessLicense
+	String businessLicense,
+	String businessLicenseName
 ) {
 }
