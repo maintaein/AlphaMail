@@ -307,14 +307,20 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                 <Typography variant="body" className="mb-1">
                   설명
                 </Typography>
-                <textarea
-                  value={schedule.description}
-                  onChange={(e) => setSchedule({ ...schedule, description: e.target.value })}
-                  className={`w-full px-3 py-2 border resize-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
-                  rows={3}
-                  maxLength={50}
-                  placeholder="설명을 입력하세요 (최대 50자)"
-                />
+                <div className="relative">
+                  <textarea
+                    value={schedule.description}
+                    onChange={(e) => setSchedule({ ...schedule, description: e.target.value })}
+                    className={`w-full px-3 py-2 border resize-none ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                    rows={3}
+                    maxLength={50}
+                    placeholder="설명을 입력하세요 (최대 50자)"
+                    style={{ paddingBottom: '1.5rem' }}
+                  />
+                  <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                    {schedule.description.length}/50
+                  </div>
+                </div>
                 {errors.description && (
                   <Typography variant="caption" color="text-red-500">{errors.description}</Typography>
                 )}
