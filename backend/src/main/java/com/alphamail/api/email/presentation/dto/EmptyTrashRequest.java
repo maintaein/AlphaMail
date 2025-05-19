@@ -1,6 +1,8 @@
 package com.alphamail.api.email.presentation.dto;
 
+import java.util.List;
+
 public record EmptyTrashRequest(
-	Integer folderId
+	List<Integer> mailIds
 ) {
 }

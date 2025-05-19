@@ -21,8 +21,7 @@ public enum ErrorMessage {
 	SCHEDULE_DATE_INVALID("시작일은 종료일보다 빠르거나 같아야 합니다"),
 	SCHEDULE_DATE_PAIR_REQUIRED("시작 날짜와 종료 날짜는 함께 제공되어야 합니다"),
 	SCHEDULE_DATE_TOO_FAR("일정은 현재로부터 최대 20년 후까지만 설정할 수 있습니다"),
-	NO_FOLDER_ID("폴더 아이디가 없습니다."),
-	NO_TRASH_FOLDER("휴지통 폴더가 아닙니다."),
+	NOT_IN_TRASH_FOLDER("선택한 이메일 중 휴지통에 없는 이메일이 있습니다"),
 
 	CURRENT_PASSWORD_MISMATCH("현재 비밀번호가 일치하지 않습니다"),
 	SAME_AS_CURRENT_PASSWORD("새 비밀번호는 현재 비밀번호와 달라야 합니다"),

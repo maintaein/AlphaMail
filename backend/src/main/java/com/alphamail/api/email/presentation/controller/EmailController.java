@@ -146,11 +146,11 @@ public class EmailController {
 
 	}
 
-	@DeleteMapping("/trash")
+	@PostMapping("/trash")
 	public ResponseEntity<EmptyTrashResponse> emptyTrash(@RequestBody EmptyTrashRequest request,
 		@Auth Integer userId) {
-		Integer deletedCount = emptyMailUseCase.execute(request, userId);
-		return ResponseEntity.ok(new EmptyTrashResponse(deletedCount));
+		Integer count = emptyMailUseCase.execute(request, userId);
+		return ResponseEntity.ok(EmptyTrashResponse.of(count));
 
 	}
 

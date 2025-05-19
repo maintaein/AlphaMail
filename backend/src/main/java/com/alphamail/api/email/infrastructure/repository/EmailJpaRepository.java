@@ -76,6 +76,8 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 
 	Optional<EmailEntity> findByMessageId(String messageId);
 
+	long countByEmailIdInAndUser_UserIdAndFolder_Name(List<Integer> emailIds, Integer userId, String trash);
+
 	@Modifying
 	@Query("UPDATE EmailEntity e SET e.readStatus = :readStatus WHERE e.emailId = :emailId")
 	void updateReadStatusById(@Param("emailId") Integer emailId, @Param("readStatus") Boolean readStatus);
