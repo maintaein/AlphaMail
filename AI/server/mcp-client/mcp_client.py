@@ -3,7 +3,7 @@ import logging
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langgraph.prebuilt import create_react_agent
 from langchain_anthropic import ChatAnthropic
-from langchain.schema import HumanMessage
+from langchain.schema import HumanMessage, SystemMessage  # SystemMessage import 추가
 from typing import Optional, List, Dict, Any
 import os
 
@@ -65,7 +65,7 @@ class MCPClientManager:
                 
                 if not self.tools:
                     logger.warning("사용 가능한 도구가 없습니다.")
-                    
+
                 # ReAct 에이전트 생성
                 self.agent = create_react_agent(self.model, self.tools)
                 self.is_initialized = True
@@ -93,12 +93,37 @@ class MCPClientManager:
                 logger.error(f"MCP 클라이언트 종료 오류: {str(e)}")
     
     async def process_query(self, query: str) -> Dict[str, Any]:
+
+        SYSTEM_PROMPT = """
+                다음 이메일 내용을 분석해 업무 관련 일정, 발주 요청, 견적 요청과 같은 업무 관련 정보를 추출합니다. 
+
+                - 한 이메일에 여러 건이 있을 경우, **건마다 개별 등록**이 필요합니다.
+                - 그러나 **같은 건(예: 같은 발주 번호, 같은 일정, 같은 요청 항목)이 반복적으로 언급된 경우, 한 번만 등록**되도록 합니다.
+                - 중복 여부는 발주서 번호, 날짜, 제품명, 요청 수량, 단가 등의 주요 키 정보를 기준으로 판단합니다.
+                - 중복된 내용으로 여러 번 tool call이 발생하지 않도록 유의하며, **각 건을 고유하게 판별하여 등록**합니다.
+                예를 들어, 다음과 같은 두 문장은 같은 건으로 간주해야 하며 중복 등록하지 않습니다:
+
+                - "A사로 5월 25일까지 100개 납품 요청드립니다."
+                - "A사 건은 지난 메일에 언급했듯이 5월 25일까지 100개 납품 부탁드립니다."
+
+                하지만 아래 두 문장은 각각 등록되어야 합니다:
+
+                - "A사로 5월 25일까지 100개 납품 요청드립니다."
+                - "B사로 6월 10일까지 50개 납품 요청드립니다."
+                """
+        
         if not self.is_initialized:
             await self.initialize()
                 
         try:
+
             # 쿼리 변수명 수정
-            response = await self.agent.ainvoke({"messages": [HumanMessage(content=query)]})
+            response = await self.agent.ainvoke({"messages": [
+                SystemMessage(content=SYSTEM_PROMPT),
+                HumanMessage(content=query)
+                ]})
+
+
 
             # 항상 일정한 반환 구조 유지
             result = {
