@@ -32,6 +32,7 @@ public class GetEmailListUseCase {
 
 		String folderName = emailFolderRepository.getFolderNameById(folderId);
 		boolean isTrashFolder = "trash".equalsIgnoreCase(folderName);
+		boolean isSentFolder = "sent".equalsIgnoreCase(folderName);
 		//폴더 이름(ex.보낸메일함, 받은메일함) 따라서 갖고오는 field 다름
 		String sortField;
 		if ("sent".equalsIgnoreCase(folderName)) {
@@ -64,16 +65,33 @@ public class GetEmailListUseCase {
 		int readCount = emailRepository.countReadByFolderIdAndUserId(folderId, userId);
 
 		List<EmailResponse> emailResponses = emailPage.getContent().stream()
-			.map(email -> new EmailResponse(
-				email.getEmailId(),
-				email.getSender(),
-				email.getSubject(),
-				email.getReceivedDateTime(),
-				email.getSentDateTime(),
-				emailAttachmentRepository.getTotalSizeByEmailId(email.getEmailId()),
-				email.getReadStatus(),
-				isTrashFolder ? email.getOriginalFolderId() : null
-			))
+			.map(email ->  {
+				if (isSentFolder) {
+					return new EmailResponse(
+						email.getEmailId(),
+						email.getSender(),
+						email.getSubject(),
+						email.getReceivedDateTime(),
+						email.getSentDateTime(),
+						emailAttachmentRepository.getTotalSizeByEmailId(email.getEmailId()),
+						email.getReadStatus(),
+						isTrashFolder ? email.getOriginalFolderId() : null,
+						email.getRecipients() // 수신자 정보 추가
+					);
+			} else {
+				// 받은 메일함인 경우 기존 응답 형식 유지
+					return EmailResponse.withoutRecipients(
+						email.getEmailId(),
+						email.getSender(),
+						email.getSubject(),
+						email.getReceivedDateTime(),
+						email.getSentDateTime(),
+						emailAttachmentRepository.getTotalSizeByEmailId(email.getEmailId()),
+						email.getReadStatus(),
+						isTrashFolder ? email.getOriginalFolderId() : null
+					);
+			}
+		})
 			.collect(Collectors.toList());
 
 		return new EmailListResponse(emailResponses, totalCount, readCount, emailPage.getTotalPages(),
