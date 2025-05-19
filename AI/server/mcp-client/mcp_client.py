@@ -6,6 +6,8 @@ from langchain_anthropic import ChatAnthropic
 from langchain.schema import HumanMessage, SystemMessage  # SystemMessage import 추가
 from typing import Optional, List, Dict, Any
 import os
+import pytz
+from datetime import datetime
 
 # 로깅 설정
 logging.basicConfig(
@@ -93,9 +95,13 @@ class MCPClientManager:
                 logger.error(f"MCP 클라이언트 종료 오류: {str(e)}")
     
     async def process_query(self, query: str) -> Dict[str, Any]:
+        now_kst = datetime.now(pytz.timezone('Asia/Seoul'))
+        now_kst_str = now_kst.strftime('%Y-%m-%d %H:%M:%S KST')
 
-        SYSTEM_PROMPT = SYSTEM_PROMPT = """
+        SYSTEM_PROMPT = f"""
             다음 이메일 내용을 분석해 업무 관련 일정, 발주 요청, 견적 요청과 같은 업무 관련 정보를 추출합니다.
+
+            현재 시간은 {now_kst_str}입니다.
 
             ### 추출 대상
             1. **업무 관련 일정**: 회의, 미팅, 프로젝트 마감일 등 업무 관련 일정만 추출
