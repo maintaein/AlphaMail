@@ -23,8 +23,8 @@ export const Button = ({
 
   // 크기별 스타일
   const sizeMap: Record<Size, string> = {
-    small: 'text-[10px] w-[80px] h-[30px] rounded-lg',
-    large: 'text-[12px] w-[180px] h-[35px] rounded-lg',
+    small: 'text-[10px] w-[80px] h-[30px] rounded-sm',
+    large: 'text-[12px] w-[180px] h-[35px] rounded-sm',
   };
 
   // variant별 스타일
