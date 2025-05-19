@@ -156,3 +156,13 @@ export interface Mail {
     id: number;
     folderName: string;
   }
+
+  export interface RecentEmailItem {
+    email: string;
+    owner: string;
+    lastUpdatedTime: string;
+  }
+  
+  export interface RecentEmailsResponse {
+    recentEmails: RecentEmailItem[];
+  }

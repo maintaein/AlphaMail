@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MailWriteHeader } from '../organisms/mailWriteHeader';
 import { MailWriteForm } from '../organisms/mailWriteForm';
 import { useMail } from '../../hooks/useMail';
-import { SendMailRequest } from '../../types/mail';
+import { RecentEmailItem, SendMailRequest } from '../../types/mail';
 import { Spinner } from '@/shared/components/atoms/spinner';
 import { mailService } from '../../services/mailService';
 import { useQuery } from '@tanstack/react-query';
@@ -29,7 +29,42 @@ const FONT_OPTIONS = [
 const MailWriteTemplate: React.FC = () => {
 
   const { data: userData } = useUser();
+  const { useRecentEmails } = useMail();
+  const { data: recentEmailsData } = useRecentEmails();
+  const [showRecentRecipients, setShowRecentRecipients] = useState(false);
 
+  // 최근 수신자 목록 (API 데이터 사용)
+  const recentRecipients = useMemo(() => {
+    if (!recentEmailsData?.recentEmails) return [];
+    
+    return recentEmailsData.recentEmails.map((item: RecentEmailItem) => ({
+      name: item.owner || undefined, // owner가 빈 문자열이면 undefined로 설정
+      email: item.email
+    }));
+  }, [recentEmailsData]);
+  
+  // 받는 사람 입력창 포커스 핸들러
+  const handleRecipientFocus = () => {
+    setShowRecentRecipients(true);
+  };
+  
+  // 받는 사람 입력창 블러 핸들러
+  const handleRecipientBlur = () => {
+    // 약간의 지연을 두어 항목 클릭이 가능하도록 함
+    setTimeout(() => {
+      setShowRecentRecipients(false);
+    }, 200);
+  };
+  
+  // 최근 수신자 선택 핸들러
+  const handleSelectRecipient = (email: string) => {
+    // 이미 선택된 이메일이 아닌 경우에만 추가
+    if (!to.includes(email)) {
+      setTo([...to, email]);
+    }
+    setShowRecentRecipients(false);
+  };
+  
   const MAX_EMAIL_LENGTH = 254; // RFC 5321 기준
   const MAX_SUBJECT_LENGTH = 120; // 제목 최대 길이
   const MAX_CONTENT_LENGTH = 50000; // 내용 최대 길이 (약 100KB)
@@ -361,6 +396,11 @@ const { data: threadInfo } = useQuery({
         onSubjectChange={handleSubjectChange}
         onRecipientsChange={handleRecipientsChange}
         fontOptions={FONT_OPTIONS}
+        onRecipientFocus={handleRecipientFocus}
+        onRecipientBlur={handleRecipientBlur}
+        showRecentRecipients={showRecentRecipients}
+        recentRecipients={recentRecipients}
+        onSelectRecipient={handleSelectRecipient}
       />
 
         {/* 로딩 오버레이 */}

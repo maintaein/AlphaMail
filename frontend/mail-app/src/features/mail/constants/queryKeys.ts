@@ -15,4 +15,5 @@ export const MAIL_QUERY_KEYS = {
     emailTemplates: () => ['email-templates'],
     emailTemplate: (id: number) => ['email-template', id],
     emailSummary: (emailId: string) => ['email-summary', emailId],
+    recentEmails: () => ['mails', 'recent'],
   };

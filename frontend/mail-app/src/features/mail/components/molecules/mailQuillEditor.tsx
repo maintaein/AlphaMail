@@ -44,7 +44,7 @@ interface QuillLinkBlot {
 export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
   content,
   onChange,
-  fontOptions
+  fontOptions,
 }) => {
   const quillRef = useRef<ReactQuill>(null);
 
@@ -79,6 +79,40 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
           return originalCreate.call(this, value);
         };
       }
+    }
+  }, []);
+  
+  // 포커스 시 placeholder 즉시 사라지게 설정
+  useEffect(() => {
+    if (quillRef.current) {
+      const editor = quillRef.current.getEditor();
+      const editorElement = editor.root;
+      
+      // 포커스 이벤트 리스너 추가
+      const handleFocus = () => {
+        // placeholder 요소 찾기
+        const placeholderStyle = document.createElement('style');
+        placeholderStyle.innerHTML = `
+          .ql-editor.ql-blank:before {
+            opacity: 0 !important;
+            transition: opacity 0s !important;
+          }
+        `;
+        document.head.appendChild(placeholderStyle);
+        
+        // 포커스 해제 시 스타일 제거
+        const handleBlur = () => {
+          document.head.removeChild(placeholderStyle);
+        };
+        
+        editorElement.addEventListener('blur', handleBlur, { once: true });
+      };
+      
+      editorElement.addEventListener('focus', handleFocus);
+      
+      return () => {
+        editorElement.removeEventListener('focus', handleFocus);
+      };
     }
   }, []);
   
@@ -121,7 +155,7 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
         // 한글 입력 관련 키보드 바인딩 설정
         // 필요시 추가 가능
       }
-    }
+    },
   };
 
   // Quill 에디터 포맷 설정
@@ -158,6 +192,11 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
         content: "글꼴";
       }
       
+      /* placeholder 즉시 사라지게 설정 */
+      .ql-editor.ql-blank:before {
+        transition: opacity 0s !important;
+      }
+
       /* 각 폰트 옵션 스타일 */
       ${fontOptions?.map(font => {
         // 폰트 이름과 실제 CSS 폰트 패밀리 매핑

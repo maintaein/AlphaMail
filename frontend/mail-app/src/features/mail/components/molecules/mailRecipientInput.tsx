@@ -8,13 +8,17 @@ interface MailRecipientInputProps {
   recipients: string[];
   onAddRecipient: (email: string) => void;
   onRemoveRecipient: (index: number) => void;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 export const MailRecipientInput: React.FC<MailRecipientInputProps> = ({
   label,
   recipients,
   onAddRecipient,
-  onRemoveRecipient
+  onRemoveRecipient,
+  onFocus,
+  onBlur
 }) => {
 
   const [inputValue, setInputValue] = useState('');
@@ -70,7 +74,22 @@ export const MailRecipientInput: React.FC<MailRecipientInputProps> = ({
     setInputValue(e.target.value);
   };
 
+  // 입력창 포커스 이벤트 핸들러
+  const handleFocus = () => {
+    // 상위 컴포넌트로 포커스 이벤트 전달
+    if (onFocus) {
+      onFocus();
+    }
+  };
+
+  // 입력창 블러 이벤트 핸들러
   const handleBlur = () => {
+    // 상위 컴포넌트로 블러 이벤트 전달
+    if (onBlur) {
+      onBlur();
+    }
+    
+    // 기존 블러 로직 유지
     if (inputValue.trim()) {
       validateAndAddRecipient(inputValue);
     }
@@ -103,6 +122,7 @@ export const MailRecipientInput: React.FC<MailRecipientInputProps> = ({
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
+          onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={`${label} 추가...`}
           className="flex-1 outline-none min-w-[100px] text-sm h-5 py-0"

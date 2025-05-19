@@ -1,4 +1,4 @@
-import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, SendMailRequest, SendMailResponse, FolderResponse } from '../types/mail';
+import { MailListResponse, MailDetailResponse, UpdateMailRequest, MoveMailsRequest, SendMailRequest, SendMailResponse, FolderResponse, RecentEmailsResponse } from '../types/mail';
 import { api } from '@/shared/lib/axiosInstance';
 
 const logApiCall = (method: string, endpoint: string, requestData?: Record<string, unknown>) => {
@@ -173,25 +173,20 @@ export const mailService = {
   },
 
   // 메일 영구 삭제 (휴지통 비우기)
-  async emptyTrash(folderId: number = 3): Promise<{ deletedCount: number }> {
+  async emptyTrash({ mailIds }: { mailIds: string[] }): Promise<{ deletedCount: number }> {
     const data = {
-      folderId: folderId,
+      mailIds: mailIds.map(Number),
     };
     
     const endpoint = `/api/mails/trash`;
-    logApiCall('DELETE', endpoint, data);
+    logApiCall('POST', endpoint, data);
     
     try {
-      const response = await api.delete(endpoint, { 
-        data,
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      logApiResponse('DELETE', endpoint, response.data, response.status);
+      const response = await api.post(endpoint, data);
+      logApiResponse('POST', endpoint, response.data, response.status);
       return response.data;
     } catch (error) {
-      logApiError('DELETE', endpoint, error as Record<string, unknown> & { 
+      logApiError('POST', endpoint, error as Record<string, unknown> & { 
         response?: { status?: number, data?: unknown }, 
         message?: string 
       });
@@ -280,6 +275,44 @@ export const mailService = {
         콘텐츠길이: response.headers['content-length']
       });
       
+      return response.data;
+    } catch (error) {
+      logApiError('GET', endpoint, error as Record<string, unknown> & { 
+        response?: { status?: number, data?: unknown }, 
+        message?: string 
+      });
+      throw error;
+    }
+  },
+
+  async restoreMailsToOrigin(emailIds: number[]): Promise<boolean> {
+    const data = {
+      emailIds,
+    };
+    
+    const endpoint = `/api/mails/origin`;
+    logApiCall('PATCH', endpoint, data);
+    
+    try {
+      const response = await api.patch(endpoint, data);
+      logApiResponse('PATCH', endpoint, response.data, response.status);
+      return response.data;
+    } catch (error) {
+      logApiError('PATCH', endpoint, error as Record<string, unknown> & { 
+        response?: { status?: number, data?: unknown }, 
+        message?: string 
+      });
+      throw error;
+    }
+  },
+  
+  async getRecentEmails(): Promise<RecentEmailsResponse> {
+    const endpoint = `/api/mails/recent`;
+    logApiCall('GET', endpoint);
+    
+    try {
+      const response = await api.get(endpoint);
+      logApiResponse('GET', endpoint, response.data, response.status);
       return response.data;
     } catch (error) {
       logApiError('GET', endpoint, error as Record<string, unknown> & { 

@@ -113,18 +113,18 @@ import { useUser } from '@/features/auth/hooks/useUser';
     
     // 휴지통 비우기 뮤테이션 추가
     const emptyTrash = useMutation({
-      mutationFn: ({ folderId = 3 }: { folderId?: number }) => 
-        mailService.emptyTrash(folderId),
+      mutationFn: ({ mailIds }: { mailIds: string[] }) => 
+        mailService.emptyTrash({ mailIds }),
       onSuccess: (data) => {
         queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
         toast.success(`${data.deletedCount}개의 메일이 영구 삭제되었습니다.`);
       },
       onError: (error) => {
-        console.error('휴지통 비우기 오류:', error);
-        toast.error('휴지통을 비우는 중 오류가 발생했습니다.');
+        console.error('메일 영구 삭제 오류:', error);
+        toast.error('메일을 영구 삭제하는 중 오류가 발생했습니다.');
       }
     });
-    
+
     // 메일 전송 뮤테이션
   const sendMail = useMutation({
     mutationFn: ({ 
@@ -195,7 +195,33 @@ import { useUser } from '@/features/auth/hooks/useUser';
     }
   });
 
+  const restoreMailsToOrigin = useMutation({
+    mutationFn: ({ emailIds }: { emailIds: string[] }) => 
+      mailService.restoreMailsToOrigin(emailIds.map(Number)),
+    onSuccess: () => {
+      // 성공 시 메일 목록 쿼리 무효화 (모든 폴더)
+      queryClient.invalidateQueries({ queryKey: ['mails'], refetchType: 'all' });
+      toast.success('메일이 원래 폴더로 복원되었습니다.');
+    },
+    onError: (error) => {
+      console.error('메일 복원 오류:', error);
+      toast.error('메일을 복원하는 중 오류가 발생했습니다.');
+    }
+  });
 
+    // 최근 수신자 목록 조회 훅
+    const useRecentEmails = () => {
+      const { data: userData } = useUser();
+      const userId = userData?.id;
+      
+      return useQuery({
+        queryKey: [...MAIL_QUERY_KEYS.recentEmails(), userId],
+        queryFn: () => mailService.getRecentEmails(),
+        staleTime: 0,
+        enabled: !!userId,
+      });
+    };
+  
   return {
     useMailList,
     useMailDetail,
@@ -209,5 +235,7 @@ import { useUser } from '@/features/auth/hooks/useUser';
     useFolders,
     getFolderIdByName,
     downloadAttachment,
+    restoreMailsToOrigin,
+    useRecentEmails,
   };
 };

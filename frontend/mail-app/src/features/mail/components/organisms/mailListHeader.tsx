@@ -20,7 +20,7 @@ export const MailListHeader: React.FC<MailListHeaderProps> = ({
   onSelectAll,
   onReply,
   onMoveToTrash,
-  // onRestore,
+  onRestore,
   onEmptyTrash,
   selectedCount,
   folderType = 'inbox',
@@ -58,13 +58,12 @@ export const MailListHeader: React.FC<MailListHeaderProps> = ({
         disabled: selectedCount === 0
       });
     } else if (folderType === 'trash') {
-      // if (onRestore) buttons.push({
-      //   label: '복원',
-      //   onClick: onRestore,
-      //   variant: 'text' as const,
-      //   disabled: selectedCount === 0
-      // });
-      
+      if (onRestore) buttons.push({
+        label: '복원',
+        onClick: onRestore,
+        variant: 'text' as const,
+        disabled: selectedCount === 0
+      });
       if (onEmptyTrash) buttons.push({
         label: '비우기',
         onClick: onEmptyTrash,

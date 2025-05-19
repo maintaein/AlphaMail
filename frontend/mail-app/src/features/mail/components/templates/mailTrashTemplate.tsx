@@ -9,6 +9,7 @@ import { Mail, MailListRow } from '../../types/mail';
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 import { useNavigate } from 'react-router-dom';
 import { useFolders } from '../../hooks/useFolders';
+import { toast } from 'react-toastify';
 
 const MailTrashTemplate: React.FC = () => {
   // 휴지통은 folderId가 3
@@ -40,7 +41,7 @@ const MailTrashTemplate: React.FC = () => {
     }
   }, [trashFolderId, setCurrentFolder]);
   
-  const { useMailList, emptyTrash } = useMail();
+  const { useMailList, emptyTrash, restoreMailsToOrigin } = useMail();
   const { data, isLoading, error, refetch } = useMailList(trashFolderId, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
   const navigate = useNavigate();
@@ -81,9 +82,14 @@ const MailTrashTemplate: React.FC = () => {
   
   // 휴지통 비우기 (모든 메일 영구 삭제)
   const handleEmptyTrash = () => {
+    if (selectedMails.length === 0) {
+      toast.warning('삭제할 메일을 선택해주세요.');
+      return;
+    }
+    
     // 확인 대화상자 표시
-    if (window.confirm('휴지통의 모든 메일을 영구적으로 삭제하시겠습니까?')) {
-      emptyTrash.mutate({ folderId: trashFolderId }, {
+    if (window.confirm('선택한 메일을 영구적으로 삭제하시겠습니까?')) {
+      emptyTrash.mutate({ mailIds: selectedMails }, {
         onSuccess: () => {
           // 삭제 성공 후 메일 목록 다시 가져오기
           refetch();
@@ -95,12 +101,23 @@ const MailTrashTemplate: React.FC = () => {
     }
   };
 
-  // const handleRestore = () => {
-  //   if (selectedMails.length > 0) {
-  //     // 받은 메일함(1)으로 복원
-  //     moveToFolder.mutate({ ids: selectedMails, targetFolderId: 1 });
-  //   }
-  // };
+  const handleRestore = () => {
+    if (selectedMails.length > 0) {
+      // 선택된 메일을 원래 폴더로 복원
+      restoreMailsToOrigin.mutate({ emailIds: selectedMails }, {
+        onSuccess: () => {
+          // 복원 성공 후 메일 목록 다시 가져오기
+          refetch();
+          // 선택 상태 초기화
+          clearSelection();
+          setAllSelected(false);
+        }
+      });
+    } else {
+      toast.warning('복원할 메일을 선택해주세요.');
+    }
+  };
+
   
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -134,7 +151,7 @@ const transformMailsData = (emails: MailListRow[] = []): Mail[] => {
           allSelected={allSelected}
           onSelectAll={handleSelectAll}
           selectedCount={selectedMails.length}
-          // onRestore={handleRestore}
+          onRestore={handleRestore}
           folderType="trash"
           onEmptyTrash={handleEmptyTrash}
         />

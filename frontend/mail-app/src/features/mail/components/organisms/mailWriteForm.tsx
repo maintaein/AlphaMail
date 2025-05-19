@@ -5,26 +5,37 @@ import { MailAttachmentInput } from '../molecules/mailAttachmentInput';
 import { MailQuillEditor } from '../molecules/mailQuillEditor';
 import { toast } from 'react-toastify';
 import { useMailStore } from '../../stores/useMailStore';
+import { Typography } from '@/shared/components/atoms/Typography';
 
 
 interface MailWriteFormProps {
-  initialTo?: string[];
-  initialSubject?: string;
-  initialContent?: string;
+  initialTo: string[];
+  initialSubject: string;
+  initialContent: string;
   onContentChange: (content: string) => void;
   onSubjectChange: (subject: string) => void;
   onRecipientsChange: (recipients: string[]) => void;
-  fontOptions?: Array<{ value: string; label: string }>;
+  fontOptions: { value: string; label: string }[];
+  onRecipientFocus?: () => void;
+  onRecipientBlur?: () => void;
+  showRecentRecipients?: boolean;
+  recentRecipients?: Array<{ name?: string; email: string }>;
+  onSelectRecipient?: (email: string) => void;
 }
 
 export const MailWriteForm: React.FC<MailWriteFormProps> = ({
-  initialTo = [],
-  initialSubject = '',
-  initialContent = '',
+  initialTo,
+  initialSubject,
+  initialContent,
   onContentChange,
   onSubjectChange,
   onRecipientsChange,
   fontOptions,
+  onRecipientFocus,
+  onRecipientBlur,
+  showRecentRecipients,
+  recentRecipients,
+  onSelectRecipient
 }) => {
   const { attachments, addAttachment, removeAttachment } = useMailStore();
   const [to, setTo] = useState<string[]>(initialTo);
@@ -137,12 +148,44 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
   return (
     <div className="flex flex-col flex-1">
       <div className="p-4 border-b border-gray-200">
-        <MailRecipientInput
-          label="받는 사람"
-          recipients={to}
-          onAddRecipient={handleAddRecipient}
-          onRemoveRecipient={handleRemoveRecipient}
-        />
+      <div className="relative">
+          <MailRecipientInput
+            label="받는 사람"
+            recipients={to}
+            onAddRecipient={handleAddRecipient}
+            onRemoveRecipient={handleRemoveRecipient}
+            onFocus={onRecipientFocus}
+            onBlur={onRecipientBlur}
+          />
+            
+          {/* 최근 수신자 목록 UI */}
+          {showRecentRecipients && recentRecipients && recentRecipients.length > 0 && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+            {recentRecipients.map((recipient, index) => (
+              <div 
+                key={index}
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                onClick={() => onSelectRecipient?.(recipient.email)}
+              >
+                {recipient.name ? (
+                  <span className="flex items-center">
+                    <Typography variant="body" className="font-medium">
+                      {recipient.name}
+                    </Typography>
+                    <Typography variant="body" className="text-gray-500 ml-2">
+                      {recipient.email}
+                    </Typography>
+                  </span>
+                ) : (
+                  <Typography variant="body">
+                    {recipient.email}
+                  </Typography>
+                )}
+              </div>
+            ))}
+          </div>
+          )}
+        </div>
                 
         <MailSubjectInput
           subject={subject}
