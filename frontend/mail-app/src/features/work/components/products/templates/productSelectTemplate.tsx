@@ -3,6 +3,8 @@ import { Product } from '../../../types/product';
 import ProductSearchBar from '../molecules/productSearchBar';
 import ProductSelectTable from '../organisms/productSelectTable';
 import { useProductSelect } from '../../../hooks/useProductSelect';
+import { Typography } from '@/shared/components/atoms/Typography';
+import { Button } from '@/shared/components/atoms/button';
 
 interface ProductSelectTemplateProps {
   isOpen: boolean;
@@ -48,14 +50,14 @@ const ProductSelectTemplate: React.FC<ProductSelectTemplateProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-gray-500 opacity-50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl mx-4">
+      <div className="relative bg-white rounded-lg shadow-xl w-[800px] h-[600px] mx-4 flex flex-col">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="font-bold">품목 추가</h2>
+          <Typography variant="titleMedium">품목 추가</Typography>
           <button onClick={onClose} className="text-2xl">&times;</button>
         </div>
-        <div className="p-4">
+        <div className="p-4 flex-1 flex flex-col overflow-hidden">
           <ProductSearchBar keyword={searchKeyword} onSearch={handleSearch} />
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto overflow-y-auto flex-1">
             <ProductSelectTable
               products={products}
               selectedId={selectedId}
@@ -64,13 +66,13 @@ const ProductSelectTemplate: React.FC<ProductSelectTemplateProps> = ({
             />
           </div>
           <div className="flex justify-end mt-4">
-            <button
-              className="bg-blue-500 text-white px-6 py-2 rounded disabled:opacity-50"
+            <Button
+              variant="primary"
               disabled={selectedId === null || isLoading}
               onClick={handleConfirm}
             >
               선택
-            </button>
+            </Button>
           </div>
         </div>
       </div>

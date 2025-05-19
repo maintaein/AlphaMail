@@ -14,7 +14,8 @@ public record RegisterClientRequest(
 	String businessItem,
 	String email,
 	String phoneNumber,
-	String businessLicense
+	String businessLicense,
+	String businessLicenseName
 ) {
 	/**
 	 * 현재 객체로부터 RegistClientRequest 객체를 생성합니다.
@@ -33,7 +34,8 @@ public record RegisterClientRequest(
 			this.businessItem,
 			this.email,
 			this.phoneNumber, // phoneNumber를 phoneNum으로 매핑
-			this.businessLicense
+			this.businessLicense,
+			this.businessLicenseName
 		);
 	}
 }

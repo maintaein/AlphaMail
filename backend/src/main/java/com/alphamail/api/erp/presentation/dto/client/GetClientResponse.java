@@ -17,6 +17,7 @@ public record GetClientResponse(
 	String businessType,
 	String businessItem,
 	String businessLicense,
+	String businessLicenseName,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
@@ -33,6 +34,7 @@ public record GetClientResponse(
 			client.getBusinessType(),
 			client.getBusinessItem(),
 			client.getBusinessLicense(),
+			client.getBusinessLicenseName(),
 			client.getCreatedAt(),
 			client.getUpdatedAt()
 		);
