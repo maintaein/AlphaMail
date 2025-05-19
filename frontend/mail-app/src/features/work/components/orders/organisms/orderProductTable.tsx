@@ -28,8 +28,8 @@ const OrderProductTable: React.FC = () => {
         <colgroup>
           <col style={{ width: '48px' }} />
           <col style={{ width: '48px' }} />
-          <col style={{ width: '130px' }} />
-          <col style={{ width: '120px' }} />
+          <col style={{ width: '140px' }} />
+          <col style={{ width: '80px' }} />
           <col style={{ width: '100px' }} />
           <col style={{ width: '120px' }} />
           <col style={{ width: '100px' }} />

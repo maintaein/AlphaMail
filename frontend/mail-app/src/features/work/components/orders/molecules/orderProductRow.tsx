@@ -34,7 +34,7 @@ const OrderProductRow: React.FC<OrderProductRowProps> = ({
           <span className="text-lg font-bold">－</span>
         </button>
       </td>
-      <td className="border border-[#E5E5E5] bg-[#F9F9F9] text-center align-middle h-[40px] w-[40px]">{index + 1}</td>
+      <td className="border border-[#E5E5E5] bg-white text-center align-middle h-[40px] w-[40px]">{index + 1}</td>
       <td className="border border-[#E5E5E5] bg-white px-2">
         <ProductInput
           value={product.name}
@@ -42,12 +42,8 @@ const OrderProductRow: React.FC<OrderProductRowProps> = ({
           className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
         />
       </td>
-      <td className="border border-[#E5E5E5] bg-gray-50 px-2">
-        <input 
-          value={product.standard} 
-          readOnly
-          className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm focus:outline-none"
-        />
+      <td className="border text-center border-[#E5E5E5] bg-white px-2">
+        <Typography variant="body">{product.standard}</Typography>
       </td>
       <td className="border border-[#E5E5E5] bg-white px-2">
         <input 
@@ -70,12 +66,12 @@ const OrderProductRow: React.FC<OrderProductRowProps> = ({
           <span className="ml-1 text-gray-500 whitespace-nowrap">원</span>
         </div>
       </td>
-      <td className="border border-[#E5E5E5] bg-gray-50 px-2">
+      <td className="border border-[#E5E5E5] bg-white px-2">
         <div className="flex items-center">
           <span className="ml-1 text-gray-500 whitespace-nowrap"><Typography variant="body">{taxAmount.toLocaleString()}원</Typography></span>
         </div>
       </td>
-      <td className="border border-[#E5E5E5] bg-gray-50 px-2">
+      <td className="border border-[#E5E5E5] bg-white px-2">
         <div className="flex items-center">
           <span className="ml-1 text-gray-500 whitespace-nowrap"><Typography variant="body">{supplyAmount.toLocaleString()}원</Typography></span>
         </div>
