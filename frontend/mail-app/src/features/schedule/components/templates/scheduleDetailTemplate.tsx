@@ -186,9 +186,15 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (schedule.id) {
-      deleteMutation.mutate(schedule.id);
+      try {
+        setShowDeleteConfirm(false);
+        await deleteMutation.mutateAsync(schedule.id);
+      } catch (error) {
+        console.error('일정 삭제 중 오류 발생:', error);
+        toast.error('일정 삭제 중 오류가 발생했습니다.');
+      }
     }
   };
 
