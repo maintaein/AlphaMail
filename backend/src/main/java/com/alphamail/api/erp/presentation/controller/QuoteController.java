@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,9 @@ public class QuoteController {
 		QuoteSearchCondition condition = new QuoteSearchCondition(
 			clientName, quoteNo, userName, productName, startDate, endDate
 		);
-		Pageable pageable = PageRequest.of(page, size);
+
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(page, size, sort);
 
 		GetPageResponse<GetAllQuotesResponse> response = getAllQuotesUseCase.execute(companyId,
 			condition, pageable);
