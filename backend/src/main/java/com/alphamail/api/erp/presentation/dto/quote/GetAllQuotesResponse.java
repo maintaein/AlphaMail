@@ -18,6 +18,8 @@ public record GetAllQuotesResponse(
 	Long price
 ) {
 	public static GetAllQuotesResponse from(Quote quote) {
+		int productCnt = quote.getQuoteProducts().size();
+
 		return new GetAllQuotesResponse(
 			quote.getQuoteId(),
 			quote.getQuoteNo(),
@@ -25,8 +27,8 @@ public record GetAllQuotesResponse(
 			quote.getUpdatedAt(),
 			quote.getUser().getName(),
 			quote.getClient().getCorpName(),
-			quote.getQuoteProducts().size(),
-			quote.getQuoteProducts().get(0).getProduct().getName(),
+			productCnt,
+			productCnt > 0 ? quote.getQuoteProducts().get(0).getProduct().getName() : null,
 			calculateTotalPrice(quote.getQuoteProducts())
 		);
 	}

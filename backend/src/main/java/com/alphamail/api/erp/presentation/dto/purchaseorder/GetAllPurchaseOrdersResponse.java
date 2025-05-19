@@ -20,6 +20,8 @@ public record GetAllPurchaseOrdersResponse(
 	Long price
 ) {
 	public static GetAllPurchaseOrdersResponse from(PurchaseOrder purchaseOrder) {
+		int productCnt = purchaseOrder.getPurchaseOrderProducts().size();
+
 		return new GetAllPurchaseOrdersResponse(
 			purchaseOrder.getPurchaseOrderId(),
 			purchaseOrder.getOrderNo(),
@@ -28,8 +30,8 @@ public record GetAllPurchaseOrdersResponse(
 			purchaseOrder.getUser().getName(),
 			purchaseOrder.getClient().getCorpName(),
 			purchaseOrder.getDeliverAt(),
-			purchaseOrder.getPurchaseOrderProducts().size(),
-			purchaseOrder.getPurchaseOrderProducts().get(0).getProduct().getName(),
+			productCnt,
+			productCnt > 0 ? purchaseOrder.getPurchaseOrderProducts().get(0).getProduct().getName() : null,
 			calculateTotalPrice(purchaseOrder.getPurchaseOrderProducts())
 		);
 	}
