@@ -45,37 +45,40 @@ const OrderTable: React.FC<OrderTableProps> = ({
       <table className="min-w-full border">
         <thead className="bg-gray-50">
           <tr>
-            <th className="p-2">
+            <th className="p-2 border-r border-gray-200">
               <input
                 type="checkbox"
                 checked={orders.length > 0 && orders.every((order) => selectedOrderIds.has(order.id))}
                 onChange={(e) => {
-                  if (e.target.checked) {
-                    orders.forEach((order) => onSelectOrder(order.id));
-                  } else {
-                    orders.forEach((order) => onSelectOrder(order.id));
-                  }
+                  const isChecked = e.target.checked;
+                  const currentPageOrderIds = orders.map(order => order.id);
+                  
+                  currentPageOrderIds.forEach(orderId => {
+                    if (selectedOrderIds.has(orderId) !== isChecked) {
+                      onSelectOrder(orderId);
+                    }
+                  });
                 }}
                 className="rounded border-gray-300"
               />
             </th>
-            <th className="p-2">
-              <Typography variant="body" bold>발주번호</Typography>
+            <th className="p-2 border-r border-gray-200">
+              <Typography variant="body" >발주번호</Typography>
+            </th>
+            <th className="p-2 border-r border-gray-200">
+              <Typography variant="body" >거래처명</Typography>
+            </th>
+            <th className="p-2 border-r border-gray-200">
+              <Typography variant="body" >납기일자</Typography>
+            </th>
+            <th className="p-2 border-r border-gray-200">
+              <Typography variant="body" >품목</Typography>
+            </th>
+            <th className="p-2 border-r border-gray-200">
+              <Typography variant="body" >담당자</Typography>
             </th>
             <th className="p-2">
-              <Typography variant="body" bold>거래처명</Typography>
-            </th>
-            <th className="p-2">
-              <Typography variant="body" bold>발주일자</Typography>
-            </th>
-            <th className="p-2">
-              <Typography variant="body" bold>납기일자</Typography>
-            </th>
-            <th className="p-2">
-              <Typography variant="body" bold>총 금액</Typography>
-            </th>
-            <th className="p-2">
-              <Typography variant="body" bold>상태</Typography>
+              <Typography variant="body" >총 금액</Typography>
             </th>
           </tr>
         </thead>
