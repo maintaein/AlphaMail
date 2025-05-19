@@ -89,6 +89,12 @@ export const HeaderContent: React.FC = () => {
         {workTitle}
       </Typography>
     );
+  } else if (path.startsWith('/user')) {
+    return (
+      <Typography variant="titleLarge">
+        내 정보 관리
+      </Typography>
+    );
   }
   
   return null;

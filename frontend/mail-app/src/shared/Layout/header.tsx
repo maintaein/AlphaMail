@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ children }) => {
   const navigate = useNavigate();
 
   const handleProfileClick = () => {
-    navigate('/user/confirm-password');
+    navigate('/user/manage');
   };
 
   return (

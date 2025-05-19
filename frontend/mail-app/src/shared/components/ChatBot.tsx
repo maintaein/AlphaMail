@@ -636,9 +636,8 @@ const ChatBot: React.FC = () => {
     <ChatBotContainer position={position}>
       <ChatButton 
         onMouseDown={handleMouseDown}
-        style={{ opacity: isDragging ? 0.8 : 1 }}
       >
-        {isOpen ? '×' : '💬'}
+      <img src="/chatbot.png" alt="ChatBot Icon" style={{ width: '100%', height: '100%' }} />
       </ChatButton>
       {isOpen && (
         <ChatWindow position={position} windowPosition={windowPosition}>
