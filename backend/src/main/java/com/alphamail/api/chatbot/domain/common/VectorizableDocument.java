@@ -13,7 +13,7 @@ public interface VectorizableDocument {
 		return getDocumentType() + "_" + getId();
 	}
 
-	DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH시 mm분");
 	default String formatDateTime(LocalDateTime dateTime) {
 		if (dateTime == null) { return "";}
 		return dateTime.format(DATE_TIME_FORMATTER);
