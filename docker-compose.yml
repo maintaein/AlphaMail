@@ -25,8 +25,13 @@ services:
     image: alphaMail/frontend:latest
     ports:
       - "3000:80" 
+    environment:
+      - VITE_API_URL=${VITE_API_URL}
+      - VITE_PUBLIC_SERVICE_KEY=${VITE_PUBLIC_SERVICE_KEY}
+      - VITE_PUBLIC_HOLIDAY_API_URL=${VITE_PUBLIC_HOLIDAY_API_URL}
     networks:
       - alphaMail-networks
+
   rag:
     build: ./AI/server/rag
     image: alphaMail/rag:latest
@@ -36,8 +41,10 @@ services:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}  
     volumes:
       - pip-cache:/root/.cache/pip
+      - chroma-data:/app/db 
     networks:
       - alphaMail-networks
+      
   ocr:
     build: ./AI/server/ocr
     image: alphaMail/ocr:latest
@@ -77,6 +84,7 @@ services:
       
 volumes:
   pip-cache: {}
+  chroma-data: {}
 
 networks:
   alphaMail-networks:

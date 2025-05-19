@@ -58,6 +58,41 @@ const OrderDetailTemplate: React.FC = () => {
         throw new Error('발주서 데이터가 없습니다.');
       }
 
+      // 각 제품에 대한 유효성 검사 추가
+      const MAX_PRODUCT_COUNT = 2000000000;
+      const MAX_PRODUCT_PRICE = 9223372036854775807; // PostgreSQL BIGINT MAX
+
+      for (let i = 0; i < formData.products.length; i++) {
+        const product = formData.products[i];
+        const productNameForAlert = product.name || `품목 ${i + 1}`;
+
+        // 품목 이름 유효성 검사
+        if (!product.name) {
+          alert(`품목 ${i + 1}의 이름을 입력해주세요.`);
+          return;
+        }
+
+        // 수량 유효성 검사
+        if (typeof product.count !== 'number' || product.count < 0) {
+          alert(`${productNameForAlert}의 수량은 0 이상의 숫자로 입력해주세요.`);
+          return;
+        }
+        if (product.count > MAX_PRODUCT_COUNT) {
+          alert(`${productNameForAlert}의 수량은 ${MAX_PRODUCT_COUNT.toLocaleString()}을 초과할 수 없습니다.`);
+          return;
+        }
+
+        // 단가 유효성 검사
+        if (typeof product.price !== 'number' || product.price < 0) {
+          alert(`${productNameForAlert}의 단가는 0 이상의 숫자로 입력해주세요.`);
+          return;
+        }
+        if (product.price > MAX_PRODUCT_PRICE) {
+          alert(`${productNameForAlert}의 단가는 ${MAX_PRODUCT_PRICE.toLocaleString()}을 초과할 수 없습니다.`);
+          return;
+        }
+      }
+
       if (id && id !== 'new') {
         await orderService.updateOrder(formData, userInfo.id, userInfo.companyId, userInfo.groupId);
       } else {
@@ -87,7 +122,7 @@ const OrderDetailTemplate: React.FC = () => {
   return (
     <div className="p-8 bg-white rounded shadow max-w-5xl mx-auto">
       <div className="mb-6 flex justify-between items-center">
-        <Typography variant="titleLarge" bold>
+        <Typography variant="titleSmall">
           발주서 {id && id !== 'new' ? '수정' : '등록'}
         </Typography>
         <div className="flex space-x-2">

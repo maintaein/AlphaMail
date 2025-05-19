@@ -6,6 +6,9 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+# ChromaDB 데이터 디렉토리 명시적 생성 및 권한 설정
+RUN mkdir -p /app/db && chmod -R 777 /app/db
+
 # 그다음 나머지 코드 복사
 COPY . /app 
 
