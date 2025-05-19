@@ -33,10 +33,10 @@ public class TemporaryScheduleEntity extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "name", length = 20)
+    @Column(name = "name", length = 50)
     private String name;
 
-    @Column(name = "description", length = 50)
+    @Column(name = "description", length = 70)
     private String description;
 
     @Column(name = "start_time", nullable = false)

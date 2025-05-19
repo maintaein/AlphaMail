@@ -34,10 +34,10 @@ public class ScheduleEntity extends BaseTimeEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private UserEntity user;
 
-	@Column(name = "name", nullable = false, length = 20)
+	@Column(name = "name", nullable = false, length = 50)
 	private String name;
 
-	@Column(length = 50)
+	@Column(length = 70)
 	private String description;
 
 	@Column(nullable = false)
