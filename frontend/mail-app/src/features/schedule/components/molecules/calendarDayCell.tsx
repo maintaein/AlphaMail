@@ -63,7 +63,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   
   };
 
-  const getTextStyle = (event: Schedule) => {
+  const getTextStyle = () => {
     return '';
   };
   
@@ -118,7 +118,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
                       style={{ background: getDotColor(event) }} 
                     />
                   ) : null}
-                  <span className={`flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis ${getTextStyle(event)}`}>
+                  <span className={`flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis ${getTextStyle()}`}>
                     {formatTime(event.start_time.toISOString())} {event.name}
                   </span>
                 </div>
