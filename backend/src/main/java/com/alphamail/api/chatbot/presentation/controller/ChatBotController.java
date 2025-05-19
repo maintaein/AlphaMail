@@ -1,5 +1,7 @@
 package com.alphamail.api.chatbot.presentation.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +20,7 @@ import com.alphamail.api.erp.domain.service.UserReader;
 import com.alphamail.api.organization.domain.entity.Group;
 import com.alphamail.api.user.domain.entity.User;
 import com.alphamail.common.annotation.Auth;
+import com.alphamail.common.util.TimezoneHelper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +41,12 @@ public class ChatBotController {
 	public ResponseEntity<ChatBotResponse> handleMessage(@Auth Integer userId, @RequestBody ChatBotRequest request) {
 		String message = request.message();
 		String timezone = request.timezone();
+		LocalDateTime userTime = TimezoneHelper.convertToUserTime(timezone);
 
-		ClaudeClassification task = classifyIntentPrompt.determineTask(message);
+		ClaudeClassification task = classifyIntentPrompt.determineTask(message, timezone, userTime);
 
 		if (task.type().startsWith("1")) {
-			return ResponseEntity.ok(registScheduleService.execute(userId, message));
+			return ResponseEntity.ok(registScheduleService.execute(userId, message, timezone, userTime));
 		} else if (task.type().startsWith("2")) {
 			return ResponseEntity.ok(
 				searchDocumentService.execute(DocumentTypes.SCHEDULE, userId, userId, task.message(), timezone));

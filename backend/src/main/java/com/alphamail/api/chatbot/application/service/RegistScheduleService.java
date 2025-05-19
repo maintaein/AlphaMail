@@ -1,5 +1,6 @@
 package com.alphamail.api.chatbot.application.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -19,10 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 public class RegistScheduleService {
 
 	private final CreateSchedulePrompt extractor;
-	private final ObjectMapper objectMapper;
 
-	public ChatBotResponse execute(Integer userId, String message) {
-		ClaudeCreateSchedule response = extractor.makeScheduleToJson(message);
+	public ChatBotResponse execute(Integer userId, String message, String timezone, LocalDateTime userTime) {
+		ClaudeCreateSchedule response = extractor.makeScheduleToJson(message, timezone, userTime);
 
 		if (response == null) {
 			return ChatBotResponse.defaultResponse();
