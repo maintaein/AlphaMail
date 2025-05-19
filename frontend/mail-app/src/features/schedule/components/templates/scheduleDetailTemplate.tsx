@@ -29,6 +29,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
 }) => {
   const queryClient = useQueryClient();
   const { selectedSchedule, isEdit, setIsEdit } = useScheduleStore();
+  const [isButtonClicked, setIsButtonClicked] = useState(false);
   const [schedule, setSchedule] = useState<Schedule>({
     id: '',
     name: '',
@@ -161,6 +162,10 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isButtonClicked) return;
+    setIsButtonClicked(true);
+
     const validationErrors = validateSchedule(schedule);
     setErrors(validationErrors);
 
@@ -173,9 +178,11 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
         }
       } catch (error) {
         console.error('일정 저장 중 오류 발생:', error);
+        setIsButtonClicked(false);
       }
     } else {
       toast.error('입력한 내용을 확인해주세요.');
+      setIsButtonClicked(false);
     }
   };
 
@@ -185,7 +192,14 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
     }
   };
 
-  const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  useEffect(() => {
+    if (isOpen) {
+      setIsButtonClicked(false);
+    }
+  }, [isOpen]);
+  
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending || isButtonClicked;
 
   if (!isOpen && !isAnimating) return null;
 
