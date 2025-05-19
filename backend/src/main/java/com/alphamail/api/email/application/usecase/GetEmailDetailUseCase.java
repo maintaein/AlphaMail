@@ -30,6 +30,10 @@ public class GetEmailDetailUseCase {
 		Email email = emailRepository.findByIdAndUserId(emailId, userId)
 			.orElseThrow(() -> new NotFoundException(ErrorMessage.RESOURCE_NOT_FOUND));
 
+		if (email.getReadStatus() == null || !email.getReadStatus()) {
+			emailRepository.updateReadStatus(emailId, true);
+		}
+
 		// email 상세보기 가져오기
 		List<EmailAttachment> attachments = emailAttachmentRepository.findAllByEmailId(emailId);
 
@@ -40,9 +44,6 @@ public class GetEmailDetailUseCase {
 		}
 
 		// 읽음 표시가 필요한 경우에만 업데이트
-		if (email.getReadStatus() == null || !email.getReadStatus()) {
-			emailRepository.updateReadStatus(emailId, true);
-		}
 
 		return EmailDetailResponse.from(email, attachments, threadList);
 

@@ -13,7 +13,7 @@ public record GetProductResponse(
 ) {
 	public static GetProductResponse from(Product product) {
 		String imageUrl = product.getImage() != null
-			? "https://alphamailemailbucket.s3.ap-northeast-2.amazonaws.com/sendAttachments/" + product.getImage()
+			? product.getImage()
 			: null;
 
 		return new GetProductResponse(
