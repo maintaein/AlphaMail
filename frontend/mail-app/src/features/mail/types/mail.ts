@@ -16,6 +16,7 @@ export interface Mail {
     id: number;
     subject: string;
     sender: string;
+    recipients?: string[]; 
     receivedDateTime: string;
     sentDateTime: string;
     readStatus: boolean;
