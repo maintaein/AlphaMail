@@ -18,27 +18,22 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class EmptyMailUseCase {
 
-	private final EmailFolderRepository emailFolderRepository;
 	private final EmailRepository emailRepository;
 
 	public Integer execute(EmptyTrashRequest request, Integer userId) {
-		// 값 체크
-		if (request.folderId() == null) {
-			throw new BadRequestException(ErrorMessage.NO_FOLDER_ID);
+
+		if (request.mailIds() == null || request.mailIds().isEmpty()) {
+			return 0;
 		}
 
-		EmailFolder emailFolder = emailFolderRepository.findById(request.folderId());
-
-		// UserId가 똑같은지 체크
-		if (!emailFolder.getUserId().equals(userId)) {
+		if (!emailRepository.validateEmailOwnership(request.mailIds(), userId)) {
 			throw new ForbiddenException(ErrorMessage.FORBIDDEN);
 		}
 
-		if (!emailFolder.getEmailFolderName().equals("TRASH")) {
-			throw new BadRequestException(ErrorMessage.NO_TRASH_FOLDER);
+		if (!emailRepository.areAllEmailsInTrash(request.mailIds(), userId)) {
+			throw new BadRequestException(ErrorMessage.NOT_IN_TRASH_FOLDER);
 		}
 
-		return emailRepository.deleteByFolderId(request.folderId(), userId);
-
+		return emailRepository.deleteSelectedEmails(request.mailIds(), userId);
 	}
 }

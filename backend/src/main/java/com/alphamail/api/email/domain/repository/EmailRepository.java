@@ -31,8 +31,6 @@ public interface EmailRepository {
 
 	Boolean existsByIdAndUserId(Integer emailId, Integer userId);
 
-	Integer deleteByFolderId(Integer folderId, Integer userId);
-
 	List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId);
 
 	void updateSesMessageId(Integer emailId, String sesMessageId);
@@ -42,4 +40,11 @@ public interface EmailRepository {
 	void updateThreadId(Integer emailId, String threadId);
 
 	Email findByMessageId(String messageId);
+
+	Integer deleteSelectedEmails(List<Integer> emailsIds, Integer userId);
+
+	boolean areAllEmailsInTrash(List<Integer> emailIds, Integer userId);
+
+	void updateReadStatus(Integer emailId, Boolean readStatus);
+
 }

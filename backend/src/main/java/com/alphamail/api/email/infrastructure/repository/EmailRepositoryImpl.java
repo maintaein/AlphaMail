@@ -77,15 +77,6 @@ public class EmailRepositoryImpl implements EmailRepository {
 		return emailJpaRepository.existsByEmailIdAndUser_UserId(emailId, userId);
 	}
 
-	@Override
-	public Integer deleteByFolderId(Integer folderId, Integer userId) {
-		List<EmailEntity> emails = emailJpaRepository.findAllWithAttachmentsByFolderIdAndUserId(folderId, userId);
-		for (EmailEntity email : emails) {
-			email.getAttachments().clear(); // orphanRemoval 트리거
-			emailJpaRepository.delete(email);
-		}
-		return emails.size();
-	}
 
 	@Override
 	public List<EmailThreadItem> findByThreadIdAndUserId(String threadId, Integer userId) {
@@ -124,6 +115,36 @@ public class EmailRepositoryImpl implements EmailRepository {
 		return emailJpaRepository.findByMessageId(messageId)
 			.map(emailMapper::toDomain)
 			.orElse(null);
+	}
+
+	@Override
+	public Integer deleteSelectedEmails(List<Integer> emailIds, Integer userId) {
+		int count = 0;
+		for (Integer emailId : emailIds) {
+			Optional<EmailEntity> emailEntity = emailJpaRepository.findByEmailIdAndUser_UserId(emailId, userId);
+			if (emailEntity.isPresent()) {
+				EmailEntity email = emailEntity.get();
+				email.getAttachments().clear(); // orphanRemoval 트리거
+				emailJpaRepository.delete(email);
+				count++;
+			}
+		}
+		return count;
+	}
+
+	@Override
+	public boolean areAllEmailsInTrash(List<Integer> emailIds, Integer userId) {
+		if (emailIds.isEmpty()) {
+			return true;
+		}
+		long trashCount = emailJpaRepository.countByEmailIdInAndUser_UserIdAndFolder_Name(
+			emailIds, userId, "TRASH");
+		return trashCount == emailIds.size();
+	}
+
+	@Override
+	public void updateReadStatus(Integer emailId, Boolean readStatus) {
+		emailJpaRepository.updateReadStatusById(emailId, readStatus);
 	}
 
 	@Override
