@@ -13,13 +13,15 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { TooltipPortal } from '@/shared/components/atoms/TooltipPortal';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useQueryClient } from '@tanstack/react-query';
 
 const OrderDetailTemplate: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { formData, setFormData } = useOrderStore();
   const { data: userInfo } = useUserInfo();
-  const { data: orderDetail, isLoading } = useOrderDetail(id !== 'new' ? Number(id) : null);
+  const { data: orderDetail, isLoading, error } = useOrderDetail(id !== 'new' ? Number(id) : null);
+  const queryClient = useQueryClient();
 
   const clientNameRef = useRef<HTMLInputElement>(null!);
   const managerRef = useRef<HTMLInputElement>(null!);
@@ -62,6 +64,12 @@ const OrderDetailTemplate: React.FC = () => {
       setFormData(orderDetail);
     }
   }, [id, orderDetail, setFormData, userInfo]);
+
+  useEffect(() => {
+    if ((error as any)?.response?.status === 404) {
+      navigate('/404', { replace: true });
+    }
+  }, [error, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,8 +187,11 @@ const OrderDetailTemplate: React.FC = () => {
 
     if (id && id !== 'new') {
       await orderService.updateOrder(formData, userInfo.id, userInfo.companyId, userInfo.groupId);
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await queryClient.invalidateQueries({ queryKey: ['orderDetail', formData.id] });
     } else {
       await orderService.createOrder(formData, userInfo.id, userInfo.companyId, userInfo.groupId);
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
     }
     navigate('/work/orders');
   };

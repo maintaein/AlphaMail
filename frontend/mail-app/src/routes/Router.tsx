@@ -14,6 +14,7 @@ import MailTrashTemplate from '@/features/mail/components/templates/mailTrashTem
 import SentMailTemplate from '@/features/mail/components/templates/sentMailTemplate';
 import { UserManageTemplate } from '@/features/auth/components/template/userManageTemplate';
 import { PasswordConfirmTemplate } from '@/features/auth/components/template/passwordConfirmTemplate';
+import NotFound from '@/pages/NotFoundPage';
 
 export const Router = () => {
   return (
@@ -27,6 +28,9 @@ export const Router = () => {
           <HomePage />
         </ProtectedRoute>
       } />
+
+      {/* Not Found Route */}
+      <Route path="/404" element={<NotFound />} />
       
       {/* Mail Routes */}
       <Route path="/mail/*" element={
@@ -73,7 +77,7 @@ export const Router = () => {
       } />
 
       {/* Fallback Route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/404" replace />} />
     </Routes>
   );
 };

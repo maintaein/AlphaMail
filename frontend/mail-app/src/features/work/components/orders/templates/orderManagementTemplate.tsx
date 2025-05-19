@@ -6,9 +6,11 @@ import { useOrderStore } from '../../../stores/orderStore';
 import { useOrderManagement } from '../../../hooks/useOrderManagement';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { useQueryClient } from '@tanstack/react-query';
 
 const OrderManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const {
     selectedOrderIds,
     currentPage,
@@ -31,13 +33,15 @@ const OrderManagementTemplate: React.FC = () => {
     navigate('/work/orders/new');
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (selectedOrderIds.size === 0) {
       alert('삭제할 발주서를 선택해주세요.');
       return;
     }
     if (window.confirm('선택한 발주서를 삭제하시겠습니까?')) {
-      handleDeleteOrders();
+      await handleDeleteOrders();
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      await queryClient.invalidateQueries({ queryKey: ['orderDetail'] });
     }
   };
 
