@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
+import { format, addHours } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import './mailThread.css';  // CSS 파일 import
 import { Typography } from '@/shared/components/atoms/Typography';
@@ -29,12 +29,16 @@ export const MailThreadList: React.FC<MailThreadListProps> = ({
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    const today = new Date();
-    const isToday = date.toDateString() === today.toDateString();
-    
-    return isToday 
-      ? format(date, 'a h:mm', { locale: ko }) 
-      : format(date, 'yyyy.MM.dd', { locale: ko });
+  
+  const today = new Date();
+  
+  const isToday = date.toDateString() === today.toDateString();
+  
+  const koreaDate = addHours(date, 9);
+  
+  return isToday 
+    ? format(koreaDate, 'a h:mm', { locale: ko }) 
+    : format(koreaDate, 'yyyy.MM.dd', { locale: ko });
   };
   
   // 폴더 ID에 따른 경로 결정
