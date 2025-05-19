@@ -156,6 +156,8 @@ export const orderService: OrderService = {
         price: product.price
       })),
     };
+
+    console.log("updateOrder", requestData);
     const response = await api.put(`/api/erp/purchase-orders/${orderData.id}`, requestData);
     return response.data;
   },

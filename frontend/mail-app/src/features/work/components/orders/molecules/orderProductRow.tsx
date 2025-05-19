@@ -2,7 +2,7 @@ import React from 'react';
 import { OrderProduct } from '../../../types/order';
 import { Product } from '../../../types/product';
 import ProductInput from '../../../../../shared/components/atoms/productInput';
-
+import { Typography } from '../../../../../shared/components/atoms/Typography';
 interface OrderProductRowProps {
   index: number;
   product: OrderProduct;
@@ -55,6 +55,7 @@ const OrderProductRow: React.FC<OrderProductRowProps> = ({
           value={product.count} 
           onChange={e => onProductChange(index, 'count', Number(e.target.value))} 
           className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm text-right focus:outline-none"
+          min={0}
         />
       </td>
       <td className="border border-[#E5E5E5] bg-white px-2">
@@ -64,30 +65,19 @@ const OrderProductRow: React.FC<OrderProductRowProps> = ({
             value={product.price} 
             onChange={e => onProductChange(index, 'price', Number(e.target.value))} 
             className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm text-right focus:outline-none"
+            min={0}
           />
           <span className="ml-1 text-gray-500 whitespace-nowrap">원</span>
         </div>
       </td>
       <td className="border border-[#E5E5E5] bg-gray-50 px-2">
         <div className="flex items-center">
-          <input 
-            type="number" 
-            value={taxAmount} 
-            readOnly
-            className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm text-right focus:outline-none"
-          />
-          <span className="ml-1 text-gray-500 whitespace-nowrap">원</span>
+          <span className="ml-1 text-gray-500 whitespace-nowrap"><Typography variant="body">{taxAmount.toLocaleString()}원</Typography></span>
         </div>
       </td>
       <td className="border border-[#E5E5E5] bg-gray-50 px-2">
         <div className="flex items-center">
-          <input 
-            type="number" 
-            value={supplyAmount} 
-            readOnly
-            className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm text-right focus:outline-none"
-          />
-          <span className="ml-1 text-gray-500 whitespace-nowrap">원</span>
+          <span className="ml-1 text-gray-500 whitespace-nowrap"><Typography variant="body">{supplyAmount.toLocaleString()}원</Typography></span>
         </div>
       </td>
     </tr>

@@ -177,7 +177,7 @@ import { Spinner } from '@/shared/components/atoms/spinner';
               disabled={loading}
             >
               <Typography variant="titleSmall">
-                {loading ? '문서 생성 중...' : '문서'}
+                {'문서'}
               </Typography>
             </Button>
           );

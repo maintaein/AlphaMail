@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, RefObject } from 'react';
 import { OrderDetail } from '../../../types/order';
 import AddressInput from '../../../../../shared/components/atoms/addressInput';
 import ClientInput from '../../../../../shared/components/atoms/clientInput';
@@ -7,6 +7,9 @@ import KakaoAddressTemplate from '../../../../../shared/components/template/kaka
 import { api } from '../../../../../shared/lib/axiosInstance';
 import { useOrderStore } from '../../../stores/orderStore';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { useParams } from 'react-router-dom';
+import { useUserInfo } from '@/shared/hooks/useUserInfo';
+import { PhoneInput } from '@/shared/components/atoms/phoneInput';
 
 const MAX_LENGTHS = {
   orderNo: 255,
@@ -16,10 +19,30 @@ const MAX_LENGTHS = {
   shippingAddress: 255,
 };
 
-const OrderBasicInfoForm: React.FC = () => {
+interface OrderBasicInfoFormProps {
+  clientNameRef?: RefObject<HTMLInputElement>;
+  managerRef?: RefObject<HTMLInputElement>;
+  managerNumberRef?: RefObject<HTMLInputElement>;
+  paymentTermRef?: RefObject<HTMLInputElement>;
+  deliverAtRef?: RefObject<HTMLInputElement>;
+  shippingAddressRef?: RefObject<HTMLInputElement>;
+  onInputFocus?: () => void;
+}
+
+const OrderBasicInfoForm: React.FC<OrderBasicInfoFormProps> = ({
+  clientNameRef,
+  managerRef,
+  managerNumberRef,
+  paymentTermRef,
+  deliverAtRef,
+  shippingAddressRef,
+  onInputFocus,
+}) => {
   const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { formData, updateFormField } = useOrderStore();
+  const { id } = useParams();
+  const { data: userInfo } = useUserInfo();
 
   if (!formData) {
     return null;
@@ -27,7 +50,7 @@ const OrderBasicInfoForm: React.FC = () => {
 
   const validate = (name: string, value: string) => {
     let error = '';
-    if (["orderNo", "clientName", "createdAt", "deliverAt", "shippingAddress"].includes(name) && !value) {
+    if (["clientName", "deliverAt", "shippingAddress"].includes(name) && !value) {
       error = '필수 입력 항목입니다.';
     }
     if (name in MAX_LENGTHS && value && value.length > MAX_LENGTHS[name as keyof typeof MAX_LENGTHS]) {
@@ -36,11 +59,36 @@ const OrderBasicInfoForm: React.FC = () => {
     return error;
   };
 
+  const formatPhoneNumber = (value: string) => {
+    const numbersOnly = value.replace(/\D/g, '');
+
+    if (numbersOnly.startsWith('02')) {
+      // 서울 지역번호
+      if (numbersOnly.length <= 2) return numbersOnly;
+      if (numbersOnly.length <= 5) return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2)}`;
+      if (numbersOnly.length <= 9)
+        return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 5)}-${numbersOnly.slice(5)}`;
+      return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 6)}-${numbersOnly.slice(6, 10)}`;
+    } else {
+      // 휴대폰 또는 일반 지역번호 (3자리)
+      if (numbersOnly.length <= 3) return numbersOnly;
+      if (numbersOnly.length <= 6)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+      if (numbersOnly.length <= 10)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 6)}-${numbersOnly.slice(6)}`;
+      return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7, 11)}`;
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const error = validate(name, value);
+    let newValue = value;
+    if (name === 'managerNumber') {
+      newValue = formatPhoneNumber(value);
+    }
+    const error = validate(name, newValue);
     setErrors(prev => ({ ...prev, [name]: error }));
-    updateFormField(name as keyof OrderDetail, value);
+    updateFormField(name as keyof OrderDetail, newValue);
   };
 
   const handleAddressChange = (value: string) => {
@@ -98,51 +146,32 @@ const OrderBasicInfoForm: React.FC = () => {
         </colgroup>
         <tbody>
           <tr>
+            {id !== 'new' && (
+              <>
+                <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
+                  <Typography variant="body">발주등록번호</Typography>
+                </td>
+                <td className="bg-white border border-[#E5E5E5] px-2">
+                  <span className="text-sm"><Typography variant="body">{formData.orderNo || '-'}</Typography></span>
+                </td>
+              </>
+            )}
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-              <Typography variant="body">발주등록번호<span className="text-red-500 ml-1">*</span></Typography>
+              <Typography variant="body">일자</Typography>
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
-              <input
-                id="orderNo"
-                name="orderNo"
-                type="text"
-                value={formData.orderNo || ''}
-                onChange={handleInputChange}
-                className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
-                required
-                maxLength={255}
-              />
-              {errors.orderNo && <p className="mt-1 text-xs text-red-500">{errors.orderNo}</p>}
-            </td>
-            <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-              <Typography variant="body">일자<span className="text-red-500 ml-1">*</span></Typography>
-            </td>
-            <td className="bg-white border border-[#E5E5E5] px-2">
-              <input
-                id="createdAt"
-                name="createdAt"
-                type="date"
-                value={formData.createdAt ? new Date(formData.createdAt).toISOString().split('T')[0] : ''}
-                onChange={handleInputChange}
-                className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
-                required
-              />
-              {errors.createdAt && <p className="mt-1 text-xs text-red-500">{errors.createdAt}</p>}
+              <span className="text-sm">
+                <Typography variant="body">{(() => {
+                  const date = formData.createdAt ? new Date(formData.createdAt) : new Date();
+                  return date.toLocaleDateString('ko-KR');
+                })()}</Typography>
+              </span>
             </td>
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
               <Typography variant="body">발주담당자</Typography>
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
-              <input
-                id="userName"
-                name="userName"
-                type="text"
-                value={formData.userName || ''}
-                onChange={handleInputChange}
-                className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
-                maxLength={30}
-              />
-              {errors.userName && <p className="mt-1 text-xs text-red-500">{errors.userName}</p>}
+              <span className="text-sm"><Typography variant="body">{userInfo?.name || '-'}</Typography></span>
             </td>
           </tr>
           <tr>
@@ -151,9 +180,12 @@ const OrderBasicInfoForm: React.FC = () => {
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
               <ClientInput
+                ref={clientNameRef}
                 value={formData.clientName}
                 onChange={handleClientChange}
                 className="w-full h-[32px]"
+                onFocus={onInputFocus}
+                onClick={onInputFocus}
               />
               {errors.clientName && <p className="mt-1 text-xs text-red-500">{errors.clientName}</p>}
             </td>
@@ -161,27 +193,13 @@ const OrderBasicInfoForm: React.FC = () => {
               <Typography variant="body">사업자등록번호</Typography>
             </td>
             <td className="bg-gray-50 border border-[#E5E5E5] px-2">
-              <input
-                id="licenseNumber"
-                name="licenseNumber"
-                type="text"
-                value={formData.licenseNumber || ''}
-                readOnly
-                className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm focus:outline-none"
-              />
+              <span className="text-sm"><Typography variant="body">{formData.licenseNumber || '-'}</Typography></span>
             </td>
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
               <Typography variant="body">대표자</Typography>
             </td>
             <td className="bg-gray-50 border border-[#E5E5E5] px-2">
-              <input
-                id="representative"
-                name="representative"
-                type="text"
-                value={formData.representative || ''}
-                readOnly
-                className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm focus:outline-none"
-              />
+              <span className="text-sm"><Typography variant="body">{formData.representative || '-'}</Typography></span>
             </td>
           </tr>
           <tr>
@@ -189,33 +207,20 @@ const OrderBasicInfoForm: React.FC = () => {
               <Typography variant="body">종목</Typography>
             </td>
             <td className="bg-gray-50 border border-[#E5E5E5] px-2">
-              <input
-                id="businessItem"
-                name="businessItem"
-                type="text"
-                value={formData.businessItem || ''}
-                readOnly
-                className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm focus:outline-none"
-              />
+              <span className="text-sm"><Typography variant="body">{formData.businessItem || '-'}</Typography></span>
             </td>
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
               <Typography variant="body">업태</Typography>
             </td>
             <td className="bg-gray-50 border border-[#E5E5E5] px-2">
-              <input
-                id="businessType"
-                name="businessType"
-                type="text"
-                value={formData.businessType || ''}
-                readOnly
-                className="w-full h-[32px] px-2 border border-gray-300 bg-gray-50 text-sm focus:outline-none"
-              />
+              <span className="text-sm"><Typography variant="body">{formData.businessType || '-'}</Typography></span>
             </td>
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
-              <Typography variant="body">담당자</Typography>
+              <Typography variant="body">거래 담당자</Typography>
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
               <input
+                ref={managerRef}
                 id="manager"
                 name="manager"
                 type="text"
@@ -223,6 +228,7 @@ const OrderBasicInfoForm: React.FC = () => {
                 onChange={handleInputChange}
                 className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
                 maxLength={30}
+                onFocus={onInputFocus}
               />
               {errors.manager && <p className="mt-1 text-xs text-red-500">{errors.manager}</p>}
             </td>
@@ -232,22 +238,24 @@ const OrderBasicInfoForm: React.FC = () => {
               <Typography variant="body">거래처연락처</Typography>
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
-              <input
+              <PhoneInput
+                ref={managerNumberRef}
                 id="managerNumber"
                 name="managerNumber"
-                type="text"
                 value={formData.managerNumber || ''}
                 onChange={handleInputChange}
-                className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
                 maxLength={13}
+                errorMessage={errors.managerNumber}
+                className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
+                onFocus={onInputFocus}
               />
-              {errors.managerNumber && <p className="mt-1 text-xs text-red-500">{errors.managerNumber}</p>}
             </td>
             <td className="bg-[#F9F9F9] h-[44px] border border-[#E5E5E5] text-center align-middle font-medium">
               <Typography variant="body">결제조건</Typography>
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
               <input
+                ref={paymentTermRef}
                 id="paymentTerm"
                 name="paymentTerm"
                 type="text"
@@ -255,6 +263,7 @@ const OrderBasicInfoForm: React.FC = () => {
                 onChange={handleInputChange}
                 className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
                 maxLength={255}
+                onFocus={onInputFocus}
               />
               {errors.paymentTerm && <p className="mt-1 text-xs text-red-500">{errors.paymentTerm}</p>}
             </td>
@@ -263,6 +272,7 @@ const OrderBasicInfoForm: React.FC = () => {
             </td>
             <td className="bg-white border border-[#E5E5E5] px-2">
               <input
+                ref={deliverAtRef}
                 id="deliverAt"
                 name="deliverAt"
                 type="date"
@@ -270,6 +280,7 @@ const OrderBasicInfoForm: React.FC = () => {
                 onChange={handleInputChange}
                 className="w-full h-[32px] px-2 border border-gray-300 bg-white text-sm focus:outline-none"
                 required
+                onFocus={onInputFocus}
               />
               {errors.deliverAt && <p className="mt-1 text-xs text-red-500">{errors.deliverAt}</p>}
             </td>
@@ -280,9 +291,12 @@ const OrderBasicInfoForm: React.FC = () => {
             </td>
             <td colSpan={5} className="bg-white border border-[#E5E5E5] px-2">
               <AddressInput
+                ref={shippingAddressRef}
                 value={formData.shippingAddress}
                 onChange={handleAddressChange}
                 className="w-full h-[32px]"
+                onFocus={onInputFocus}
+                onClick={onInputFocus}
               />
               {errors.shippingAddress && <p className="mt-1 text-xs text-red-500">{errors.shippingAddress}</p>}
             </td>

@@ -25,6 +25,16 @@ const OrderProductTable: React.FC = () => {
   return (
     <div className="bg-white rounded shadow p-4">
       <table className="min-w-full mb-2 border-separate border-spacing-0">
+        <colgroup>
+          <col style={{ width: '48px' }} />
+          <col style={{ width: '48px' }} />
+          <col style={{ width: '130px' }} />
+          <col style={{ width: '120px' }} />
+          <col style={{ width: '100px' }} />
+          <col style={{ width: '120px' }} />
+          <col style={{ width: '100px' }} />
+          <col style={{ width: '100px' }} />
+        </colgroup>
         <thead className="bg-gray-100">
           <tr>
             <th className="p-2 w-[40px] text-center align-middle">
