@@ -119,6 +119,10 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       alert('필수 항목을 모두 입력해 주세요.');
       return;
     }
+    if (form.licenseNum.length !== 10) {
+      alert('사업자번호는 10자리 숫자입니다.');
+      return;
+    }
     if (id && id !== 'new') {
       updateMutation.mutate({ id, data: form });
     } else {
@@ -194,6 +198,9 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             inputMode='numeric'
             maxLength={10}
           />
+          {form.licenseNum.length > 0 && form.licenseNum.length !== 10 && (
+            <span className="text-red-500 text-xs ml-2">사업자번호는 10자리 숫자입니다.</span>
+          )}
           {isSubmitted && !form.licenseNum.trim() && (
             <span className="text-red-500 text-xs ml-2">사업자번호를 입력해 주세요.</span>
           )}
