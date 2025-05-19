@@ -20,7 +20,7 @@ public class CreateScheduleUseCase {
 	private final ScheduleRepository scheduleRepository;
 	private final VectorUpsertClient vectorUpsertClient;
 
-	public void execute(CreateScheduleRequest request, Integer userId) {
+	public Schedule execute(CreateScheduleRequest request, Integer userId) {
 
 		Schedule schedule = Schedule.create(request, userId);
 
@@ -28,5 +28,7 @@ public class CreateScheduleUseCase {
 
 		VectorizableDocument doc = new ScheduleVectorAdapter(saved);
 		vectorUpsertClient.upsert(doc);
+
+		return saved;
 	}
 }

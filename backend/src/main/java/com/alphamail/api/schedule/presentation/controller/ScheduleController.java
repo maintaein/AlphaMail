@@ -26,8 +26,10 @@ import com.alphamail.api.schedule.application.usecase.DeleteScheduleUseCase;
 import com.alphamail.api.schedule.application.usecase.GetAllSchedulesUseCase;
 import com.alphamail.api.schedule.application.usecase.GetScheduleDetailUseCase;
 import com.alphamail.api.schedule.application.usecase.UpdateScheduleUseCase;
+import com.alphamail.api.schedule.domain.entity.Schedule;
 import com.alphamail.api.schedule.presentation.dto.ChangeScheduleToggleRequest;
 import com.alphamail.api.schedule.presentation.dto.CreateScheduleRequest;
+import com.alphamail.api.schedule.presentation.dto.RegistScheduleResponse;
 import com.alphamail.api.schedule.presentation.dto.ScheduleDetailResponse;
 import com.alphamail.api.schedule.presentation.dto.ScheduleListResponse;
 import com.alphamail.api.schedule.presentation.dto.ToggleScheduleResponse;
@@ -53,10 +55,9 @@ public class ScheduleController {
 	public ResponseEntity<?> addSchedule(@RequestBody CreateScheduleRequest request,
 		@Auth Integer userId) {
 
-		createScheduleUseCase.execute(request, userId);
+		Schedule result = createScheduleUseCase.execute(request, userId);
 
-		return ResponseEntity.ok().build();
-
+		return ResponseEntity.ok().body(new RegistScheduleResponse(result.getScheduleId()));
 	}
 
 	@GetMapping
