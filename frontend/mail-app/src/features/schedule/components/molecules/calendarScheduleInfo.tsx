@@ -16,10 +16,17 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({ sche
       scheduleService.patchSchedule(id, isCompleted),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedules'] });
+      queryClient.invalidateQueries({ queryKey: ['calendarSchedules'] });
+      queryClient.invalidateQueries({ queryKey: ['weeklySchedules'] });
     }
   });
 
-  const handleCheckboxChange = () => {
+
+  const handleToggleComplete = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    
+    if (updateMutation.isPending) return; 
+    
     updateMutation.mutate({
       id: schedule.id,
       isCompleted: !schedule.is_done
@@ -27,11 +34,17 @@ export const CalendarScheduleInfo: React.FC<CalendarScheduleInfoProps> = ({ sche
   };
 
   return (
-    <div className="flex items-center gap-1 mb-2">
+    <div 
+      className="flex items-center gap-1 mb-2 cursor-pointer p-1 rounded hover:bg-gray-50"
+      onClick={handleToggleComplete} // 전체 컴포넌트 클릭 시 토글
+    >
       <input
         type="checkbox"
         checked={schedule.is_done}
-        onChange={handleCheckboxChange}
+        onChange={(e) => {
+          e.stopPropagation(); // 체크박스 클릭 시 이벤트 버블링 방지
+          handleToggleComplete(e as unknown as React.MouseEvent);
+        }}
         className="w-4 h-4 accent-blue-400"
         disabled={updateMutation.isPending}
       />
