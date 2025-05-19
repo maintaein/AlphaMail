@@ -97,6 +97,12 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    if (name === 'licenseNum') {
+      const onlyNumbers = value.replace(/\D/g, '').slice(0, 10);
+      setForm((prev: ClientDetail) => ({ ...prev, [name]: onlyNumbers }));
+      return;
+    }  
     setForm((prev: ClientDetail) => ({ ...prev, [name]: value }));
   };
 
@@ -185,6 +191,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="사업자 번호를 입력하세요."
             size="large"
             className="!w-[400px]"
+            inputMode='numeric'
+            maxLength={10}
           />
           {isSubmitted && !form.licenseNum.trim() && (
             <span className="text-red-500 text-xs ml-2">사업자번호를 입력해 주세요.</span>
