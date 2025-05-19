@@ -105,12 +105,31 @@ const SentMailTemplate: React.FC = () => {
       const receivedTime = mail.receivedDateTime || mail.sentDateTime;
       const koreaTime = new Date(new Date(receivedTime).getTime() + 9 * 60 * 60 * 1000).toISOString();
       
+      // 보낸 메일함에서는 수신자 정보를 표시
+      // recipients 배열의 첫 번째 수신자를 사용 (수신자가 여러 명일 경우)
+        // 보낸 메일함에서는 수신자 정보를 표시
+    let recipientName = '수신자 없음';
+    let recipientEmail = 'unknown@example.com';
+    
+    if (mail.recipients && mail.recipients.length > 0) {
+      // 첫 번째 수신자 이메일 가져오기
+      recipientEmail = mail.recipients[0];
+      
+      // 첫 번째 수신자 이름 (@앞 부분 추출)
+      recipientName = recipientEmail.split('@')[0];
+      
+      // 추가 수신자가 있는 경우 "외 X명" 추가
+      if (mail.recipients.length > 1) {
+        recipientName += ` 외 ${mail.recipients.length - 1}명`;
+      }
+    }
+
       return {
         id: mail.id.toString(),
         subject: mail.subject,
         sender: {
-          name: mail.sender.split('@')[0],
-          email: mail.sender
+          name: recipientName,
+          email: recipientEmail
         },
         receivedAt: koreaTime,
         isRead: mail.readStatus === undefined ? true : mail.readStatus,
