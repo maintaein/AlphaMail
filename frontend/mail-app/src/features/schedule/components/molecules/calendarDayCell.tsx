@@ -49,12 +49,27 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     const isEnd = isSameDay(currentDate, endDate);
     const isSingleDay = isStart && isEnd;
 
+    const isCompleted = event.is_done;
+
     // 여러 날짜에 걸친 일정만 배경색 적용
     if (!isSingleDay) {
-      return 'text-xs text-white cursor-pointer p-1 overflow-hidden bg-[#3E99C6]';
+      // 완료된 일정은 회색 바로 표시
+      return isCompleted 
+        ? 'text-xs text-gray-500 bg-gray-200 cursor-pointer p-1 overflow-hidden'
+        : 'text-xs text-white bg-[#3E99C6] cursor-pointer p-1 overflow-hidden';
     }
     // 단일 날짜 일정은 배경색 없이 텍스트만
-    return 'text-xs text-black cursor-pointer p-1 overflow-hidden flex items-center';
+    return `text-xs ${isCompleted ? 'text-gray-400' : 'text-black'} cursor-pointer p-1 overflow-hidden flex items-center`;
+  
+  };
+
+  const getTextStyle = (event: Schedule) => {
+    return '';
+  };
+  
+  const getDotColor = (event: Schedule) => {
+    if (!event) return '#3E99C6'; // 기본 색상
+    return event.is_done ? '#9CA3AF' : '#3E99C6'; // 완료된 일정은 회색, 미완료는 파란색
   };
 
   return (
@@ -98,9 +113,12 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
               {isStart ? (
                 <div className="flex items-center w-full min-w-0">
                   {isSingleDay ? (
-                    <span className="inline-block w-2 h-2 rounded-full mr-1 flex-shrink-0" style={{ background: '#3E99C6' }} />
+                    <span 
+                      className="inline-block w-2 h-2 rounded-full mr-1 flex-shrink-0" 
+                      style={{ background: getDotColor(event) }} 
+                    />
                   ) : null}
-                  <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
+                  <span className={`flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis ${getTextStyle(event)}`}>
                     {formatTime(event.start_time.toISOString())} {event.name}
                   </span>
                 </div>
