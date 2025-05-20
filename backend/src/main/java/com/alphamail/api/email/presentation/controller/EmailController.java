@@ -102,7 +102,7 @@ public class EmailController {
 
 	public ResponseEntity<Void> sendEmail(
 		@RequestPart("sender") String sender,
-		@RequestParam("recipients") List<String> recipients
+		@RequestParam("recipients") List<String> recipients,
 		@RequestPart("subject") String subject,
 		@RequestPart("bodyText") String bodyText,
 		@RequestPart(value = "bodyHtml", required = false) String bodyHtml,
