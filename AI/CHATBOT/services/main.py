@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -12,6 +13,16 @@ collection = chroma_client.get_or_create_collection(
     embedding_function=embedding_function
 )
 
+def chunk_by_lines(text: str, lines_per_chunk: int = 2, overlap: int = 1) -> list[str]:
+    lines = [line.strip() for line in text.strip().split('\n') if line.strip()]
+    chunks = []
+    i = 0
+    while i < len(lines):
+        chunk_lines = lines[i:i + lines_per_chunk]
+        chunks.append("\n".join(chunk_lines))
+        i += lines_per_chunk - overlap
+    return chunks
+
 @app.route("/api/vector/upsert", methods=["POST"])
 def upsert_document():
     data = request.get_json()
@@ -20,10 +31,14 @@ def upsert_document():
     text = data["text"]
     metadata = data["metadata"]
 
+    chunks = chunk_by_lines(text, lines_per_chunk=2, overlap=0)
+    ids = [f"{vector_id}_{i}" for i in range(len(chunks))]
+    metadatas = [metadata | {"chunk_index": i} for i in range(len(chunks))]
+
     collection.upsert(
-        ids=[vector_id],
-        documents=[text],
-        metadatas=[metadata]
+        ids=ids,
+        documents=chunks,
+        metadatas=metadatas
     )
 
     return jsonify({"status": "upsert success"})
@@ -41,22 +56,25 @@ def search_schedule():
 
     results = collection.query(
         query_texts=[query],
-        n_results=10,
+        n_results=50,
         where=where
     )
 
-    ids = results["ids"][0]
     documents = results["documents"][0]
     metadatas = results["metadatas"][0]
 
-    matched = []
-    for i in range(len(ids)):
-        matched.append({
-            "id": metadatas[i].get("domain_id"),
-            "text": documents[i]
-        })
+    grouped = defaultdict(list)
 
-    return jsonify(matched)  # 유사 일정 top 10만 응답
+    for doc, meta in zip(documents, metadatas):
+        grouped[meta["domain_id"]].append((meta.get("chunk_index", 0), doc))
+
+    merged = []
+    for domain_id, chunks in grouped.items():
+        chunks.sort(key=lambda x: x[0])
+        full_text = "\n".join(doc for _, doc in chunks)
+        merged.append({"id": domain_id, "text": full_text})
+
+    return jsonify(merged[:10])
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001, debug=True)

@@ -20,14 +20,14 @@ public class QuoteVectorAdapter implements VectorizableDocument {
 			등록번호: %s
 			거래처명: %s
 			거래처 담당자명: %s
+			견적일(견적서 등록일): %s
 			배송지: %s
-			견적일(견적서 생성일): %s
 			""".formatted(
 			quote.getQuoteNo(),
 			quote.getClient().getCorpName(),
 			quote.getManager(),
-			quote.getShippingAddress(),
-			formatDateTime(quote.getCreatedAt())
+			formatDateTime(quote.getCreatedAt()),
+			quote.getShippingAddress()
 		);
 	}
 

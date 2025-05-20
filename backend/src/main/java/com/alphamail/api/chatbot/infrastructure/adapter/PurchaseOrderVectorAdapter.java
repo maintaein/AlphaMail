@@ -17,15 +17,23 @@ public class PurchaseOrderVectorAdapter implements VectorizableDocument {
 	@Override
 	public String toVectorText() {
 		return """
-			등록번호: %s
+			발주번호: %s
 			거래처명: %s
-			발주일(발주서 생성일): %s
+			발주일(발주서 등록일): %s
 			납기일: %s
+			납품 장소: %s
+			거래처 담당자: %s
+			거래처 담당자 연락처: %s
+			결제 조건: %s
 			""".formatted(
 			purchaseOrder.getOrderNo(),
 			purchaseOrder.getClient().getCorpName(),
 			formatDateTime(purchaseOrder.getCreatedAt()),
-			formatDateTime(purchaseOrder.getDeliverAt())
+			formatDateTime(purchaseOrder.getDeliverAt()),
+			purchaseOrder.getShippingAddress(),
+			purchaseOrder.getManager(),
+			purchaseOrder.getManagerNumber(),
+			purchaseOrder.getPaymentTerm()
 		);
 	}
 
