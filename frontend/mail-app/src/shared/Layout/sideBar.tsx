@@ -184,7 +184,7 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                                   >
                                     <Typography 
                                       variant="titleSmall" 
-                                      color={activeItem === getFolderDisplayName(folder.folderName) ? "text-[#66BAE4]" : ""}
+                                      color={activeItem === getFolderDisplayName(folder.folderName) ? "text-[#518EF9]" : ""}
                                       bold={activeItem === getFolderDisplayName(folder.folderName)}
                                     >
                                       {getFolderDisplayName(folder.folderName)}

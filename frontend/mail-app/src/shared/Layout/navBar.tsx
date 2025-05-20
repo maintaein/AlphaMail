@@ -80,7 +80,7 @@ export const NavBar = () => {
 
     return (
         <div className={cn(
-            "h-screen bg-[#66BAE4] flex flex-col transition-all duration-300",
+            "h-screen bg-gradient-to-b from-[#3A77F5] to-[#6EABFF] flex flex-col transition-all duration-300",
             isCollapsed ? "w-[70px]" : "w-[190px]"
         )}>
             {/* 햄버거 버튼 영역 */}
@@ -108,14 +108,14 @@ export const NavBar = () => {
                     {/* 로고 크기를 NavBar의 isCollapsed 상태에 따라 조정 */}
                     <div className={cn(
                         "flex-shrink-0 transition-all duration-300",
-                        isCollapsed ? "w-10 h-10" : "w-16 h-16"
+                        isCollapsed ? "w-13 h-13" : "w-20 h-20"
                     )}>
                         <img src="/logo.png" alt="ALPHAMAIL 로고" className="w-full h-full" />
                     </div>
                 </div>
                 {!isCollapsed && contentVisible && (
                     <div className={cn(
-                        "absolute left-1/2 transform -translate-x-1/2 top-[70px] text-white font-light whitespace-nowrap cursor-pointer transition-all duration-300",
+                        "absolute left-1/2 transform -translate-x-1/2 top-[75px] text-white font-light whitespace-nowrap cursor-pointer transition-all duration-300",
                         isCollapsed ? "text-lg" : "text-xl"
                     )}
                         onClick={navigateToHome}
@@ -134,7 +134,7 @@ export const NavBar = () => {
                         <Link to="/">
                             <div className={cn(
                                 "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
-                                path === '/' ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                                path === '/' ? "bg-[#5B98FB]" : "hover:bg-[#5B98FB]"
                             )}>
                                 <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                                     <img src="/home.png" alt="홈" className="w-5 h-5" />
@@ -149,7 +149,7 @@ export const NavBar = () => {
                         <Link to="/mail">
                             <div className={cn(
                                 "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
-                                isMailActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                                isMailActive ? "bg-[#5B98FB]" : "hover:bg-[#5B98FB]"
                             )}>
                                 <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                                     <img src="/mail_outline.png" alt="메일" className="w-5 h-5" />
@@ -164,7 +164,7 @@ export const NavBar = () => {
                         <Link to="/schedule">
                             <div className={cn(
                                 "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
-                                isScheduleActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                                isScheduleActive ? "bg-[#5B98FB]" : "hover:bg-[#5B98FB]"
                             )}>
                                 <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                                     <img src="/date_range.png" alt="일정" className="w-5 h-5" />
@@ -179,7 +179,7 @@ export const NavBar = () => {
                         <Link to="/work/clients">
                             <div className={cn(
                                 "flex items-center h-[40px] px-4 text-white rounded-md transition-colors",
-                                isWorkActive ? "bg-[#3E99C6]" : "hover:bg-[#3E99C6]"
+                                isWorkActive ? "bg-[#5B98FB]" : "hover:bg-[#5B98FB]"
                             )}>
                                 <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
                                     <img src="/business_center.png" alt="work+" className="w-5 h-5" />

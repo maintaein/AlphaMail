@@ -167,6 +167,7 @@ export const RowTmpScheduleAdd: React.FC<RowTmpScheduleAddProps> = ({ temporaryS
           <Typography variant="titleSmall" className="text-gray-700 mb-1">
             설명
           </Typography>
+           <Typography variant="caption">
           <textarea
             value={schedule.description}
             onChange={(e) => setScheduleDescription(e.target.value)}
@@ -174,6 +175,7 @@ export const RowTmpScheduleAdd: React.FC<RowTmpScheduleAddProps> = ({ temporaryS
             className="border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-primary w-full p-3 text-sm h-24 resize-none"
             maxLength={100}
           />
+          </Typography>
           {scheduleErrors.description && (
             <Typography variant="caption" className="text-red-500 mt-1">
               {scheduleErrors.description}
