@@ -3,9 +3,10 @@ import { ChatMessage, ChatState } from '../types/chat';
 import { chatService } from '../services/chatService';
 
 interface ChatStore extends ChatState {
-  sendMessage: (content: string, userId: string) => Promise<void>;
+  sendMessage: (content: string, userId: string, timezone?: string) => Promise<void>;
   clearMessages: () => void;
   removeMessage: (index: number) => void;
+  addBotMessage: (content: string) => void;
 }
 
 export const useChatStore = create<ChatStore>((set) => ({
@@ -13,7 +14,7 @@ export const useChatStore = create<ChatStore>((set) => ({
   isLoading: false,
   error: null,
 
-  sendMessage: async (content: string, userId: string) => {
+  sendMessage: async (content: string, userId: string, timezone = '') => {
     try {
       set({ isLoading: true, error: null });
 
@@ -30,8 +31,8 @@ export const useChatStore = create<ChatStore>((set) => ({
       }));
 
       // 챗봇 응답 받기
-      console.log('useChatStore - API 요청 전:', { content, userId });
-      const botResponse = await chatService.sendMessage(content, userId);
+      console.log('useChatStore - API 요청 전:', { content, userId, timezone });
+      const botResponse = await chatService.sendMessage(content, userId, timezone);
       console.log('useChatStore - API 응답 받음:', botResponse);
       
       const botMessage: ChatMessage = {
@@ -63,6 +64,18 @@ export const useChatStore = create<ChatStore>((set) => ({
   removeMessage: (index: number) => {
     set((state) => ({
       messages: state.messages.filter((_, i) => i !== index)
+    }));
+  },
+
+  addBotMessage: (content: string) => {
+    const botMessage: ChatMessage = {
+      reply: content,
+      ids: [],
+      type: 'text',
+      isUser: false
+    };
+    set((state) => ({
+      messages: [...state.messages, botMessage]
     }));
   }
 })); 

@@ -11,12 +11,13 @@ class ChatService {
     return ChatService.instance;
   }
 
-  async sendMessage(message: string, userId: string): Promise<ChatMessage> {
+  async sendMessage(message: string, userId: string, timezone: string): Promise<ChatMessage> {
     try {
       console.log('chatService - 요청 데이터:', { message, userId });
 
       const response = await api.post('/api/chatbot/message', {
         message,
+        timezone,
         userId,
       });
       const data = response.data;

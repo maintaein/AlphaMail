@@ -16,8 +16,8 @@ import { Schedule } from '@/features/schedule/types/schedule';
 
 // 스타일 컴포넌트
 const MessageCard = styled.div`
-  background-color: white;
-  border-radius: 8px;
+  background-color:rgb(255, 255, 255)
+  border-radius: 10px;
   padding: 12px;
   margin: 8px 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -41,7 +41,9 @@ const Th = styled.th`
 `;
 
 const Td = styled.td`
+  font-weight: 500;
   padding: 8px;
+  color: #666;
   border-bottom: 1px solid #eee;
 `;
 
@@ -58,37 +60,41 @@ const QuoteMessage = ({ id, reply }: { id: string; reply: string }) => {
   const quotes = quoteDetail?.contents || [];
   
   return (
-    <MessageCard>
-      <Typography variant="body" className="mb-2">{reply}</Typography>
-      <Table>
-        <thead>
-          <tr>
-            <Th>거래처</Th>
-            <Th>품목</Th>
-            <Th>금액</Th>
-            <Th></Th>
-          </tr>
-        </thead>
-        <tbody>
-          {quotes.map((quote) => (
-            <Tr key={quote.id}>
-              <Td>{quote.clientName || '-'}</Td>
-              <Td>{quote.productName || '-'}</Td>
-              <Td>{quote.price?.toLocaleString() || '-'}원</Td>
-              <Td>
-                <Button 
-                  size="small" 
-                  variant="primary" 
-                  onClick={() => navigate(`/work/quotes/${quote.id}`)}
-                >
-                  보기
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </tbody>
-      </Table>
-    </MessageCard>
+    <>
+      <MessageCard>
+        <Typography variant="titleSmall" className="mb-2">{reply}</Typography>
+      </MessageCard>
+      <MessageCard>
+        <Table>
+          <thead>
+            <tr>
+              <Th><Typography variant="titleSmall">거래처</Typography></Th>
+              <Th><Typography variant="titleSmall">품목</Typography></Th>
+              <Th><Typography variant="titleSmall">금액</Typography></Th>
+              <Th></Th>
+            </tr>
+          </thead>
+          <tbody>
+            {quotes.map((quote) => (
+              <Tr key={quote.id}>
+                <Td><Typography variant="titleSmall">{quote.clientName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quote.productName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quote.price?.toLocaleString() || '-'}원</Typography></Td>
+                <Td>
+                  <Button 
+                    size="small" 
+                    variant="primary" 
+                    onClick={() => navigate(`/work/quotes/${quote.id}`)}
+                  >
+                    <Typography variant="titleSmall">보기</Typography>
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </tbody>
+        </Table>
+      </MessageCard>
+    </>
   );
 };
 
@@ -98,39 +104,43 @@ const PurchaseOrderMessage = ({ id, reply }: { id: string; reply: string }) => {
   const products = orderDetail?.products || [];
   
   return (
-    <MessageCard>
-      <Typography variant="body" className="mb-2">{reply}</Typography>
-      <Table>
-        <thead>
-          <tr>
-            <Th>거래처</Th>
-            <Th>납기일</Th>
-            <Th>품목</Th>
-            <Th>금액</Th>
-            <Th></Th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <Tr key={product.id}>
-              <Td>{orderDetail?.clientName || '-'}</Td>
-              <Td>{orderDetail?.deliverAt ? new Date(orderDetail.deliverAt).toLocaleDateString() : '-'}</Td>
-              <Td>{product.name || '-'}</Td>
-              <Td>{product.amount?.toLocaleString() || '-'}원</Td>
-              <Td>
-                <Button 
-                  size="small" 
-                  variant="primary" 
-                  onClick={() => navigate(`/work/orders/${id}`)}
-                >
-                  보기
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </tbody>
-      </Table>
-    </MessageCard>
+    <>
+      <MessageCard>
+        <Typography variant="titleSmall" className="mb-2">{reply}</Typography>
+      </MessageCard>
+      <MessageCard>
+        <Table>
+          <thead>
+            <tr>
+              <Th><Typography variant="titleSmall">거래처</Typography></Th>
+              <Th><Typography variant="titleSmall">납기일</Typography></Th>
+              <Th><Typography variant="titleSmall">품목</Typography></Th>
+              <Th><Typography variant="titleSmall">금액</Typography></Th>
+              <Th></Th>
+            </tr>
+          </thead>
+          <tbody>
+            {products.map((product) => (
+              <Tr key={product.id}>
+                <Td><Typography variant="titleSmall">{orderDetail?.clientName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{orderDetail?.deliverAt ? new Date(orderDetail.deliverAt).toLocaleDateString() : '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{product.name || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{product.amount?.toLocaleString() || '-'}원</Typography></Td>
+                <Td>
+                  <Button 
+                    size="small" 
+                    variant="primary" 
+                    onClick={() => navigate(`/work/orders/${id}`)}
+                  >
+                    <Typography variant="titleSmall">보기</Typography>
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </tbody>
+        </Table>
+      </MessageCard>
+    </>
   );
 };
 
@@ -152,35 +162,40 @@ const ScheduleMessage = ({ id, reply }: { id: string; reply: string }) => {
   const schedules = scheduleDetail?.data || [];
   
   return (
-    <MessageCard>
-      <Typography variant="body" className="mb-2">{reply}</Typography>
-      <Table>
-        <thead>
-          <tr>
-            <Th>일정명</Th>
-            <Th>시작</Th>
-            <Th></Th>
-          </tr>
-        </thead>
-        <tbody>
-          {schedules.map((schedule) => (
-            <Tr key={schedule.id}>
-              <Td>{schedule.name || '-'}</Td>
-              <Td>{schedule.start_time ? formatDateTime(new Date(schedule.start_time)) : '-'}</Td>
-              <Td>
-                <Button 
-                  size="small" 
-                  variant="primary" 
-                  onClick={() => navigate(`/schedule/${schedule.id}`)}
-                >
-                  보기
-                </Button>
-              </Td>
-            </Tr>
-          ))}
-        </tbody>
-      </Table>
-    </MessageCard>
+    <>
+      <MessageCard>
+        <Typography variant="titleSmall" className="text-[rgb(55, 47, 47)]" >{reply}</Typography>
+      </MessageCard>
+      <MessageCard>
+        
+        <Table>
+          <thead>
+            <tr>
+              <Th><Typography variant="titleSmall">일정명</Typography></Th>
+              <Th><Typography variant="titleSmall">시작</Typography></Th>
+              <Th></Th>
+            </tr>
+          </thead>
+          <tbody>
+            {schedules.map((schedule) => (
+              <Tr key={schedule.id}>
+                <Td><Typography variant="titleSmall">{schedule.name || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{schedule.start_time ? formatDateTime(new Date(schedule.start_time)) : '-'}</Typography></Td>
+                <Td>
+                  <Button 
+                    size="small" 
+                    variant="primary" 
+                    onClick={() => navigate(`/schedule/${schedule.id}`)}
+                  >
+                    <Typography variant="titleSmall">보기</Typography>
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </tbody>
+        </Table>
+      </MessageCard>
+    </>
   );
 };
 
@@ -200,7 +215,7 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdSchedule, setCreatedSchedule] = useState<Schedule | null>(null);
-  const { messages, removeMessage } = useChatStore();
+  const { messages, removeMessage, clearMessages, addBotMessage } = useChatStore();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -209,6 +224,7 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
       newErrors.name = '일정명을 입력해주세요.';
     }
     if (!scheduleForm.startTime) {
+      
       newErrors.startTime = '시작 시간을 선택해주세요.';
     }
     if (scheduleForm.endTime && new Date(scheduleForm.endTime) < new Date(scheduleForm.startTime)) {
@@ -258,15 +274,15 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
 
   if (createdSchedule) {
     return (
-      <MessageCard>
-        <Typography variant="body" className="mb-4">일정이 성공적으로 추가되었습니다.</Typography>
+      <MessageCard style={{ background: '#F7F7F7' }}>
+        <Typography variant="titleSmall" className="mb-4">일정이 성공적으로 추가되었습니다.</Typography>
         <div className="flex justify-center">
           <Button
             onClick={() => navigate('/schedule')}
             variant="primary"
             size="large"
           >
-            일정 페이지로 이동
+            <Typography variant="titleSmall">일정 페이지로 이동</Typography>
           </Button>
         </div>
       </MessageCard>
@@ -274,76 +290,80 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
   }
 
   return (
-    <MessageCard>
-      <Typography variant="body" className="mb-2">{reply}</Typography>
+    <MessageCard style={{ background: '#F7F7F7' }}>
       <div className="space-y-4">
         <div>
-          <Typography variant="caption" className="block mb-1">일정명 <span className="text-red-500">*</span></Typography>
+          
+          <Typography variant="titleSmall" className="block mb-1">일정명 <span className="text-red-500">*</span></Typography>
           <Input
-            type="text"
-            value={scheduleForm.name}
-            onChange={(e) => setScheduleForm(prev => ({ ...prev, name: e.target.value }))}
-            placeholder="일정명을 입력하세요"
-            size="small"
-            className={`w-full ${errors.name ? 'border-red-500' : ''}`}
-          />
+  type="text"
+  value={scheduleForm.name}
+  onChange={(e) =>
+    setScheduleForm((prev) => ({ ...prev, name: e.target.value }))
+  }
+  placeholder="일정명을 입력하세요"
+  className={`w-full text-black ${errors.name ? 'border-red-500' : ''}`}
+/>
           {errors.name && (
             <Typography variant="caption" color="text-red-500">{errors.name}</Typography>
           )}
         </div>
         <div>
-          <Typography variant="caption" className="block mb-1">시작 시간 <span className="text-red-500">*</span></Typography>
+          <Typography variant="titleSmall" className="block mb-1">시작 시간 <span className="text-red-500">*</span></Typography>
           <Input
             type="datetime-local"
             value={scheduleForm.startTime}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, startTime: e.target.value }))}
-            size="small"
-            className={`w-full ${errors.startTime ? 'border-red-500' : ''}`}
+         
+            className={`w-full text-black${errors.startTime ? 'border-red-500' : ''}`}
           />
           {errors.startTime && (
-            <Typography variant="caption" color="text-red-500">{errors.startTime}</Typography>
+            <Typography variant="titleSmall" color="text-red-500">{errors.startTime}</Typography>
           )}
         </div>
         <div>
-          <Typography variant="caption" className="block mb-1">종료 시간 (선택사항)</Typography>
+          <Typography variant="titleSmall" className="block mb-1">종료 시간 (선택사항)</Typography>
           <Input
             type="datetime-local"
             value={scheduleForm.endTime}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, endTime: e.target.value }))}
-            size="small"
-            className={`w-full ${errors.endTime ? 'border-red-500' : ''}`}
+           
+            className={`w-full text-black ${errors.endTime ? 'border-red-500' : ''}`}
           />
           {errors.endTime && (
             <Typography variant="caption" color="text-red-500">{errors.endTime}</Typography>
           )}
         </div>
         <div>
-          <Typography variant="caption" className="block mb-1">설명 (선택사항)</Typography>
+          <Typography variant="titleSmall" className="block mb-1">설명 (선택사항)</Typography>
           <textarea
             value={scheduleForm.description}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, description: e.target.value }))}
             placeholder="설명을 입력하세요"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px] font-pretendard"
             rows={3}
           />
         </div>
         <div className="flex gap-2">
+          
           <Button
             onClick={handleCancel}
             variant="secondary"
             size="small"
             className="flex-1"
+            style={{ background: '#F3F3F3', color: '#fff', border: 'none', borderRadius: 5 }}
           >
-            취소
+            <Typography variant="titleSmall">취소</Typography>
           </Button>
           <Button
             onClick={handleSubmit}
             variant="primary"
             size="small"
             className="flex-1"
+            style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
             disabled={isSubmitting}
           >
-            {isSubmitting ? '처리중...' : '일정 추가'}
+            {isSubmitting ? <Typography variant="titleSmall">처리중...</Typography> : <Typography variant="titleSmall">일정 추가</Typography>}
           </Button>
         </div>
         {errors.submit && (
@@ -358,7 +378,8 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
 
 // 스타일 컴포넌트
 const ChatBotContainer = styled.div<{ position: { x: number; y: number } }>`
-  position: fixed;
+ 
+position: fixed;
   left: ${props => props.position.x}px;
   top: ${props => props.position.y}px;
   z-index: 1000;
@@ -393,9 +414,9 @@ const ChatWindow = styled.div<{
   position: fixed;
   left: ${props => props.windowPosition.x}px;
   top: ${props => props.windowPosition.y}px;
-  width: 500px;
-  height: 500px;
-  background-color: white;
+  width: 450px;
+  height: 600px;
+  background-color:  rgba(255, 255, 255, 0.2);
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
@@ -405,10 +426,10 @@ const ChatWindow = styled.div<{
 
 const ChatHeader = styled.div`
   padding: 15px;
-  background: linear-gradient(to right, #62DDFF, #9D44CA);
+  background: linear-gradient(to right, #62DDFF,rgb(68, 134, 233));
   color: white;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   position: relative;
 `;
@@ -417,28 +438,82 @@ const ChatMessages = styled.div`
   flex: 1;
   padding: 15px;
   overflow-y: auto;
-  background-color: white;
+  background-color:rgb(245, 245, 245);
   scroll-behavior: smooth;
 `;
 
 const ChatInput = styled.div`
-  padding: 15px;
-  border-top: 1px solid #eee;
+  padding: 3px 20px;
+  background:rgb(252, 252, 252);
+  border: 1px solid #E0E0E0;
+  border-radius: 10px;
   display: flex;
+  align-items: center;
   gap: 10px;
-  background-color: white;
 `;
 
-const MessageBubble = styled.div<{ isUser: boolean }>`
+const ChatInputBox = styled.div`
+  padding: 10px 20px;
+   background-color:rgb(245, 245, 245);
+  gap: 10px;
+`;
+
+const ChatInputField = styled.input`
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Pretendard', sans-serif;
+  color: #222;
+  padding: 10px 0;
+`;
+
+const SendButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  width: 30x;
+  height: 30px;
+  cursor: pointer;
+  transition: background 0.1s;
+  &:hover:enabled {
+    background:rgb(255, 255, 255);
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
+
+const MessageBubble = styled.div<{ isUser: boolean }>((props: { isUser: boolean }) => `
   max-width: 80%;
   padding: 12px 16px;
   margin: 8px 0;
-  border-radius: 18px;
-  background-color: ${props => props.isUser ? 'white' : '#f5f5f5'};
-  color: black;
-  align-self: ${props => props.isUser ? 'flex-end' : 'flex-start'};
+  border-radius: 10px;
+  background-color: ${props.isUser ? '#528BF9' : '#ffffff'};
+  color: ${props.isUser ? '#ffffff' : '#528BF9'};
+  align-self: ${props.isUser ? 'flex-end' : 'flex-start'};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
+  text-align: ${props.isUser ? 'right' : 'left'};
+  display: inline-block;
+  font-size: 14px;
+  font-family: 'Pretendard', sans-serif;
+`);
+
+const MessageRow = styled.div<{ isUser: boolean }>((props: { isUser: boolean }) => `
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  justify-content: ${props.isUser ? 'flex-end' : 'flex-start'};
+  gap: 8px;
+`);
 
 const MessageContainer = styled.div`
   display: flex;
@@ -464,6 +539,7 @@ const ErrorMessage = styled.div`
 `;
 
 const ChatBot: React.FC = () => {
+
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [position, setPosition] = useState(() => {
@@ -478,13 +554,19 @@ const ChatBot: React.FC = () => {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, isLoading, error, sendMessage } = useChatStore();
+  const { messages, isLoading, error, sendMessage, clearMessages, addBotMessage } = useChatStore();
   const { data: userInfo } = useUser();
 
   // 메시지 변경 감지
   useEffect(() => {
     console.log('ChatBot - 현재 메시지 목록:', messages);
   }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && messages.length === 0) {
+      addBotMessage('안녕하세요 업무 도우미 입니다.\n일정과 관련한 모든것을 요청해주세요');
+    }
+  }, [isOpen]);
 
   const calculateWindowPosition = (botX: number, botY: number) => {
     const windowWidth = 500;
@@ -578,14 +660,27 @@ const ChatBot: React.FC = () => {
   }, [position]);
 
   const toggleChat = () => {
+    if (isOpen) {
+      clearMessages();
+    }
     setIsOpen(!isOpen);
+  };
+
+  const getTimezoneOffsetString = () => {
+    const offset = new Date().getTimezoneOffset();
+    const absOffset = Math.abs(offset);
+    const sign = offset <= 0 ? '+' : '-';
+    const hours = String(Math.floor(absOffset / 60)).padStart(2, '0');
+    const minutes = String(absOffset % 60).padStart(2, '0');
+    return `${sign}${hours}:${minutes}`;
   };
 
   const handleSendMessage = async () => {
     if (message.trim() && userInfo?.id) {
       console.log('ChatBot - 메시지 전송:', message.trim());
       setMessage('');
-      await sendMessage(message.trim(), userInfo.id.toString());
+      const timezone = getTimezoneOffsetString();
+      await sendMessage(message.trim(), userInfo.id.toString(), timezone);
       // 메시지 전송 후 스크롤
       setTimeout(() => {
         scrollToBottom();
@@ -604,32 +699,83 @@ const ChatBot: React.FC = () => {
   }, [messages, isLoading]);
 
   const renderMessage = (msg: ChatMessage) => {
-    console.log('ChatBot - 렌더링할 메시지:', {
-      type: msg.type,
-      reply: msg.reply,
-      ids: msg.ids,
-      content: msg.content,
-      isUser: msg.isUser
-    });
-    
     if (msg.type === 'quote' && msg.ids[0]) {
-      return <QuoteMessage id={msg.ids[0]} reply={msg.reply} />;
+      return (
+        <MessageRow isUser={false}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+            <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
+          <div style={{ width: '100%' }}>
+            <QuoteMessage id={msg.ids[0]} reply={msg.reply} />
+          </div>
+        </MessageRow>
+      );
     }
     if (msg.type === 'purchaseOrder' && msg.ids[0]) {
-      return <PurchaseOrderMessage id={msg.ids[0]} reply={msg.reply} />;
+      return (
+        <MessageRow isUser={false}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+            <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
+          <div style={{ width: '100%' }}>
+            <PurchaseOrderMessage id={msg.ids[0]} reply={msg.reply} />
+          </div>
+        </MessageRow>
+      );
     }
     if (msg.type === 'schedule' && msg.ids[0]) {
-      return <ScheduleMessage id={msg.ids[0]} reply={msg.reply} />;
+      return (
+        <MessageRow isUser={false}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+            <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
+          <div style={{ width: '100%' }}>
+            <ScheduleMessage id={msg.ids[0]} reply={msg.reply} />
+          </div>
+        </MessageRow>
+      );
     }
     if (msg.type === 'tmp_schedule') {
-      console.log('ChatBot - tmp_schedule 메시지 상세:', {
-        reply: msg.reply,
-        content: msg.content
-      });
-      return <TmpScheduleMessage reply={msg.reply} content={msg.content} />;
+      return (
+        <MessageRow isUser={false}>
+         
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+            <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
+          <div style={{ width: '100%' }}>
+          <MessageBubble isUser={false}>
+          <Typography variant="titleSmall" className="text-[#528BF9]">{msg.reply.split('\n').map((line, idx) => (<React.Fragment key={idx}>{line}{idx !== msg.reply.split('\n').length - 1 && <br />}</React.Fragment>))}
+
+            <TmpScheduleMessage 
+            
+            reply={msg.reply} content={msg.content} />
+          </Typography>
+          </MessageBubble>
+          </div>
+        </MessageRow>
+      );
     }
     // 기본 텍스트 메시지
-    return <MessageBubble isUser={msg.isUser}>{msg.reply}</MessageBubble>;
+    if (!msg.isUser) {
+      return (
+        <MessageRow isUser={false}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+            <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+          </div>
+          <MessageBubble isUser={false}>
+            <Typography variant="titleSmall" className="text-[#528BF9]">{msg.reply.split('\n').map((line, idx) => (<React.Fragment key={idx}>{line}{idx !== msg.reply.split('\n').length - 1 && <br />}</React.Fragment>))}</Typography>
+          </MessageBubble>
+        </MessageRow>
+      );
+    }
+    // 사용자 메시지(오른쪽)
+    return (
+      <MessageRow isUser={true}>
+        <MessageBubble isUser={true}>
+          <Typography variant="titleSmall"  className="text-white">{msg.reply}</Typography>
+        </MessageBubble>
+      </MessageRow>
+    );
   };
 
   return (
@@ -642,9 +788,12 @@ const ChatBot: React.FC = () => {
       {isOpen && (
         <ChatWindow position={position} windowPosition={windowPosition}>
           <ChatHeader>
-            <Typography variant="titleMedium" bold className="text-white">
-              AI 어시스턴트
-            </Typography>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/chaticon.png" alt="ChatBot Icon" style={{ width: 25, height: 25, objectFit: 'contain' }} />
+              <Typography variant="titleSmall" className="text-white ml-1">
+              Chat Alpha
+              </Typography>
+            </div>
             <button 
               onClick={toggleChat}
               className="text-white hover:text-gray-200 absolute right-4"
@@ -662,35 +811,34 @@ const ChatBot: React.FC = () => {
                 </div>
               ))}
               {isLoading && (
-                <LoadingContainer>
-                  <AiLoading />
-                </LoadingContainer>
+                <MessageRow isUser={false}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 4 }}>
+                    <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+                  </div>
+                  <MessageBubble isUser={false}>
+                    <img src="/chat-loading.gif" alt="로딩" style={{ width: 32, height: 32 }} />
+                  </MessageBubble>
+                </MessageRow>
               )}
               {error && <ErrorMessage>{error}</ErrorMessage>}
               <div ref={messagesEndRef} />
             </MessageContainer>
           </ChatMessages>
+          <ChatInputBox>
           <ChatInput>
-            <Input
+            <ChatInputField
               type="text"
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
               placeholder="메시지를 입력하세요..."
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSendMessage()}
               disabled={isLoading}
-              size="medium"
-              variant="default"
-              className="flex-1"
             />
-            <Button
-              onClick={handleSendMessage}
-              disabled={isLoading}
-              size="small"
-              variant="primary"
-            >
-              전송
-            </Button>
+            <SendButton onClick={handleSendMessage} disabled={isLoading}>
+              <img src="/sendicon.png" alt="전송" style={{ width: 25, height: 25, objectFit: 'contain' }} />
+            </SendButton>
           </ChatInput>
+          </ChatInputBox>
         </ChatWindow>
       )}
     </ChatBotContainer>
