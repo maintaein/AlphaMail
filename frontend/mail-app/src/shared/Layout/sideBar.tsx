@@ -3,7 +3,7 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { useSidebarStore } from '../stores/useSidebarStore';
 import { cn } from '../utils/cn';
 import { Button } from '@/shared/components/atoms/button';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useMailStore } from '@/features/mail/stores/useMailStore';
 import { FolderResponse } from '@/features/mail/types/mail';
 import { useMail } from '@/features/mail/hooks/useMail';
@@ -24,6 +24,7 @@ const titleToSection: Record<string, string> = {
 
 export const SideBar: React.FC<SideBarProps> = ({ type}) => {
     const navigate = useNavigate();
+    const { pathname } = useLocation();
     const { 
       activeItem, 
       setActiveItem, 
@@ -228,8 +229,8 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                           >
                             <Typography 
                               variant="titleSmall"
-                              color={activeItem === "거래처 관리" ? "text-[#66BAE4]" : ""}
-                              bold={activeItem === "거래처 관리"}
+                              color={pathname.startsWith("/work/clients") ? "text-[#66BAE4]" : ""}
+                              bold={pathname.startsWith("/work/clients")}
                             >
                               거래처 관리
                             </Typography>
@@ -242,8 +243,8 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                           >
                             <Typography 
                               variant="titleSmall"
-                              color={activeItem === "발주서 관리" ? "text-[#66BAE4]" : ""}
-                              bold={activeItem === "발주서 관리"}
+                              color={pathname.startsWith("/work/orders") ? "text-[#66BAE4]" : ""}
+                              bold={pathname.startsWith("/work/orders")}
                             >
                               발주서 관리
                             </Typography>
@@ -256,8 +257,8 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                           >
                             <Typography
                               variant="titleSmall"
-                              color={activeItem === "재고 관리" ? "text-[#66BAE4]" : ""}
-                              bold={activeItem === "재고 관리"}
+                              color={pathname.startsWith("/work/products") ? "text-[#66BAE4]" : ""}
+                              bold={pathname.startsWith("/work/products")}
                             >
                               재고 관리
                             </Typography>
@@ -270,8 +271,8 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
                           >
                             <Typography 
                               variant="titleSmall"
-                              color={activeItem === "견적서 관리" ? "text-[#66BAE4]" : ""}
-                              bold={activeItem === "견적서 관리"}
+                              color={pathname.startsWith("/work/quotes") ? "text-[#66BAE4]" : ""}
+                              bold={pathname.startsWith("/work/quotes")}
                             >
                               견적서 관리
                             </Typography>

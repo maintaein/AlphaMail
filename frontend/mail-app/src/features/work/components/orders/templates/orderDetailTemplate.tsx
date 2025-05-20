@@ -166,21 +166,21 @@ const OrderDetailTemplate: React.FC = () => {
 
       // 수량 유효성 검사
       if (typeof product.count !== 'number' || product.count < 0) {
-        alert(`${productNameForAlert}의 수량은 0 이상의 숫자로 입력해주세요.`);
+        toast.error(`${productNameForAlert}의 수량은 0 이상의 숫자로 입력해주세요.`);
         return;
       }
       if (product.count > MAX_PRODUCT_COUNT) {
-        alert(`${productNameForAlert}의 수량은 ${MAX_PRODUCT_COUNT.toLocaleString()}을 초과할 수 없습니다.`);
+        toast.error(`${productNameForAlert}의 수량은 ${MAX_PRODUCT_COUNT.toLocaleString()}을 초과할 수 없습니다.`);
         return;
       }
 
       // 단가 유효성 검사
       if (typeof product.price !== 'number' || product.price < 0) {
-        alert(`${productNameForAlert}의 단가는 0 이상의 숫자로 입력해주세요.`);
+        toast.error(`${productNameForAlert}의 단가는 0 이상의 숫자로 입력해주세요.`);
         return;
       }
       if (product.price > MAX_PRODUCT_PRICE) {
-        alert(`${productNameForAlert}의 단가는 ${MAX_PRODUCT_PRICE.toLocaleString()}을 초과할 수 없습니다.`);
+        toast.error(`${productNameForAlert}의 단가는 ${MAX_PRODUCT_PRICE.toLocaleString()}을 초과할 수 없습니다.`);
         return;
       }
     }
@@ -189,9 +189,11 @@ const OrderDetailTemplate: React.FC = () => {
       await orderService.updateOrder(formData, userInfo.id, userInfo.companyId, userInfo.groupId);
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
       await queryClient.invalidateQueries({ queryKey: ['orderDetail', formData.id] });
+      toast.success('발주서가 수정되었습니다.');
     } else {
       await orderService.createOrder(formData, userInfo.id, userInfo.companyId, userInfo.groupId);
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
+      toast.success('발주서가 등록되었습니다.');
     }
     navigate('/work/orders');
   };

@@ -11,23 +11,25 @@ interface ProductSearchBarProps {
 const ProductSearchBar: React.FC<ProductSearchBarProps> = ({ keyword, onSearch }) => {
   const [input, setInput] = useState(keyword);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(input);
-  };
-
   return (
-    <form className="flex items-center mb-2 gap-3" onSubmit={handleSubmit}>
+    <div className="flex items-center mb-2 gap-3">
       <Typography variant="body">품목</Typography>
       <Input
         className="border p-2 rounded mr-2 !w-40"
         placeholder="품목명"
         value={input}
         onChange={e => setInput(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onSearch(input);
+          }
+        }}
         size="small"
       />
       <Button
-        type="submit"
+        type="button"
+        onClick={() => onSearch(input)}
         className="w-[110px] h-[30px] bg-[#3E99C6] text-white rounded-lg font-semibold flex items-center justify-center gap-2"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -36,7 +38,7 @@ const ProductSearchBar: React.FC<ProductSearchBarProps> = ({ keyword, onSearch }
         </svg>
         <Typography variant="titleSmall" className="text-white">검색</Typography>
       </Button>
-    </form>
+    </div>
   );
 };
 

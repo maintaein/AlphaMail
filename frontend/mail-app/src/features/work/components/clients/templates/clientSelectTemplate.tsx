@@ -32,6 +32,7 @@ export const ClientSelectTemplate: React.FC<ClientSelectTemplateProps> = ({
   const handleSearch = (keyword: string) => {
     setSearchKeyword(keyword);
     setCurrentPage(1);
+    setSelectedId(null);
   };
 
   const handleSelect = () => {

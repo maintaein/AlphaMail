@@ -3,7 +3,9 @@ import { cn } from '@/shared/utils/cn';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useNavbarStore } from '../stores/useNavbarStore';
 import { useUserStore } from '../stores/useUserStore';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { api } from '@/shared/lib/axiosInstance';
 
 export const NavBar = () => {
@@ -13,6 +15,7 @@ export const NavBar = () => {
 
     const { isCollapsed, toggleCollapse, contentVisible, setContentVisible } = useNavbarStore();
     const { isAuthenticated, logout: logoutStore } = useUserStore();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     // 현재 경로가 /mail로 시작하는지 확인
     const isMailActive = path.startsWith('/mail');
@@ -35,15 +38,39 @@ export const NavBar = () => {
         navigate('/login');
     };
 
-    const handleLogout = async () => {
-        if (window.confirm('로그아웃 하시겠습니까?')) {
-            try {
-                await api.post('/api/logout');
-            } catch (error) {
-            }
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true);
+    };
+
+    const confirmLogout = async () => {
+        try {
+            await api.post('/api/logout');
             logoutStore();
+            setShowLogoutModal(false);
             navigate('/login');
+            toast.success('로그아웃 되었습니다.', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true
+            });
+        } catch (error) {
+            setShowLogoutModal(false);
+            toast.error('로그아웃 중 오류가 발생했습니다.', {
+                position: "top-right",
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true
+            });
         }
+    };
+
+    const cancelLogout = () => {
+        setShowLogoutModal(false);
     };
 
     const navigateToHome = () => {
@@ -182,14 +209,14 @@ export const NavBar = () => {
                     // 로그아웃 버튼
                     !isCollapsed && contentVisible ? (
                         <button
-                            onClick={handleLogout}
+                            onClick={handleLogoutClick}
                             className="w-full py-3 text-white border border-white rounded-md hover:bg-[#3E99C6] transition-colors"
                         >
                             <Typography variant="titleSmall" color="text-white">로그아웃</Typography>
                         </button>
                     ) : (
                         <button
-                            onClick={handleLogout}
+                            onClick={handleLogoutClick}
                             className="w-full flex justify-center py-3 text-white border border-white rounded-md hover:bg-[#3E99C6] transition-colors"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -201,6 +228,52 @@ export const NavBar = () => {
                     )
                 )}
             </div>
+
+            {/* 로그아웃 모달 - Typography 컴포넌트 활용 */}
+            {showLogoutModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 backdrop-blur-sm">
+                    <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full border border-gray-100 animate-fadeIn">
+                        <div className="mb-5 flex items-center">
+                            <div className="bg-blue-50 p-2 rounded-full mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3E99C6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16 17 21 12 16 7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </div>
+                            <Typography variant="titleMedium" bold as="h3">
+                                로그아웃
+                            </Typography>
+                        </div>
+                        
+                        <Typography variant="titleSmall" className="mb-6 text-gray-600">
+                            정말 로그아웃 하시겠습니까?
+                        </Typography>
+                        
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={cancelLogout}
+                                className="px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors border border-gray-200"
+                            >
+                                <Typography variant="titleSmall" className="text-gray-700">
+                                    취소
+                                </Typography>
+                            </button>
+                            <button
+                                onClick={confirmLogout}
+                                className="px-4 py-2 bg-[#66BAE4] rounded-lg hover:bg-[#3E99C6] transition-colors shadow-sm"
+                            >
+                                <Typography variant="titleSmall" className="text-white">
+                                    확인
+                                </Typography>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* 토스트 컨테이너 */}
+            <ToastContainer />
         </div>
     );
 };

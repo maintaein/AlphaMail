@@ -8,6 +8,7 @@ import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import AddressInput from '@/shared/components/atoms/addressInput';
+import { toast } from 'react-toastify';
 
 interface ClientDetailTemplateProps {
   onSave?: (data: ClientDetail) => void;
@@ -95,34 +96,101 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     }
   });
 
+  const formatBusinessLicense = (value: string) => {
+    const onlyNums = value.replace(/\D/g, '').slice(0, 10); // 숫자만, 최대 10자리
+    const part1 = onlyNums.slice(0, 3);
+    const part2 = onlyNums.slice(3, 5);
+    const part3 = onlyNums.slice(5, 10);
+    let formatted = part1;
+    if (part2) formatted += `-${part2}`;
+    if (part3) formatted += `-${part3}`;
+    return formatted;
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    const numbersOnly = value.replace(/\D/g, '');
+
+    if (numbersOnly.startsWith('02')) {
+      // 서울 지역번호
+      if (numbersOnly.length <= 2) return numbersOnly;
+      if (numbersOnly.length <= 5) return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2)}`;
+      if (numbersOnly.length <= 9)
+        return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 5)}-${numbersOnly.slice(5)}`;
+      return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 6)}-${numbersOnly.slice(6, 10)}`;
+    } else {
+      // 휴대폰 또는 일반 지역번호 (3자리)
+      if (numbersOnly.length <= 3) return numbersOnly;
+      if (numbersOnly.length <= 6)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+      if (numbersOnly.length <= 10)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 6)}-${numbersOnly.slice(6)}`;
+      return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7, 11)}`;
+    }
+  };
+
+  const isValidPhoneNumber = (value: string) => {
+    const phoneRegex = /^(010-\d{4}-\d{4}|01[16789]-\d{3,4}-\d{4}|02-\d{3,4}-\d{4}|(031|032|033|041|042|043|044|051|052|053|054|055|061|062|063|064)-\d{3,4}-\d{4})$/;
+    return phoneRegex.test(value);
+  };
+
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     if (name === 'licenseNum') {
-      const onlyNumbers = value.replace(/\D/g, '').slice(0, 10);
-      setForm((prev: ClientDetail) => ({ ...prev, [name]: onlyNumbers }));
+      const formatted = formatBusinessLicense(value);
+      setForm((prev) => ({ ...prev, licenseNum: formatted }));
+      // const onlyNumbers = value.replace(/\D/g, '').slice(0, 10);
+      // setForm((prev: ClientDetail) => ({ ...prev, [name]: onlyNumbers }));
+
       return;
-    }  
+    } 
+
+    if (name === 'phoneNum') {
+      const formatted = formatPhoneNumber(value);
+      setForm((prev) => ({ ...prev, phoneNum: formatted }));
+      return;
+    }
+
     setForm((prev: ClientDetail) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitted(true);
-    if (
-      !form.corpName.trim() ||
-      !form.representative.trim() ||
-      !form.licenseNum.trim() ||
-      !form.businessItem.trim() ||
-      !form.businessType.trim()
-    ) {
-      alert('필수 항목을 모두 입력해 주세요.');
+    // 필수 입력값 체크
+    if (!form.corpName.trim()) {
+      toast.error('거래처명을 입력해 주세요.');
+      return;
+    } else if (!form.representative.trim()) {
+      toast.error('대표자명을 입력해 주세요.');
+      return;
+    } else if (!form.licenseNum.trim()) {
+      toast.error('사업자번호를 입력해 주세요.');
+      return;
+    } else if (!form.businessItem.trim()) {
+      toast.error('종목을 입력해 주세요.');
+      return;
+    } else if (!form.businessType.trim()) {
+      toast.error('업태를 입력해 주세요.');
       return;
     }
-    if (form.licenseNum.length !== 10) {
-      alert('사업자번호는 10자리 숫자입니다.');
+
+    // 추가 유효성 검사
+    if (form.licenseNum.length !== 12) {
       return;
     }
+    if (form.phoneNum && !isValidPhoneNumber(form.phoneNum)) {
+      return;
+    }
+    if (form.email && !isValidEmail(form.email)) {
+      return;
+    }
+
     if (id && id !== 'new') {
       updateMutation.mutate({ id, data: form });
     } else {
@@ -159,9 +227,16 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="거래처명을 입력하세요."
             size="large"
             className="!w-[400px]"
+            maxLength={50}
           />
           {isSubmitted && !form.corpName.trim() && (
             <span className="text-red-500 text-xs ml-2">거래처명을 입력해 주세요.</span>
+          )}
+          {form.corpName.length > 0 && (
+            <span className="text-blue-500 text-xs ml-2">{form.corpName.length}/50자</span>
+          )}
+          {form.corpName.length > 50 && (
+            <span className="text-red-500 text-xs ml-2">최대 50자까지 입력 가능합니다.</span>
           )}
         </div>
 
@@ -177,9 +252,16 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="대표자명을 입력하세요."
             size="large"
             className="!w-[400px]"
+            maxLength={10}
           />
           {isSubmitted && !form.representative.trim() && (
             <span className="text-red-500 text-xs ml-2">대표자명을 입력해 주세요.</span>
+          )}
+          {form.representative.length > 0 && (
+            <span className="text-blue-500 text-xs ml-2">{form.representative.length}/10자</span>
+          )}
+          {form.representative.length > 10 && (
+            <span className="text-red-500 text-xs ml-2">최대 10자까지 입력 가능합니다.</span>
           )}
         </div>
 
@@ -196,13 +278,16 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             size="large"
             className="!w-[400px]"
             inputMode='numeric'
-            maxLength={10}
+            maxLength={12}
           />
-          {form.licenseNum.length > 0 && form.licenseNum.length !== 10 && (
+          {form.licenseNum.length > 0 && form.licenseNum.length !== 12 && (
             <span className="text-red-500 text-xs ml-2">사업자번호는 10자리 숫자입니다.</span>
           )}
           {isSubmitted && !form.licenseNum.trim() && (
             <span className="text-red-500 text-xs ml-2">사업자번호를 입력해 주세요.</span>
+          )}
+          {form.licenseNum.length == 12 && (
+            <span className="text-blue-500 text-xs ml-2">올바른 사업자번호 형식입니다.</span>
           )}
         </div>
 
@@ -218,9 +303,16 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="종목을 입력하세요."
             size="large"
             className="!w-[400px]"
+            maxLength={100}
           />
           {isSubmitted && !form.businessItem.trim() && (
             <span className="text-red-500 text-xs ml-2">종목을 입력해 주세요.</span>
+          )}
+          {form.businessItem.length > 0 && (
+            <span className="text-blue-500 text-xs ml-2">{form.businessItem.length}/100자</span>
+          )}
+          {form.businessItem.length > 100 && (
+            <span className="text-red-500 text-xs ml-2">최대 100자까지 입력 가능합니다.</span>
           )}
         </div>
 
@@ -236,9 +328,16 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="업태를 입력하세요."
             size="large"
             className="!w-[400px]"
+            maxLength={100}
           />
           {isSubmitted && !form.businessType.trim() && (
             <span className="text-red-500 text-xs ml-2">업태를 입력해 주세요.</span>
+          )}
+          {form.businessType.length > 0 && (
+            <span className="text-blue-500 text-xs ml-2">{form.businessType.length}/100자</span>
+          )}
+          {form.businessType.length > 100 && (
+            <span className="text-red-500 text-xs ml-2">최대 100자까지 입력 가능합니다.</span>
           )}
         </div>
 
@@ -251,10 +350,18 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             name="phoneNum"
             value={form.phoneNum}
             onChange={handleChange}
+            maxLength={13}
+            inputMode='numeric'
             placeholder="전화번호"
             size="large"
             className="!w-[400px]"
           />
+          {form.phoneNum && !isValidPhoneNumber(form.phoneNum) && (
+            <span className="text-red-500 text-xs ml-2">전화번호 형식이 올바르지 않습니다.</span>
+          )}
+          {isValidPhoneNumber(form.phoneNum) && form.phoneNum.length > 0 && form.phoneNum.length <= 13 && (
+            <span className="text-blue-500 text-xs ml-2">올바른 전화번호 형식입니다.</span>
+          )}
         </div>
 
         {/* 담당자 Email */}
@@ -269,7 +376,17 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             placeholder="Email"
             size="large"
             className="!w-[400px]"
+            maxLength={128}
           />
+          {form.email && !isValidEmail(form.email) && (
+            <span className="text-red-500 text-xs ml-2">이메일 형식이 올바르지 않습니다.</span>
+          )}
+          {isValidEmail(form.email) && form.email.length > 0 && form.email.length <= 128 && (
+            <span className="text-blue-500 text-xs ml-2">올바른 이메일 형식입니다.</span>
+          )}
+          {form.email.length > 128 && (
+            <span className="text-red-500 text-xs ml-2">최대 128자까지 입력 가능합니다.</span>
+          )}
         </div>
 
         {/* 주소 */}
