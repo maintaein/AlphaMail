@@ -6,7 +6,6 @@ import { useUser } from '@/features/auth/hooks/useUser';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { Input } from '@/shared/components/atoms/input';
 import { Button } from '@/shared/components/atoms/button';
-import AiLoading from '@/features/mail/components/organisms/aiLoading';
 import { useNavigate } from 'react-router-dom';
 import { useQuotes } from '@/features/work/hooks/useQuote';
 import { useOrderDetail } from '@/features/work/hooks/useOrderDetail';
@@ -199,7 +198,7 @@ const ScheduleMessage = ({ id, reply }: { id: string; reply: string }) => {
   );
 };
 
-const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { name?: string; startTime?: string; endTime?: string | null; description?: string | null } }) => {
+const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: string; startTime?: string; endTime?: string | null; description?: string | null } }) => {
   const navigate = useNavigate();
   const [scheduleForm, setScheduleForm] = useState({
     name: content?.name || '',
@@ -215,7 +214,7 @@ const TmpScheduleMessage = ({ reply, content }: { reply: string; content?: { nam
   }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdSchedule, setCreatedSchedule] = useState<Schedule | null>(null);
-  const { messages, removeMessage, clearMessages, addBotMessage } = useChatStore();
+  const { messages, removeMessage } = useChatStore();
 
   const validateForm = () => {
     const newErrors: typeof errors = {};
@@ -521,12 +520,7 @@ const MessageContainer = styled.div`
   gap: 12px;
 `;
 
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-`;
+
 
 const ErrorMessage = styled.div`
   padding: 12px;
