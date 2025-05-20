@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,7 +64,9 @@ public class PurchaseOrderController {
 	) {
 		PurchaseOrderSearchCondition condition = new PurchaseOrderSearchCondition(
 			clientName, orderNo, userName, productName, startDate, endDate);
-		Pageable pageable = PageRequest.of(page, size);
+
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(page, size, sort);
 
 		GetPageResponse<GetAllPurchaseOrdersResponse> response = getAllPurchaseOrdersUseCase.execute(companyId,
 			condition, pageable);

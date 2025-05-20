@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { format } from 'date-fns';
+import { format, addYears } from 'date-fns';
 import { Schedule } from '@/features/schedule/types/schedule';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { scheduleService } from '@/features/schedule/services/scheduleService';
@@ -42,6 +42,11 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // 현재 날짜로부터 20년 후를 최대 날짜로 설정
+  const currentDate = new Date();
+  const maxDate = addYears(currentDate, 20);
+  const maxDateString = format(maxDate, "yyyy-MM-dd'T'HH:mm");
+
   const validateSchedule = (schedule: Schedule): ValidationErrors => {
     const newErrors: ValidationErrors = {};
 
@@ -63,6 +68,15 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
       newErrors.end_time = '종료 일시를 선택해주세요.';
     } else if (schedule.end_time < schedule.start_time) {
       newErrors.end_time = '종료 일시는 시작 일시보다 이후여야 합니다.';
+    }
+    
+    const maxAllowedDate = addYears(new Date(), 20);
+    if (schedule.start_time > maxAllowedDate) {
+      newErrors.start_time = '일정은 현재로부터 최대 20년 이내로만 등록할 수 있습니다.';
+    }
+    
+    if (schedule.end_time > maxAllowedDate) {
+      newErrors.end_time = '일정은 현재로부터 최대 20년 이내로만 등록할 수 있습니다.';
     }
 
     return newErrors;
@@ -272,11 +286,28 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                     value={format(new Date(schedule.start_time), "yyyy-MM-dd'T'HH:mm")}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value) setSchedule({ ...schedule, start_time: new Date(value) });
+                      if (value) {
+                        const newStartTime = new Date(value);
+                        const currentEndTime = new Date(schedule.end_time);
+                        
+                        if (newStartTime >= currentEndTime) {
+                          // 종료 시간을 시작 시간 + 1시간으로 자동 조정
+                          const newEndTime = new Date(newStartTime.getTime() + 60 * 60 * 1000);
+                          setSchedule({ 
+                            ...schedule, 
+                            start_time: newStartTime,
+                            end_time: newEndTime
+                          });
+                          toast.info('종료 시간이 시작 시간 이후로 자동 조정되었습니다.');
+                        } else {
+                          setSchedule({ ...schedule, start_time: newStartTime });
+                        }
+                      }
                     }}
                     size="medium"
                     className={errors.start_time ? 'border-red-500' : ''}
                     required
+                    max={maxDateString} 
                   />
                   {errors.start_time && (
                     <Typography variant="caption" color="text-red-500">{errors.start_time}</Typography>
@@ -291,8 +322,20 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                     value={format(new Date(schedule.end_time), "yyyy-MM-dd'T'HH:mm")}
                     onChange={(e) => {
                       const value = e.target.value;
-                      if (value) setSchedule({ ...schedule, end_time: new Date(value) });
+                      if (value) {
+                        const newEndTime = new Date(value);
+                        if (newEndTime < schedule.start_time) {
+                          // 시작 시간 이후로 종료 시간 자동 조정 (시작 시간 + 1시간)
+                          const adjustedEndTime = new Date(schedule.start_time.getTime() + 60 * 60 * 1000);
+                          setSchedule({ ...schedule, end_time: adjustedEndTime });
+                          toast.info('종료 시간이 시작 시간 이후로 자동 조정되었습니다.');
+                        } else {
+                          setSchedule({ ...schedule, end_time: newEndTime });
+                        }
+                      }
                     }}
+                    min={format(new Date(schedule.start_time), "yyyy-MM-dd'T'HH:mm")}
+                    max={maxDateString} 
                     size="medium"
                     className={errors.end_time ? 'border-red-500' : ''}
                     required

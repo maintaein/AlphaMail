@@ -6,6 +6,7 @@ import { ko } from 'date-fns/locale';
 import { useNavigate } from 'react-router-dom';
 import { queryClient } from '@/shared/lib/queryClient';
 import { ArrowPathIcon as RefreshIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 
 export const HomeUnreadMailBox: React.FC = () => {
   const { data: unreadMailsData, isLoading, error } = useUnreadMails(10);
@@ -30,13 +31,24 @@ export const HomeUnreadMailBox: React.FC = () => {
     return format(date, 'yy-MM-dd HH:mm', { locale: ko });
   };
 
-    // 데이터 새로고침
-    const refreshData = () => {
-      queryClient.invalidateQueries({ 
-        queryKey: ['mails', 'unread'],
-        refetchType: 'all'
-      });
-    };
+  
+  const refreshData = () => {
+    // 토스트 알림 표시
+    toast.info('안읽은 메일 목록을 새로고침합니다.', {
+      position: 'bottom-right',
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+    
+    // 쿼리 무효화 및 새로고침
+    queryClient.invalidateQueries({ 
+      queryKey: ['mails', 'unread'],
+      refetchType: 'all'
+    });
+  };
   
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 h-full">
