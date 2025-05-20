@@ -5,13 +5,15 @@ import { scheduleService } from '@/features/schedule/services/scheduleService';
 import { Schedule } from '@/features/schedule/types/schedule';
 
 export const HomeScheduleBox: React.FC = () => {
-  const { data: scheduleData, isLoading, error } = useTodaySchedules();
+  const { data: scheduleData, isLoading, error, refetch } = useTodaySchedules();
   const schedules = scheduleData?.data || [];
 
   // 일정 완료 상태 변경 핸들러
   const handleToggleComplete = async (id: string, isDone: boolean) => {
     try {
       await scheduleService.patchSchedule(id, !isDone);
+      // 상태 변경 후 데이터 다시 가져오기
+      refetch();
     } catch (error) {
       console.error('일정 상태 변경 실패:', error);
     }
