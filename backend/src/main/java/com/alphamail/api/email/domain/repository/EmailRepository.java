@@ -41,6 +41,8 @@ public interface EmailRepository {
 
 	Email findByMessageId(String messageId);
 
+	List<Email> findAllByMessageId(String messageId);
+
 	Integer deleteSelectedEmails(List<Integer> emailsIds, Integer userId);
 
 	boolean areAllEmailsInTrash(List<Integer> emailIds, Integer userId);

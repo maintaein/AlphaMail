@@ -82,4 +82,5 @@ public interface EmailJpaRepository extends JpaRepository<EmailEntity, Integer> 
 	@Query("UPDATE EmailEntity e SET e.readStatus = :readStatus WHERE e.emailId = :emailId")
 	void updateReadStatusById(@Param("emailId") Integer emailId, @Param("readStatus") Boolean readStatus);
 
+	List<EmailEntity> findAllByMessageId(String messageId);
 }

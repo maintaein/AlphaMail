@@ -118,6 +118,14 @@ public class EmailRepositoryImpl implements EmailRepository {
 	}
 
 	@Override
+	public List<Email> findAllByMessageId(String messageId) {
+		return emailJpaRepository.findAllByMessageId(messageId)
+			.stream()
+			.map(emailMapper::toDomain)
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public Integer deleteSelectedEmails(List<Integer> emailIds, Integer userId) {
 		int count = 0;
 		for (Integer emailId : emailIds) {

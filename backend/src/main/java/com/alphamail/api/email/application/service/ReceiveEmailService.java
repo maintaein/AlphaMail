@@ -83,10 +83,13 @@ public class ReceiveEmailService {
 	private String resolveThreadId(ReceiveEmailRequest request) {
 		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
 			log.info("inReplyTo에서 원본 이메일 찾기: {}", request.inReplyTo());
-			Email original = emailRepository.findByMessageId(request.inReplyTo());
-			if (original != null && original.getThreadId() != null) {
-				log.info("원본 이메일에서 스레드 ID 찾음: {}", original.getThreadId());
-				return original.getThreadId();
+			List<Email> originals = emailRepository.findAllByMessageId(request.inReplyTo());
+			if (originals != null && !originals.isEmpty()) {
+				Email firstEmail = originals.get(0);
+				if (firstEmail.getThreadId() != null) {
+					log.info("원본 이메일에서 스레드 ID 찾음: {}", firstEmail.getThreadId());
+					return firstEmail.getThreadId();
+				}
 			}
 		}
 		return ThreadId.fromEmailHeaders(request.references(), request.inReplyTo(), request.messageId()).getValue();

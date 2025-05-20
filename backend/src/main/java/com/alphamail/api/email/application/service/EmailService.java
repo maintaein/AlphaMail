@@ -47,10 +47,14 @@ public class EmailService {
 		// 답장인 경우 원본 이메일의 스레드 ID 찾기
 		if (request.inReplyTo() != null && !request.inReplyTo().isEmpty()) {
 			log.info("inReplyTo에서 원본 이메일 찾기: {}", request.inReplyTo());
-			Email originalEmail = emailRepository.findByMessageId(request.inReplyTo());
-			if (originalEmail != null && originalEmail.getThreadId() != null) {
-				threadId = originalEmail.getThreadId();
-				log.info("원본 이메일에서 스레드 ID 찾음: {}", threadId);
+
+			List<Email> originals = emailRepository.findAllByMessageId(request.inReplyTo());
+			if (originals != null && !originals.isEmpty()) {
+				Email originalEmail = originals.get(0);
+				if (originalEmail != null && originalEmail.getThreadId() != null) {
+					threadId = originalEmail.getThreadId();
+					log.info("원본 이메일에서 스레드 ID 찾음: {}", threadId);
+				}
 			}
 		}
 
