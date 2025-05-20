@@ -7,6 +7,7 @@ import { useOrderManagement } from '../../../hooks/useOrderManagement';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 
 const OrderManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -21,12 +22,34 @@ const OrderManagementTemplate: React.FC = () => {
     setSortOption,
     setSearchParams,
     setSelectedOrderIds,
+    clearSelection
   } = useOrderStore();
 
-  const { orders, isLoading, error, handleDeleteOrders } = useOrderManagement();
+  const { 
+    orders, 
+    isLoading, 
+    error, 
+    handleDeleteOrders,
+    totalPages,
+    totalElements,
+    currentPage: responseCurrentPage
+  } = useOrderManagement();
+
+  // 페이지 변경 시 선택 초기화
+  useEffect(() => {
+    clearSelection();
+  }, [currentPage, clearSelection]);
+
+  // 서버의 현재 페이지와 클라이언트의 현재 페이지가 다를 경우 동기화
+  useEffect(() => {
+    if (responseCurrentPage && responseCurrentPage !== currentPage) {
+      setCurrentPage(responseCurrentPage);
+    }
+  }, [responseCurrentPage, currentPage, setCurrentPage]);
 
   const handleSearch = (params: any) => {
     setSearchParams(params);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
   };
 
   const handleAddOrder = () => {
@@ -42,6 +65,7 @@ const OrderManagementTemplate: React.FC = () => {
       await handleDeleteOrders();
       await queryClient.invalidateQueries({ queryKey: ['orders'] });
       await queryClient.invalidateQueries({ queryKey: ['orderDetail'] });
+      clearSelection(); // 삭제 후 선택 초기화
     }
   };
 
@@ -51,10 +75,12 @@ const OrderManagementTemplate: React.FC = () => {
 
   const handleSizeChange = (size: number) => {
     setPageSize(size);
+    setCurrentPage(1); // 페이지 크기 변경 시 첫 페이지로 이동
   };
 
   const handleSortChange = (option: number) => {
     setSortOption(option);
+    setCurrentPage(1); // 정렬 옵션 변경 시 첫 페이지로 이동
   };
 
   const handleOrderClick = (order: Order) => {
@@ -94,15 +120,15 @@ const OrderManagementTemplate: React.FC = () => {
             </div>
           </div>
           <OrderTable
-            orders={orders}
+            orders={orders as Order[]}
             currentPage={currentPage}
-            totalPages={Math.ceil(orders.length / pageSize)}
+            pageCount={totalPages}
             onPageChange={handlePageChange}
             pageSize={pageSize}
             onSizeChange={handleSizeChange}
             sortOption={sortOption}
             onSortChange={handleSortChange}
-            totalCount={orders.length}
+            totalCount={totalElements}
             onOrderClick={handleOrderClick}
             isLoading={isLoading}
             selectedOrderIds={selectedOrderIds}
