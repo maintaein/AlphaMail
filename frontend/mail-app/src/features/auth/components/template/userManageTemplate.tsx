@@ -393,7 +393,7 @@ export const UserManageTemplate: React.FC = () => {
               <div className="flex justify-end pt-2">
                 <Button
                   type="button"
-                  size="medium"
+                  size="small"
                   variant="primary"
                   onClick={handlePasswordChange}
                   disabled={isLoading}
