@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Schedule } from '@/features/schedule/types/schedule';
 import { format, isSameDay, startOfDay, isMonday } from 'date-fns';
+import { ScheduleDayModal } from './ScheduleDayModal';
 
 interface CalendarDayCellProps {
   date: Date;
@@ -19,6 +20,12 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   onEventClick,
   holidayMap = {},
 }) => {
+
+    // 각 셀에 표시할 최대 일정 수
+  const MAX_VISIBLE_EVENTS = 3;
+
+  const [showModal, setShowModal] = useState(false);
+
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return format(date, 'HH:mm');
@@ -97,7 +104,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
 
   // 긴 공휴일 이름 약어로 표시
   const formatHolidayName = (name: string) => {
-    // 특정 공휴일 이름 약어로 변환
+   
     if (name.includes('공휴일')) {
 
       if (name.length > 8) {
@@ -108,72 +115,87 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     return name;
   };
 
+   
+  const filteredEvents = events.filter(event => event !== null) as Schedule[];
 
+  const visibleEvents = filteredEvents.slice(0, MAX_VISIBLE_EVENTS);
+  const hiddenEventsCount = Math.max(0, filteredEvents.length - MAX_VISIBLE_EVENTS);
 
 
   return (
-    <div
-      className={`min-h-[100px] border-b border-gray-300 bg-white ${
-        !isCurrentMonth ? 'text-gray-400' : ''
-      } ${isToday ? 'bg-blue-100' : ''}`}
-    >
-      <div className={`inline-flex items-center font-medium p-2 ${isToday ? 'text-blue-600 font-bold' : ''} ${!isCurrentMonth ? 'text-gray-400' : dayColor}`}>
-        <span>{date.getDate()}</span>
-        {holidayName && (
-               <span className={`ml-1 text-xs align-middle truncate max-w-[60px] ${!isCurrentMonth ? 'text-gray-400' : 'text-red-500'}`} title={holidayName}>
-            {formatHolidayName(holidayName)}
-          </span>
-        )}
-      </div>
-      <div className="space-y-0.5">
-        {events.map((event, index) => {
-          const baseEvent = events[index] || {} as Schedule;
-          const eventClass = getEventStyle(baseEvent) + " w-full flex items-center p-1 overflow-hidden";
-          if (!event) {
+    <>
+      <div
+        className={`min-h-[100px] border-b border-gray-300 bg-white ${
+          !isCurrentMonth ? 'text-gray-400' : ''
+        } ${isToday ? 'bg-blue-100' : ''}`}
+      >
+        <div className={`inline-flex items-center font-medium p-2 ${isToday ? 'text-blue-600 font-bold' : ''} ${!isCurrentMonth ? 'text-gray-400' : dayColor}`}>
+          <span>{date.getDate()}</span>
+          {holidayName && (
+            <span className={`ml-1 text-xs align-middle truncate max-w-[60px] ${!isCurrentMonth ? 'text-gray-400' : 'text-red-500'}`} title={holidayName}>
+              {formatHolidayName(holidayName)}
+            </span>
+          )}
+        </div>
+        <div className="space-y-0.5">
+          {/* 표시할 일정만 매핑 (최대 MAX_VISIBLE_EVENTS개) */}
+          {visibleEvents.map((event, index) => {
+            const isStart = isSameDay(date, new Date(event.start_time));
+            const isEnd = isSameDay(date, new Date(event.end_time));
+            const isSingleDay = isStart && isEnd;
+            const isMultiDay = !isSingleDay;
+            const showEventName = shouldShowEventName(event);
+
             return (
               <div
-                key={index}
-                className={eventClass + " h-[24px]"}
-                style={{ opacity: 0 }}
+                key={`${event.id}-${index}`}
+                className={getEventStyle(event) + " w-full h-[24px]"}
+                onClick={() => event && onEventClick?.(event)}
               >
-                <span className="flex-1 min-w-0">&nbsp;</span>
+                {(isStart || showEventName) ? (
+                  <div className="flex items-center w-full min-w-0">
+                    {isSingleDay ? (
+                      <span 
+                        className="inline-block w-2 h-2 rounded-full mr-1 flex-shrink-0" 
+                        style={{ background: getDotColor(event) }} 
+                      />
+                    ) : null}
+                    <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
+                      {isStart ? `${formatTime(event.start_time.toISOString())} ${event.name}` : event.name}
+                    </span>
+                  </div>
+                ) : isMultiDay ? (
+                  <div className="w-full h-full">&nbsp;</div>
+                ) : (
+                  <div className="invisible">placeholder</div>
+                )}
               </div>
             );
-          }
-
-          const isStart = isSameDay(date, new Date(event.start_time));
-          const isEnd = isSameDay(date, new Date(event.end_time));
-          const isSingleDay = isStart && isEnd;
-          const isMultiDay = !isSingleDay;
-          const showEventName = shouldShowEventName(event);
-
-          return (
-            <div
-              key={`${event.id}-${index}`}
-              className={getEventStyle(event) + " w-full h-[24px]"}
-              onClick={() => event && onEventClick?.(event)}
+          })}
+          
+          {/* 더보기 버튼 */}
+          {hiddenEventsCount > 0 && (
+            <div 
+              className="text-xs text-gray-500 p-1 cursor-pointer hover:bg-gray-100 rounded flex items-center justify-center"
+              onClick={() => setShowModal(true)}
             >
-              {(isStart || showEventName) ? (
-                <div className="flex items-center w-full min-w-0">
-                  {isSingleDay ? (
-                    <span 
-                      className="inline-block w-2 h-2 rounded-full mr-1 flex-shrink-0" 
-                      style={{ background: getDotColor(event) }} 
-                    />
-                  ) : null}
-                 <span className="flex-1 min-w-0 overflow-hidden whitespace-nowrap text-ellipsis">
-                    {isStart ? `${formatTime(event.start_time.toISOString())} ${event.name}` : event.name}
-                  </span>
-                </div>
-              ) : isMultiDay ? (
-                <div className="w-full h-full">&nbsp;</div>
-              ) : (
-                <div className="invisible">placeholder</div>
-              )}
+              <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              {hiddenEventsCount}개 더보기
             </div>
-          );
-        })}
+          )}
+        </div>
       </div>
-    </div>
+
+      <ScheduleDayModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        date={date}
+        events={filteredEvents}
+        onEventClick={onEventClick}
+      />
+    </>
+    
   );
 };
