@@ -118,7 +118,7 @@ export const orderService: OrderService = {
       companyId,
       groupId,
       clientId: orderData.clientId,
-      orderNo: orderData.orderNo,
+      //orderNo: orderData.orderNo, 
       deliverAt: orderData.deliverAt.toISOString(),
       shippingAddress: orderData.shippingAddress,
       manager: orderData.manager,

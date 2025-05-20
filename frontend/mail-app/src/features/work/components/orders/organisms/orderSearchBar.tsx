@@ -16,6 +16,15 @@ const OrderSearchBar: React.FC<OrderSearchBarProps> = ({ onSearch }) => {
   const endDateRef = useRef<HTMLInputElement>(null);
   const [isProductSelectOpen, setIsProductSelectOpen] = useState(false);
 
+  const resetForm = () => {
+    if (clientRef.current) clientRef.current.value = '';
+    if (orderNoRef.current) orderNoRef.current.value = '';
+    if (managerRef.current) managerRef.current.value = '';
+    if (itemRef.current) itemRef.current.value = '';
+    if (startDateRef.current) startDateRef.current.value = '';
+    if (endDateRef.current) endDateRef.current.value = '';
+  };
+
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const params = {
@@ -27,6 +36,7 @@ const OrderSearchBar: React.FC<OrderSearchBarProps> = ({ onSearch }) => {
       endDate: endDateRef.current?.value,
     };
     onSearch(params);
+    resetForm();
   };
 
   const handleProductSelect = (product: Product) => {

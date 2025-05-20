@@ -39,7 +39,7 @@ export const quoteService = {
       companyId: companyId,
       groupId: groupId,
       clientId: data.clientId,
-      quoteNo: data.quoteNo,
+      //quoteNo: data.quoteNo,
       shippingAddress: data.shippingAddress,
       manager: data.manager,
       managerNumber: data.managerNumber,
