@@ -104,7 +104,7 @@ public class EmailController {
 		@RequestPart("sender") String sender,
 		@RequestParam("recipients") List<String> recipients,
 		@RequestPart("subject") String subject,
-		@RequestPart("bodyText") String bodyText,
+		@RequestPart(value = "bodyText", required = false) String bodyText,
 		@RequestPart(value = "bodyHtml", required = false) String bodyHtml,
 		@RequestPart(value = "inReplyTo", required = false) String inReplyTo,
 		@RequestPart(value = "references", required = false) String references,
