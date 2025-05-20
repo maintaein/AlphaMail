@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+// @ts-ignore: If you see a type error for '@emotion/styled', install @types/emotion__styled for type safety
 import styled from '@emotion/styled';
 import { useChatStore } from '../stores/useChatStore';
 import { ChatMessage } from '../types/chat';
@@ -52,6 +53,18 @@ const Tr = styled.tr`
   }
 `;
 
+function formatUTCToKSTLocalInputString(utcISOString: string): string {
+  const date = new Date(utcISOString);
+  const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC+9 시간 보정
+  const year = kstDate.getFullYear();
+  const month = String(kstDate.getMonth() + 1).padStart(2, '0');
+  const day = String(kstDate.getDate()).padStart(2, '0');
+  const hours = String(kstDate.getHours()).padStart(2, '0');
+  const minutes = String(kstDate.getMinutes()).padStart(2, '0');
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 // 각 타입별 컴포넌트
 const QuoteMessage = ({ id, reply }: { id: string; reply: string }) => {
   const navigate = useNavigate();
@@ -76,16 +89,18 @@ const QuoteMessage = ({ id, reply }: { id: string; reply: string }) => {
           <tbody>
             {quotes.map((quote) => (
               <Tr key={quote.id}>
-                <Td><Typography variant="titleSmall">{quote.clientName || '-'}</Typography></Td>
-                <Td><Typography variant="titleSmall">{quote.productName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quoteDetail?.clientName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quote.name || '-'}</Typography></Td>
                 <Td><Typography variant="titleSmall">{quote.price?.toLocaleString() || '-'}원</Typography></Td>
                 <Td>
                   <Button 
                     size="small" 
-                    variant="primary" 
+                    variant="primary"
+                    className="flex-1"
+                    style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
                     onClick={() => navigate(`/work/quotes/${quote.id}`)}
                   >
-                    <Typography variant="titleSmall">보기</Typography>
+                    <Typography variant="titleSmall" className="text-white">보기</Typography>
                   </Button>
                 </Td>
               </Tr>
@@ -129,9 +144,11 @@ const PurchaseOrderMessage = ({ id, reply }: { id: string; reply: string }) => {
                   <Button 
                     size="small" 
                     variant="primary" 
+                    className="flex-1"
+                    style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
                     onClick={() => navigate(`/work/orders/${id}`)}
                   >
-                    <Typography variant="titleSmall">보기</Typography>
+                    <Typography variant="titleSmall" className="text-white">보기</Typography>
                   </Button>
                 </Td>
               </Tr>
@@ -162,10 +179,12 @@ const ScheduleMessage = ({ id, reply }: { id: string; reply: string }) => {
   
   return (
     <>
-      <MessageCard>
-        <Typography variant="titleSmall" className="text-[rgb(55, 47, 47)]" >{reply}</Typography>
-      </MessageCard>
-      <MessageCard>
+      <MessageBubble isUser={false}>
+    
+        <Typography variant="titleSmall"  className="text-[#528BF9]">{reply.split('.').map((line, idx) => (<React.Fragment key={idx}>{line}{idx !== reply.split('.').length - 1 && <br />}</React.Fragment>))}</Typography>
+
+      </MessageBubble>
+      <MessageBubble isUser={false}>
         
         <Table>
           <thead>
@@ -178,22 +197,25 @@ const ScheduleMessage = ({ id, reply }: { id: string; reply: string }) => {
           <tbody>
             {schedules.map((schedule) => (
               <Tr key={schedule.id}>
-                <Td><Typography variant="titleSmall">{schedule.name || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall" >{schedule.name || '-'}</Typography></Td>
+    
                 <Td><Typography variant="titleSmall">{schedule.start_time ? formatDateTime(new Date(schedule.start_time)) : '-'}</Typography></Td>
                 <Td>
                   <Button 
                     size="small" 
                     variant="primary" 
+                    className="flex-1"
+                    style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
                     onClick={() => navigate(`/schedule/${schedule.id}`)}
                   >
-                    <Typography variant="titleSmall">보기</Typography>
+                    <Typography variant="titleSmall" className="text-white">보기</Typography>
                   </Button>
                 </Td>
               </Tr>
             ))}
           </tbody>
         </Table>
-      </MessageCard>
+      </MessageBubble>
     </>
   );
 };
@@ -226,7 +248,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
       
       newErrors.startTime = '시작 시간을 선택해주세요.';
     }
-    if (scheduleForm.endTime && new Date(scheduleForm.endTime) < new Date(scheduleForm.startTime)) {
+    if (scheduleForm.endTime && new Date(ensureZ(scheduleForm.endTime)) < new Date(ensureZ(scheduleForm.startTime))) {
       newErrors.endTime = '종료 시간은 시작 시간보다 이후여야 합니다.';
     }
 
@@ -243,8 +265,8 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
     try {
       const response = await scheduleService.createSchedule({
         name: scheduleForm.name,
-        start_time: new Date(scheduleForm.startTime),
-        end_time: scheduleForm.endTime ? new Date(scheduleForm.endTime) : new Date(scheduleForm.startTime),
+        start_time: new Date(ensureZ(scheduleForm.startTime)),
+        end_time: scheduleForm.endTime ? new Date(ensureZ(scheduleForm.endTime)) : new Date(ensureZ(scheduleForm.startTime)),
         description: scheduleForm.description || '',
         is_done: false,
         created_at: new Date()
@@ -279,9 +301,11 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
           <Button
             onClick={() => navigate('/schedule')}
             variant="primary"
+            className="flex-1"
+            style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
             size="large"
           >
-            <Typography variant="titleSmall">일정 페이지로 이동</Typography>
+            <Typography variant="titleSmall" className="text-white">일정 페이지로 이동</Typography>
           </Button>
         </div>
       </MessageCard>
@@ -309,9 +333,10 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
         </div>
         <div>
           <Typography variant="titleSmall" className="block mb-1">시작 시간 <span className="text-red-500">*</span></Typography>
+        
           <Input
             type="datetime-local"
-            value={scheduleForm.startTime}
+            value={formatUTCToKSTLocalInputString(scheduleForm.startTime)}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, startTime: e.target.value }))}
          
             className={`w-full text-black${errors.startTime ? 'border-red-500' : ''}`}
@@ -324,7 +349,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
           <Typography variant="titleSmall" className="block mb-1">종료 시간 (선택사항)</Typography>
           <Input
             type="datetime-local"
-            value={scheduleForm.endTime}
+            value={formatUTCToKSTLocalInputString(scheduleForm.endTime)}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, endTime: e.target.value }))}
            
             className={`w-full text-black ${errors.endTime ? 'border-red-500' : ''}`}
@@ -339,7 +364,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
             value={scheduleForm.description}
             onChange={(e) => setScheduleForm(prev => ({ ...prev, description: e.target.value }))}
             placeholder="설명을 입력하세요"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px] font-pretendard"
+            className="w-full text-black px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-[14px] font-pretendard"
             rows={3}
           />
         </div>
@@ -350,7 +375,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
             variant="secondary"
             size="small"
             className="flex-1"
-            style={{ background: '#F3F3F3', color: '#fff', border: 'none', borderRadius: 5 }}
+            style={{ background: '#fff', color: '#fff', border: 'none', borderRadius: 5 }}
           >
             <Typography variant="titleSmall">취소</Typography>
           </Button>
@@ -362,7 +387,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
             style={{ background: '#73A2FC', color: '#fff', border: 'none', borderRadius: 5 }}
             disabled={isSubmitting}
           >
-            {isSubmitting ? <Typography variant="titleSmall">처리중...</Typography> : <Typography variant="titleSmall">일정 추가</Typography>}
+            {isSubmitting ? <Typography variant="titleSmall" className="text-white">처리중...</Typography> : <Typography variant="titleSmall" className="text-white">일정 추가</Typography>}
           </Button>
         </div>
         {errors.submit && (
@@ -377,8 +402,7 @@ const TmpScheduleMessage = ({ content }: { reply: string; content?: { name?: str
 
 // 스타일 컴포넌트
 const ChatBotContainer = styled.div<{ position: { x: number; y: number } }>`
- 
-position: fixed;
+  position: fixed;
   left: ${props => props.position.x}px;
   top: ${props => props.position.y}px;
   z-index: 1000;
@@ -406,9 +430,9 @@ const ChatButton = styled.button`
   }
 `;
 
-const ChatWindow = styled.div<{ 
-  position: { x: number; y: number },
-  windowPosition: { x: number; y: number }
+const ChatWindow = styled.div<{
+  position: { x: number; y: number };
+  windowPosition: { x: number; y: number };
 }>`
   position: fixed;
   left: ${props => props.windowPosition.x}px;
@@ -453,11 +477,11 @@ const ChatInput = styled.div`
 
 const ChatInputBox = styled.div`
   padding: 10px 20px;
-   background-color:rgb(245, 245, 245);
+  background-color:rgb(247, 247, 247);
   gap: 10px;
 `;
 
-const ChatInputField = styled.input`
+const ChatInputField = styled.textarea`
   flex: 1;
   border: none;
   background: transparent;
@@ -466,6 +490,10 @@ const ChatInputField = styled.input`
   font-family: 'Pretendard', sans-serif;
   color: #222;
   padding: 10px 0;
+  resize: none;
+  min-height: 36px;
+  max-height: 200px;
+  overflow-y: auto;
 `;
 
 const SendButton = styled.button`
@@ -499,7 +527,7 @@ const MessageBubble = styled.div<{ isUser: boolean }>((props: { isUser: boolean 
   color: ${props.isUser ? '#ffffff' : '#528BF9'};
   align-self: ${props.isUser ? 'flex-end' : 'flex-start'};
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  text-align: ${props.isUser ? 'right' : 'left'};
+  text-align: ${props.isUser ? 'left' : 'left'};
   display: inline-block;
   font-size: 14px;
   font-family: 'Pretendard', sans-serif;
@@ -509,7 +537,6 @@ const MessageRow = styled.div<{ isUser: boolean }>((props: { isUser: boolean }) 
   display: flex;
   flex-direction: row;
   align-items: flex-start;
-
   justify-content: ${props.isUser ? 'flex-end' : 'flex-start'};
   gap: 8px;
 `);
@@ -531,6 +558,15 @@ const ErrorMessage = styled.div`
   margin: 8px 0;
   font-size: 14px;
 `;
+
+// Helper to ensure date string has 'Z' for UTC
+function ensureZ(dateStr: string): string {
+  if (!dateStr) return dateStr;
+  if (typeof dateStr === 'string' && dateStr.length > 10 && !dateStr.endsWith('Z')) {
+    return dateStr + 'Z';
+  }
+  return dateStr;
+}
 
 const ChatBot: React.FC = () => {
 
@@ -558,7 +594,24 @@ const ChatBot: React.FC = () => {
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      addBotMessage('안녕하세요 업무 도우미 입니다.\n일정과 관련한 모든것을 요청해주세요');
+      addBotMessage(`안녕하세요! 😊\n저는 일정과 업무 문서를 도와드리는 AI 비서입니다. 아래와 같은 기능을 이용하실 수 있어요:
+\n📅 1. 일정 등록
+- "내일 오후 2시에 회의 잡아줘"
+- "5월 20일 10시에 김부장님이랑 미팅 추가해줘"
+
+🔍 2. 일정 조회
+- "이번 주 일정 뭐 있어?"
+- "오늘 스케줄 알려줘"
+
+📦 3. 발주서 검색
+- "지난주에 등록한 발주서 보여줘"
+- "5월 1일 발주 내용 알려줘"
+
+📄 4. 견적서 검색
+- "최근 견적서 정리해줘"
+- "어제 받은 견적서 뭐였지?"
+
+무엇을 도와드릴까요?`);
     }
   }, [isOpen]);
 
@@ -724,6 +777,7 @@ const ChatBot: React.FC = () => {
             <img src="/chatbot.png" alt="Chatbot" style={{ width: 32, height: 32, objectFit: 'contain' }} />
           </div>
           <div style={{ width: '100%' }}>
+            
             <ScheduleMessage id={msg.ids[0]} reply={msg.reply} />
           </div>
         </MessageRow>
@@ -821,12 +875,17 @@ const ChatBot: React.FC = () => {
           <ChatInputBox>
           <ChatInput>
             <ChatInputField
-              type="text"
               value={message}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setMessage(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setMessage(e.target.value)}
               placeholder="메시지를 입력하세요..."
-              onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessage();
+                }
+              }}
               disabled={isLoading}
+              rows={1}
             />
             <SendButton onClick={handleSendMessage} disabled={isLoading}>
               <img src="/sendicon.png" alt="전송" style={{ width: 25, height: 25, objectFit: 'contain' }} />

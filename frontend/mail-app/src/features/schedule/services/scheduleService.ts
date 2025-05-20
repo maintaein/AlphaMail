@@ -173,9 +173,9 @@ export const scheduleService = {
     return {
       id: String(response.data.id),
       name: response.data.name,
-      created_at: new Date(response.data.createdAt),
-      start_time: new Date(response.data.startTime),
-      end_time: new Date(response.data.endTime),
+      created_at: new Date(response.data.createdAt + 'Z'),
+      start_time: new Date(response.data.startTime+ 'Z'),
+      end_time: new Date(response.data.endTime+ 'Z'),
       is_done: response.data.isDone,
       description: response.data.description
     };
@@ -203,9 +203,9 @@ export const scheduleService = {
     return {
       id: String(response.data.id),
       name: response.data.name,
-      created_at: new Date(response.data.createdAt),
-      start_time: new Date(response.data.startTime),
-      end_time: new Date(response.data.endTime),
+      created_at: new Date(response.data.createdAt + 'Z'),
+      start_time: new Date(response.data.startTime+ 'Z'),
+      end_time: new Date(response.data.endTime+ 'Z'),
       is_done: response.data.isDone,
       description: response.data.description
     };
