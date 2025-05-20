@@ -20,8 +20,6 @@ export const quoteService = {
         v !== null && v !== undefined && v !== ''
       )
     );
-
-    console.log("filteredParams", filteredParams);
     const response = await api.get(`/api/erp/companies/${companyId}/quotes`, {
       params: filteredParams,
     });

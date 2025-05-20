@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Quote } from '../../../types/quote';
 import { QuoteSearchBar } from '../molecules/quoteSearchBar';
@@ -8,20 +8,46 @@ import { quoteService } from '../../../services/quoteService';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useQuoteStore } from '@/features/work/stores/quoteStore';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const QuoteManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedQuoteIds, setSelectedQuoteIds] = useState<Set<number>>(new Set());
-  const { setSearchParams, searchParams } = useQuoteStore();
+  const queryClient = useQueryClient();
+  const { 
+    currentPage, 
+    pageSize, 
+    sortOption,
+    searchParams,
+    selectedQuoteIds,
+    setCurrentPage,
+    setPageSize,
+    setSortOption,
+    setSearchParams,
+    setSelectedQuoteIds,
+    clearSelection 
+  } = useQuoteStore();
 
   const { data: quoteResponse, isLoading, error } = useQuotes({
     ...searchParams,
-    page: 1,
-    size: 10,
+    page: currentPage,
+    size: pageSize
   });
+
+  // 페이지 변경 시 선택 초기화
+  useEffect(() => {
+    clearSelection();
+  }, [currentPage, clearSelection]);
+
+  // 서버의 현재 페이지와 클라이언트의 현재 페이지가 다를 경우 동기화
+  useEffect(() => {
+    if (quoteResponse?.currentPage && quoteResponse.currentPage !== currentPage) {
+      setCurrentPage(quoteResponse.currentPage);
+    }
+  }, [quoteResponse?.currentPage, currentPage, setCurrentPage]);
 
   const handleSearch = (params: any) => {
     setSearchParams(params);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
   };
 
   const handleAddQuote = () => {
@@ -30,18 +56,6 @@ export const QuoteManagementTemplate: React.FC = () => {
 
   const handleQuoteClick = (quote: Quote) => {
     navigate(`/work/quotes/${quote.id}`);
-  };
-
-  const toggleQuoteSelection = (quoteId: number) => {
-    setSelectedQuoteIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(quoteId)) {
-        newSet.delete(quoteId);
-      } else {
-        newSet.add(quoteId);
-      }
-      return newSet;
-    });
   };
 
   const handleDelete = async () => {
@@ -56,12 +70,27 @@ export const QuoteManagementTemplate: React.FC = () => {
 
     try {
       await quoteService.deleteQuotes(Array.from(selectedQuoteIds));
-      setSelectedQuoteIds(new Set());
+      await queryClient.invalidateQueries({ queryKey: ['quotes'] });
+      clearSelection();
       alert('선택한 견적서가 삭제되었습니다.');
     } catch (error) {
       console.error('견적서 삭제 실패:', error);
       alert('견적서 삭제에 실패했습니다.');
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleSizeChange = (size: number) => {
+    setPageSize(size);
+    setCurrentPage(1); // 페이지 크기 변경 시 첫 페이지로 이동
+  };
+
+  const handleSortChange = (option: number) => {
+    setSortOption(option);
+    setCurrentPage(1); // 정렬 옵션 변경 시 첫 페이지로 이동
   };
 
   if (isLoading) return <div>로딩 중...</div>;
@@ -97,9 +126,26 @@ export const QuoteManagementTemplate: React.FC = () => {
           </div>
           <QuoteTable
             quotes={quoteResponse?.contents || []}
+            currentPage={currentPage}
+            pageCount={quoteResponse?.pageCount || 0}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+            onSizeChange={handleSizeChange}
+            sortOption={sortOption}
+            onSortChange={handleSortChange}
+            totalCount={quoteResponse?.totalCount || 0}
             onQuoteClick={handleQuoteClick}
-            onSelectQuote={toggleQuoteSelection}
+            isLoading={isLoading}
             selectedQuoteIds={selectedQuoteIds}
+            onSelectQuote={(id) => {
+              const newSelectedIds = new Set(selectedQuoteIds);
+              if (newSelectedIds.has(id)) {
+                newSelectedIds.delete(id);
+              } else {
+                newSelectedIds.add(id);
+              }
+              setSelectedQuoteIds(newSelectedIds);
+            }}
           />
         </div>
       </div>
