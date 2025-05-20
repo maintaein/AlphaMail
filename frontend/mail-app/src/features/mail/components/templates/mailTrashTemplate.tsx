@@ -18,6 +18,7 @@ const MailTrashTemplate: React.FC = () => {
     sortOrder,
     searchKeyword,
     selectedMails, 
+    currentFolder,
     setCurrentPage, 
     selectMail, 
     unselectMail, 
@@ -36,11 +37,12 @@ const MailTrashTemplate: React.FC = () => {
   
   // 컴포넌트 마운트 시 현재 폴더를 휴지통으로 설정
   useEffect(() => {
-    if (trashFolderId) {
+    // 현재 폴더가 설정되어 있지 않은 경우에만 설정
+    if (trashFolderId && !currentFolder) {
       setCurrentFolder(trashFolderId);
     }
-  }, [trashFolderId, setCurrentFolder]);
-  
+  }, [trashFolderId, currentFolder, setCurrentFolder]);
+
   const { useMailList, emptyTrash, restoreMailsToOrigin } = useMail();
   const { data, isLoading, error, refetch } = useMailList(trashFolderId, currentPage, sortOrder, searchKeyword);
   const { setMailStats } = useHeaderStore();
@@ -77,9 +79,9 @@ const MailTrashTemplate: React.FC = () => {
   };
   
   const handleMailClick = (id: string) => {
-    navigate(`/mail/trash/${id}`);
-  };
-  
+    navigate(`/mail/trash/${id}?page=${currentPage}`);
+  };  
+
   // 휴지통 비우기 (모든 메일 영구 삭제)
   const handleEmptyTrash = () => {
     if (selectedMails.length === 0) {

@@ -1,26 +1,43 @@
 import React from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { useMail } from '@/features/mail/hooks/useMail';
+import { toast } from 'react-toastify';
 
 interface Attachment {
+  id?: number;
   name: string;
-  size: string;
+  size: number;
+  type: string;
 }
 
 interface TmpMailAttachmentsProps {
   attachments: Attachment[];
+  emailId?: number;
 }
 
-export const TmpMailAttachments: React.FC<TmpMailAttachmentsProps> = ({ attachments }) => {
+export const TmpMailAttachments: React.FC<TmpMailAttachmentsProps> = ({ attachments, emailId }) => {
+  const { downloadAttachment } = useMail();
+  
   if (attachments.length === 0) return null;
   
+  const handleDownload = (attachment: Attachment) => {
+    if (!emailId || !attachment.id) {
+      toast.error('다운로드에 필요한 정보가 없습니다.');
+      return;
+    }
+    
+    downloadAttachment.mutate({
+      mailId: emailId,
+      attachmentId: attachment.id,
+      fileName: attachment.name
+    });
+  };
+
   return (
     <div className="mb-2">
       <div className="flex mb-1">
         <Typography variant="body" className="text-gray-600 w-20">
           첨부 {attachments.length}개
-        </Typography>
-        <Typography variant="body" className="text-gray-500">
-          {attachments.reduce((acc, curr) => acc + parseInt(curr.size), 0)}KB
         </Typography>
       </div>
       
@@ -30,12 +47,24 @@ export const TmpMailAttachments: React.FC<TmpMailAttachmentsProps> = ({ attachme
             <div className="w-6 h-6 bg-red-500 text-white flex items-center justify-center rounded-sm mr-2">
               <span className="text-xs">PDF</span>
             </div>
-            <Typography variant="body">
+            <div
+              className="cursor-pointer hover:text-blue-500 hover:underline text-xs font-pretendard"
+              onClick={() => handleDownload(attachment)}
+            >
               {attachment.name}
-            </Typography>
+            </div>
             <div className="flex ml-auto space-x-2">
-              <button className="text-gray-500 hover:text-gray-700">
-                <span className="text-xs">↓</span>
+              <Typography variant="body" className="text-gray-500">
+                {attachments.reduce((acc, curr) => acc + (typeof curr.size === 'string' ? parseInt(curr.size) : curr.size), 0)}KB
+              </Typography>
+              <button 
+                className="text-gray-500 hover:text-blue-500"
+                onClick={() => handleDownload(attachment)}
+                title="다운로드"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
               </button>
             </div>
           </div>

@@ -137,7 +137,7 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
     
     // 세액 계산 (공급가액의 10%)
     const taxAmount = Math.round(supplyAmount * 0.1);
-        
+    
     const updatedItems = items.map(item => 
       item.id === id ? {
         ...item,

@@ -32,7 +32,7 @@ export const MailWriteHeader: React.FC<MailWriteHeaderProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={onAiAssistant}
-            className="flex items-center justify-center px-4 py-2 rounded-md text-white font-medium transition-colors duration-200 hover:opacity-80"
+            className="flex items-center justify-center px-3 py-2 rounded-md text-white font-medium transition-colors duration-200 hover:opacity-80"
             style={{
               background: 'linear-gradient(90deg, #62DDFF 0%, #9D44CA 100%)',
               width: aiButtonWidth,
@@ -53,7 +53,7 @@ export const MailWriteHeader: React.FC<MailWriteHeaderProps> = ({
                 fill="white"
               />
             </svg>
-            AI 어시스턴트
+            AI 메일 템플릿
           </button>
           <Button 
             variant="primary" 

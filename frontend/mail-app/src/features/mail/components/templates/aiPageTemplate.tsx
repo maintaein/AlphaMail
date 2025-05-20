@@ -35,7 +35,6 @@ const AiPageTemplate: React.FC<AiPageTemplateProps> = ({
 
   // 템플릿 적용 핸들러
   const handleApplyTemplate = (templateContent: string) => {
-    console.log('AI 페이지 - 템플릿 적용:', templateContent);
     setContent(templateContent);
   };
 
@@ -83,7 +82,7 @@ const AiPageTemplate: React.FC<AiPageTemplateProps> = ({
          }}>
       <div className="flex justify-center items-center p-4 bg-gradient-to-r from-[#62DDFF] to-[#9D44CA] relative">
         <Typography variant="titleMedium" bold className="text-white">
-          {mode === 'summary' ? 'AI 어시스턴트' : 'AI 어시스턴트'}
+          {mode === 'summary' ? 'AI 스레드 요약' : 'AI 메일 템플릿'}
         </Typography>
         <button 
           onClick={onClose}

@@ -12,7 +12,7 @@ interface AiTemplateDetailProps {
 }
 
 const AiTemplateDetail: React.FC<AiTemplateDetailProps> = ({ onApplyTemplate, onCloseAssistant }) => {
-  const { selectedTemplateId, setIsEditing } = useAiStore();
+  const { selectedTemplateId } = useAiStore();
   const queryClient = useQueryClient();
 
   // 템플릿 ID를 숫자로 변환
@@ -28,10 +28,6 @@ const AiTemplateDetail: React.FC<AiTemplateDetailProps> = ({ onApplyTemplate, on
     // 또는 쿼리 캐시 무효화
     queryClient.invalidateQueries({ queryKey: ['emailTemplate', templateId] });
   }, [templateId, refetch, queryClient]);
-
-  const handleEdit = () => {
-    setIsEditing(true);
-  };
 
   const handleApplyTemplate = () => {
     // 메일 본문에 템플릿 내용을 적용하는 로직
@@ -49,9 +45,7 @@ const AiTemplateDetail: React.FC<AiTemplateDetailProps> = ({ onApplyTemplate, on
         // AI 어시스턴트 패널 닫기
         onCloseAssistant();
         
-        console.log('템플릿 적용 완료');
-      } catch (error) {
-        console.error('템플릿 적용 중 오류:', error);
+      } catch {
         toast.error('템플릿 적용 중 오류가 발생했습니다.', {
           toastId: `template-error-${Date.now()}`
         });
@@ -120,15 +114,7 @@ const AiTemplateDetail: React.FC<AiTemplateDetailProps> = ({ onApplyTemplate, on
       </div>
                                           
       {/* 버튼 영역 */}
-      <div className="flex justify-between">
-        <Button 
-          variant="secondary"
-          onClick={handleEdit}
-          className="mx-2 py-4"
-        >
-          템플릿 수정
-        </Button>
-        
+      <div className="flex justify-center">        
         <Button 
           variant="primary"
           onClick={handleApplyTemplate}

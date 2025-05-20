@@ -38,6 +38,19 @@ export const SideBar: React.FC<SideBarProps> = ({ type}) => {
       setLoadingFolders
     } = useSidebarStore();
   
+    useEffect(() => {
+      if (type === 'mail') {
+        const path = location.pathname;
+        if (path === '/mail' || path.startsWith('/mail/') && !path.includes('/sent') && !path.includes('/trash')) {
+          setActiveItem("받은 메일함");
+        } else if (path === '/mail/sent' || path.includes('/mail/sent/')) {
+          setActiveItem("보낸 메일함");
+        } else if (path === '/mail/trash' || path.includes('/mail/trash/')) {
+          setActiveItem("휴지통");
+        }
+      }
+    }, [pathname, setActiveItem, type]);
+  
     const { setCurrentFolder, resetFolderState } = useMailStore();
   
     const { data: userData } = useUser();

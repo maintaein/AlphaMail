@@ -76,7 +76,7 @@ export const MailListHeader: React.FC<MailListHeaderProps> = ({
 
   return (
     <div className="mb-4">
-      <div className="flex items-center justify-between px-4 py-2 bg-gray-50">
+      <div className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center">
           <div className="mr-4">
             <CheckboxItem 

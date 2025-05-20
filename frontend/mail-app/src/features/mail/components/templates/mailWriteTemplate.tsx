@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import AiPageTemplate from './aiPageTemplate';
 import { useAiStore } from '../../stores/useAiStore';
 import { useUser } from '@/features/auth/hooks/useUser'; // useUser 훅 임포트
+import { useHeaderStore } from '@/shared/stores/useHeaderStore';
 
 const FONT_OPTIONS = [
   { value: 'pretendard', label: '프리텐다드' },
@@ -32,6 +33,11 @@ const MailWriteTemplate: React.FC = () => {
   const { useRecentEmails } = useMail();
   const { data: recentEmailsData } = useRecentEmails();
   const [showRecentRecipients, setShowRecentRecipients] = useState(false);
+  const { setTitle } = useHeaderStore();
+
+  useEffect(() => {
+    setTitle('메일 작성');
+  }, [setTitle]);
 
   // 최근 수신자 목록 (API 데이터 사용)
   const recentRecipients = useMemo(() => {

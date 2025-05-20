@@ -8,6 +8,7 @@ import { TmpMailContents } from '../molecules/tmpMailContents';
 import { useHome } from '../../hooks/useHome';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { AssistantType } from '../../types/home';
+import { Attachment } from '@/features/mail/types/mail';
 
 interface RowTmpMailProps {
   type?: AssistantType;
@@ -18,14 +19,32 @@ export const RowTmpMail: React.FC<RowTmpMailProps> = ({ type, id }) => {
   const { useEmailByType } = useHome();
   const { data: detailData, isLoading } = useEmailByType(type as AssistantType || null, id || null);
 
+  const getAttachments = () => {
+    if (!detailData) return [];
+    
+    // 각 타입별로 첨부파일 데이터 가져오기
+    switch (type) {
+      case 'PURCHASE_ORDER':
+      case 'QUOTE':
+      case 'CLIENT':
+        // emailAttachments 필드가 있는 타입들
+        return 'emailAttachments' in detailData ? detailData.emailAttachments || [] : [];
+      case 'SCHEDULE':
+      default:
+        // emailAttachments 필드가 없는 타입들
+        return detailData.email?.hasAttachment ? [{ name: '첨부파일', size: '0' }] : [];
+    }
+  };
+
   // API 데이터 형식에 맞게 변환
   const formattedMailData = {
     subject: detailData?.email?.subject || '',
     sender: detailData?.email?.sender?.split('<')[0].trim().replace(/"/g, '') || '',
     recipients: detailData?.email?.recipients || [],
     date: detailData?.email?.receivedDateTime || '',
-    attachments: detailData?.email?.hasAttachment ? [{ name: '첨부파일', size: '0' }] : [],
-    content: detailData?.email?.bodyText || ''
+    attachments: getAttachments() as Attachment[],
+    content: detailData?.email?.bodyText || '',
+    emailId: detailData?.email?.emailId || 0
   };
 
   if (isLoading) {
@@ -47,7 +66,7 @@ export const RowTmpMail: React.FC<RowTmpMailProps> = ({ type, id }) => {
           <TmpMailSender name={formattedMailData.sender} />
           <TmpMailRecipient emails={formattedMailData.recipients} />
           <TmpMailDate date={formattedMailData.date} />
-          <TmpMailAttachments attachments={formattedMailData.attachments} />
+          <TmpMailAttachments attachments={formattedMailData.attachments} emailId={formattedMailData.emailId} />
         </div>
         
         {/* 오른쪽 영역: 메일 본문 */}

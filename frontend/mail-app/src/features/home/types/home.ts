@@ -245,14 +245,7 @@ export interface TemporaryClientDetail {
     emailStatus: string | null;
     originalFolderId: number | null;
   };
-  emailAttachments: Array<{
-    id: number;
-    emailId: number;
-    name: string;
-    s3Key: string;
-    size: number;
-    type: string;
-  }>;
+  emailAttachments: Attachment[];
 }
 
 // 임시 거래처 업데이트 요청 타입
