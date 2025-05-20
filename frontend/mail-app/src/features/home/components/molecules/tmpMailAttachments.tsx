@@ -54,9 +54,9 @@ export const TmpMailAttachments: React.FC<TmpMailAttachmentsProps> = ({ attachme
               {attachment.name}
             </div>
             <div className="flex ml-auto space-x-2">
-              <Typography variant="body" className="text-gray-500">
+              {/* <Typography variant="body" className="text-gray-500">
                 {attachments.reduce((acc, curr) => acc + (typeof curr.size === 'string' ? parseInt(curr.size) : curr.size), 0)}KB
-              </Typography>
+              </Typography> */}
               <button 
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => handleDownload(attachment)}
