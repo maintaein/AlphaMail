@@ -10,13 +10,8 @@ interface ClientSearchBarProps {
 export const ClientSearchBar: React.FC<ClientSearchBarProps> = ({ onSearch }) => {
   const [keyword, setKeyword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch(keyword);
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="flex items-center gap-3 mb-2">
+    <div className="flex items-center gap-3 mb-2">
       <Typography variant="body">거래처</Typography>
       <Input
         type="text"
@@ -24,9 +19,16 @@ export const ClientSearchBar: React.FC<ClientSearchBarProps> = ({ onSearch }) =>
         placeholder="거래처명/사업자번호"
         value={keyword}
         onChange={(e) => setKeyword(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            onSearch(keyword);
+          }
+        }}
       />
       <Button
-        type="submit"
+        type="button"
+        onClick={() => onSearch(keyword)}
         className="w-[110px] h-[30px] bg-[#3E99C6] text-white rounded-lg font-semibold flex items-center justify-center gap-2"
       >
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -35,6 +37,6 @@ export const ClientSearchBar: React.FC<ClientSearchBarProps> = ({ onSearch }) =>
         </svg>
         <Typography variant="titleSmall" className="text-white">검색</Typography>
       </Button>
-    </form>
+    </div>
   );
 }; 
