@@ -79,12 +79,16 @@ services:
     image: alphaMail/chatbot:latest
     ports:
       - "5001:5001"
+    volumes:
+      - chatbot-db:/app/db
     networks:
       - alphaMail-networks
-      
+
 volumes:
   pip-cache: {}
   chroma-data: {}
+  chatbot-db: {}
+
 
 networks:
   alphaMail-networks:
