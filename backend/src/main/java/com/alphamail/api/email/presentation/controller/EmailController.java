@@ -99,10 +99,9 @@ public class EmailController {
 	}
 
 	@PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-
 	public ResponseEntity<Void> sendEmail(
 		@RequestPart("sender") String sender,
-		@RequestParam("recipients") List<String> recipients,
+		@RequestParam("recipients") List<String> recipients,  // 이렇게 받으면 됨
 		@RequestPart("subject") String subject,
 		@RequestPart(value = "bodyText", required = false) String bodyText,
 		@RequestPart(value = "bodyHtml", required = false) String bodyHtml,
