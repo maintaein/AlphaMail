@@ -23,12 +23,61 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
   const { id } = useParams();
   const queryClient = useQueryClient();
   const { data: userInfo } = useUserInfo();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [uploadSuccess, setUploadSuccess] = useState('');
 
   const { data: clientData } = useQuery({
     queryKey: ['client', id],
     queryFn: () => clientService.getClient(id!),
     enabled: !!id && id !== 'new',
   });
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 파일 형식 검증
+    if (!clientService.validateBusinessLicense(file)) {
+      setUploadError('사업자등록증은 PDF, JPG, JPEG 또는 PNG 형식만 업로드 가능합니다.');
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      setUploadError('');
+
+      // OCR 처리 API 호출
+      const ocrResult = await clientService.uploadBusinessLicenseOCR(file);
+
+      // OCR 처리 성공 여부 확인
+      if (ocrResult.success) {
+        // OCR 결과로 폼 필드 자동 채우기
+        setForm(prev => ({
+          ...prev,
+          licenseNum: ocrResult.licenseNum || prev.licenseNum,
+          corpName: ocrResult.corpName || prev.corpName,
+          representative: ocrResult.representative || prev.representative,
+          address: ocrResult.address || prev.address,
+          businessType: ocrResult.businessType || prev.businessType,
+          businessItem: ocrResult.businessItem || prev.businessItem,
+          // 파일 자체는 별도로 저장할 필요가 있다면 여기에 추가
+          businessLicense: file.name // 파일 이름이나 다른 식별자 저장
+        }));
+
+        // 성공 메시지 표시
+        setUploadSuccess('사업자등록증이 성공적으로 인식되었습니다.');
+      } else {
+        // OCR 처리는 되었지만 인식 실패
+        setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
+      }
+
+    } catch (error) {
+      setUploadError((error as any).message || 'OCR 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const [form, setForm] = useState<ClientDetail>({
     id: clientData?.id || 1,
@@ -79,12 +128,12 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      alert('저장에 실패했습니다.');
+      toast.error('저장에 실패했습니다.');
     }
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ClientDetail }) => 
+    mutationFn: ({ id, data }: { id: string; data: ClientDetail }) =>
       clientService.updateClient(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
@@ -92,7 +141,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      alert('수정에 실패했습니다.');
+      toast.error('수정에 실패했습니다.');
     }
   });
 
@@ -148,7 +197,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       // setForm((prev: ClientDetail) => ({ ...prev, [name]: onlyNumbers }));
 
       return;
-    } 
+    }
 
     if (name === 'phoneNum') {
       const formatted = formatPhoneNumber(value);
@@ -212,7 +261,26 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
           <Typography variant="body" bold>사업자등록증 첨부</Typography>
         </div>
         <div className="flex items-center h-[40px] border-b">
-          <Button variant="ghost" size="small">첨부파일</Button>
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png"
+            onChange={handleFileChange}
+            disabled={isUploading}
+            className="hidden"
+            id="businessLicenseFile"
+          />
+          <label htmlFor="businessLicenseFile" className="cursor-pointer">
+            {isUploading ? (
+              <span className="px-4 py-2 text-sm bg-gray-200 text-gray-600 rounded">업로드 중...</span>
+            ) : (
+              <span className="px-4 py-2 text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 rounded cursor-pointer">첨부파일</span>
+            )}
+          </label>
+          {uploadError && <span className="text-red-500 text-xs ml-2">{uploadError}</span>}
+          {uploadSuccess && <span className="text-green-500 text-xs ml-2">{uploadSuccess}</span>}
+          {form.businessLicense && !uploadError && !uploadSuccess && (
+            <span className="text-blue-500 text-xs ml-2">파일: {form.businessLicense}</span>
+          )}
         </div>
 
         {/* 거래처명 */}

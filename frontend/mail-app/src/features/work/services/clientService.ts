@@ -5,7 +5,6 @@ import {
   ClientResponse,
 } from '../types/clients';
 
-
 interface GetClientsParams {
   query?: string;
   page?: number;
@@ -14,7 +13,51 @@ interface GetClientsParams {
   companyId: number;
 }
 
+interface EmailOCR {
+  licenseNum: string;
+  address: string;
+  corpName: string;
+  representative: string;
+  businessType: string;
+  businessItem: string;
+  success: boolean;
+}
+
 export const clientService = {
+  
+  validateBusinessLicense: (file: File | null): boolean => {
+    if (!file) return false;
+    
+    const allowedTypes = [
+      'application/pdf', 
+      'image/jpeg', 
+      'image/jpg', 
+      'image/png'
+    ];
+    const fileType = file.type;
+    
+    return allowedTypes.includes(fileType);
+  },
+  
+  uploadBusinessLicenseOCR: async (file: File): Promise<EmailOCR> => {
+    // 파일 형식 검증
+    if (!clientService.validateBusinessLicense(file)) {
+      throw new Error('사업자등록증은 PDF, JPG, JPEG 또는 PNG 형식만 업로드 가능합니다.');
+    }
+  
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    // OCR 처리 엔드포인트로 POST 요청
+    const response = await api.post<EmailOCR>('/api/erp/clients/ocr', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    
+    return response.data;
+  },
+  
   // 거래처 목록 조회
   getClients: async (params: GetClientsParams) => {
     const response = await api.get<ClientResponse>(`/api/erp/companies/${params.companyId}/clients`, {
@@ -39,15 +82,15 @@ export const clientService = {
     const requestData = {
       companyId: companyId,
       groupId: groupId,
-      licenseNum : client.licenseNum,
-      corpName : client.corpName,
-      representative : client.representative,
-      phoneNum : client.phoneNum,
-      email : client.email,
-      address : client.address,
-      businessType : client.businessType,
-      businessItem : client.businessItem,
-      businessLicense : client.businessLicense,
+      licenseNum: client.licenseNum,
+      corpName: client.corpName,
+      representative: client.representative,
+      phoneNum: client.phoneNum,
+      email: client.email,
+      address: client.address,
+      businessType: client.businessType,
+      businessItem: client.businessItem,
+      businessLicense: client.businessLicense,
     };
 
     const response = await api.post<Client>('/api/erp/clients', requestData);
@@ -57,15 +100,15 @@ export const clientService = {
   // 거래처 수정
   updateClient: async (id: string, client: ClientDetail) => {
     const requestData = {
-      licenseNum : client.licenseNum,
-      corpName : client.corpName,
-      representative : client.representative,
-      phoneNum : client.phoneNum,
-      email : client.email,
-      address : client.address,
-      businessType : client.businessType,
-      businessItem : client.businessItem,
-      businessLicense : client.businessLicense,
+      licenseNum: client.licenseNum,
+      corpName: client.corpName,
+      representative: client.representative,
+      phoneNum: client.phoneNum,
+      email: client.email,
+      address: client.address,
+      businessType: client.businessType,
+      businessItem: client.businessItem,
+      businessLicense: client.businessLicense,
     };
 
     const response = await api.put<ClientDetail>(`/api/erp/clients/${id}`, requestData);

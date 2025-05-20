@@ -288,9 +288,9 @@ export const TmpQuoteAddRow: React.FC<TmpQuoteAddRowProps> = ({ showValidationEr
           <thead>
             <tr className="bg-gray-100">
               <th className="border-t border-b border-gray-300 p-2 w-12 text-center">
-                <button 
+              <button 
                   onClick={addItem}
-                  className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center"
+                  className="w-6 h-6 pb-1 bg-[#66BAE4] text-white rounded-md  flex items-center justify-center"
                 >
                   +
                 </button>
@@ -322,9 +322,9 @@ export const TmpQuoteAddRow: React.FC<TmpQuoteAddRowProps> = ({ showValidationEr
             {items.map((item) => (
               <tr key={item.id}>
                 <td className="border-b border-gray-300 p-2 text-center">
-                  <button 
+                <button 
                     onClick={() => removeItem(item.id)}
-                    className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center"
+                    className="w-6 h-6 pb-0.5 bg-[#AFAFAF] text-white rounded-md flex items-center justify-center"
                   >
                     -
                   </button>
@@ -333,7 +333,7 @@ export const TmpQuoteAddRow: React.FC<TmpQuoteAddRowProps> = ({ showValidationEr
                   <Typography variant="body">{item.id}</Typography>
                 </td>
                 <td className="border-b border-x border-gray-300 p-2">
-                  <CustomProductInput item={item} />
+                <Typography variant="body"> <CustomProductInput item={item} /></Typography>
                 </td>
                 <td className="border-b border-x border-gray-300 p-2">
                   <Input

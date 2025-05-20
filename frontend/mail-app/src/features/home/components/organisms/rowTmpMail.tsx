@@ -58,7 +58,7 @@ export const RowTmpMail: React.FC<RowTmpMailProps> = ({ type, id }) => {
   }
 
   return (
-    <div className="mt-3 bg-[#F6F7F7] rounded-md p-4">
+    <div className="mt-3 bg-[#F6F7F7]  p-5">
       <div className="flex flex-col md:flex-row">
         {/* 왼쪽 영역: 메일 정보 */}
         <div className="md:w-1/2 pr-4 border-r border-gray-200">

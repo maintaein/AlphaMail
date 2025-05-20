@@ -99,41 +99,41 @@ export const UserManageTemplate: React.FC = () => {
     }
   };
 
+  const formatPhoneNumber = (value: string) => {
+    const numbersOnly = value.replace(/\D/g, '');
+
+    if (numbersOnly.startsWith('02')) {
+      // 서울 지역번호
+      if (numbersOnly.length <= 2) return numbersOnly;
+      if (numbersOnly.length <= 5) return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2)}`;
+      if (numbersOnly.length <= 9)
+        return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 5)}-${numbersOnly.slice(5)}`;
+      return `${numbersOnly.slice(0, 2)}-${numbersOnly.slice(2, 6)}-${numbersOnly.slice(6, 10)}`;
+    } else {
+      // 휴대폰 또는 일반 지역번호 (3자리)
+      if (numbersOnly.length <= 3) return numbersOnly;
+      if (numbersOnly.length <= 6)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
+      if (numbersOnly.length <= 10)
+        return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 6)}-${numbersOnly.slice(6)}`;
+      return `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7, 11)}`;
+    }
+  };
+
+  const isValidPhoneNumber = (value: string) => {
+    const phoneRegex = /^(010-\d{4}-\d{4}|01[16789]-\d{3,4}-\d{4}|02-\d{3,4}-\d{4}|(031|032|033|041|042|043|044|051|052|053|054|055|061|062|063|064)-\d{3,4}-\d{4})$/;
+    return phoneRegex.test(value);
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
     // 전화번호 필드인 경우 특별한 처리를 합니다
     if (name === 'phone') {
       // 입력된 값에서 모든 하이픈을 제거합니다
-      const numbersOnly = value.replace(/-/g, '');
-
-      // 숫자만 입력되도록 검사합니다
-      if (!/^\d*$/.test(numbersOnly)) {
-        toast.error('전화번호는 숫자만 입력할 수 있습니다.');
-        return; // 숫자가 아닌 문자가 포함되어 있으면 상태를 업데이트하지 않습니다
-      }
-
-      // 숫자만 있는 문자열에 하이픈을 자동으로 추가합니다
-      let formattedPhone = '';
-      if (numbersOnly.length <= 3) {
-        formattedPhone = numbersOnly;
-      } else if (numbersOnly.length <= 7) {
-        formattedPhone = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3)}`;
-      } else {
-        formattedPhone = `${numbersOnly.slice(0, 3)}-${numbersOnly.slice(3, 7)}-${numbersOnly.slice(7, 11)}`;
-      }
-
-      // 하이픈이 자동으로 추가된 형식으로 상태를 업데이트합니다
-      setFormData(prev => ({
-        ...prev,
-        [name]: formattedPhone,
-      }));
-    } else {
-      // 다른 필드는 원래대로 처리합니다
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
+      const formatted = formatPhoneNumber(value);
+      setFormData((prev) => ({ ...prev, phone: formatted }));
+      return;
     }
   };
 
@@ -185,6 +185,13 @@ export const UserManageTemplate: React.FC = () => {
 
 
   const handleProfileAndPhoneUpdate = async () => {
+    if (!formData.phone) {
+      toast.error('전화번호를 입력해주세요.');
+      return;
+    }
+    if (formData.phone && !isValidPhoneNumber(formData.phone)) {
+      return;
+    }
     setPhoneLoading(true);
     setImgLoading(true);
     setMessage({ type: '', text: '' });
@@ -207,10 +214,12 @@ export const UserManageTemplate: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['userInfo'] });
 
 
-      setMessage({ type: 'success', text: '프로필 사진과 전화번호가 성공적으로 수정되었습니다.' });
+      toast.success('프로필이 성공적으로 수정되었습니다.');
+      // setMessage({ type: 'success', text: '프로필 사진과 전화번호가 성공적으로 수정되었습니다.' });
       setProfileFile(null);
     } catch (error: any) {
-      setMessage({ type: 'error', text: error?.response?.data?.message || '수정에 실패했습니다.' });
+      toast.error('프로필 수정에 실패했습니다.');
+      // setMessage({ type: 'error', text: error?.response?.data?.message || '수정에 실패했습니다.' });
     } finally {
       setPhoneLoading(false);
       setImgLoading(false);
@@ -297,7 +306,7 @@ export const UserManageTemplate: React.FC = () => {
             </tr>
             <tr>
               <td className="bg-gray-50 text-center font-medium">
-                <Typography variant="body">핸드폰 번호</Typography>
+                <Typography variant="body">전화번호</Typography>
               </td>
               <td>
                 <Input
@@ -305,9 +314,24 @@ export const UserManageTemplate: React.FC = () => {
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
+                  maxLength={13}
+                  inputMode='numeric'
+                  placeholder="전화번호를 입력해주세요"
                   className="w-60 h-9 px-2 border border-gray-300 rounded focus:outline-none"
                   required
                 />
+                {formData.phone && !isValidPhoneNumber(formData.phone) && (
+                  <div className="mt-1 flex items-center">
+                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
+                    <span className="ml-2 text-xs text-red-500">전화번호 형식이 올바르지 않습니다.</span>
+                  </div>
+                )}
+                {formData.phone && isValidPhoneNumber(formData.phone) && (
+                  <div className="mt-1 flex items-center">
+                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                    <span className="ml-2 text-xs text-green-500">올바른 전화번호 형식입니다.</span>
+                  </div>
+                )} 
               </td>
             </tr>
             <tr>

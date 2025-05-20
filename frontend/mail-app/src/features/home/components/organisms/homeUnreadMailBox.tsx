@@ -146,7 +146,7 @@ export const HomeUnreadMailBox: React.FC = () => {
           <Typography variant="body">안읽은 메일이 없습니다.</Typography>
         </div>
       ) : (
-        <div className="space-y-3 max-h-[400px] border border-gray-200 p-3 rounded-md overflow-y-auto">
+        <div className="space-y-1 max-h-[400px] border border-gray-200 p-3 rounded-md overflow-y-auto">
           <AnimatePresence initial={false}>
             {unreadMails.map((mail) => {
               const isNewMail = newMailIds.includes(mail.id.toString());
@@ -164,7 +164,7 @@ export const HomeUnreadMailBox: React.FC = () => {
                     mass: 1,
                   }}
                   layout
-                  className="border-b border-gray-100 pb-3 cursor-pointer hover:bg-gray-50"
+                  className="border border-gray-100 p-3 rounded-md cursor-pointer bg-gray-50 hover:bg-gray-100"
                   onClick={() => handleMailClick(mail.id.toString())}
                 >
                   <Typography variant="body" className="font-medium">
