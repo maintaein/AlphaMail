@@ -76,8 +76,8 @@ const QuoteMessage = ({ id, reply }: { id: string; reply: string }) => {
           <tbody>
             {quotes.map((quote) => (
               <Tr key={quote.id}>
-                <Td><Typography variant="titleSmall">{quote.clientName || '-'}</Typography></Td>
-                <Td><Typography variant="titleSmall">{quote.productName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quoteDetail?.clientName || '-'}</Typography></Td>
+                <Td><Typography variant="titleSmall">{quote.name || '-'}</Typography></Td>
                 <Td><Typography variant="titleSmall">{quote.price?.toLocaleString() || '-'}원</Typography></Td>
                 <Td>
                   <Button 
