@@ -8,6 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { clientService } from '../../../services/clientService';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
+import { toast } from 'react-toastify';
 
 export const ClientManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export const ClientManagementTemplate: React.FC = () => {
 
   const handleDelete = async () => {
     if (selectedClientIds.size === 0) {
-      alert('삭제할 거래처를 선택해주세요.');
+      toast.error('삭제할 거래처를 선택해주세요.');
       return;
     }
     if (!window.confirm('선택한 거래처를 삭제하시겠습니까?')) return;
@@ -39,9 +40,9 @@ export const ClientManagementTemplate: React.FC = () => {
       await clientService.deleteClients(Array.from(selectedClientIds));
       setSelectedClientIds(new Set());
       refetch();
-      alert('선택한 거래처가 삭제되었습니다.');
+      toast.success('선택한 거래처가 삭제되었습니다.');
     } catch (error) {
-      alert('거래처 삭제에 실패했습니다.');
+      toast.error('거래처 삭제를 실패했습니다.');
     }
   };
 
