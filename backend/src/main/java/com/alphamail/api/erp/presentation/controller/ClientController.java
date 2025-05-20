@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -61,7 +62,8 @@ public class ClientController {
 		@RequestParam(defaultValue = "0") int page,
 		@RequestParam(defaultValue = "10") int size
 	) {
-		Pageable pageable = PageRequest.of(page, size);
+		Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+		Pageable pageable = PageRequest.of(page, size, sort);
 
 		GetPageResponse<GetAllClientsResponse> response = getAllClientsUseCase.execute(companyId, query, pageable);
 
