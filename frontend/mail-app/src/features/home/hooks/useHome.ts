@@ -3,19 +3,23 @@ import { homeService } from '../services/homeService';
 import { homeQueryKeys } from '../constants/queryKeys';
 import { AssistantsParams, AssistantType, RegisterClientRequest, UpdateTemporaryClientRequest, UpdateTemporaryPurchaseOrderRequest, UpdateTemporaryQuoteRequest } from '../types/home';
 import { toast } from 'react-toastify';
+import { useUser } from '@/features/auth/hooks/useUser';
 
 export const useHome = () => {
   const queryClient = useQueryClient();
   
   // AI 비서 항목 목록 조회 쿼리
   const useAssistants = (params: AssistantsParams = {}) => {
+    const { data:user } = useUser(); // 사용자 정보 가져오기
+    
     return useQuery({
-      queryKey: [...homeQueryKeys.assistants, params],
+      // 쿼리 키에 사용자 ID 포함
+      queryKey: [...homeQueryKeys.assistants, user?.id, params],
       queryFn: () => homeService.getAssistants(params),
       staleTime: 1000 * 60 * 5, // 5분
     });
   };
-    
+
   const useTemporarySchedule = (temporaryScheduleId: number | null) => {
     return useQuery({
       queryKey: temporaryScheduleId ? homeQueryKeys.temporarySchedule(temporaryScheduleId) : [],

@@ -31,7 +31,7 @@ public class QuoteSpecification {
 			if (productName == null) {
 				return null;
 			}
-			Join<Object, Object> products = root.join("products", JoinType.LEFT);
+			Join<Object, Object> products = root.join("quoteProducts", JoinType.LEFT);
 			Join<Object, Object> product = products.join("productEntity", JoinType.LEFT);
 			query.distinct(true);
 			return cb.like(cb.lower(product.get("name")), "%" + productName.toLowerCase() + "%");

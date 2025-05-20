@@ -1,4 +1,10 @@
 spring:
+  servlet:
+    multipart:
+      max-file-size: 40MB
+      max-request-size: 40MB
+      enabled: true
+
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -27,6 +33,11 @@ aws:
     system-sender: "AlphaMail System <noreply@alphamail.my>"  # 시스템용 이메일
   s3:
     bucket-name: ${AWS_S3_BUCKET_NAME}
+
+server:
+  tomcat:
+    max-http-form-post-size: 40MB
+    max-swallow-size: 40MB
 
 decorator:
   datasource:

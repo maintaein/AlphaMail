@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { AiAssistantRow } from '../organisms/aiAssistantRow';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
@@ -6,22 +6,64 @@ import { useHome } from '../../hooks/useHome';
 import { AssistantType, assistantTypeMap } from '../../types/home';
 import { format } from 'date-fns';
 import { Spinner } from '@/shared/components/atoms/spinner';
+import { useUser } from '@/features/auth/hooks/useUser';
+import { ArrowPathIcon as RefreshIcon } from '@heroicons/react/24/outline';
 
 const ITEMS_PER_PAGE = 10;
 
 export const HomeAiTemplate: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(0); // API는 0부터 시작하는 페이지 인덱스 사용
-  
   const { useAssistants } = useHome();
-  
+  const { data:user } = useUser(); // 현재 로그인한 사용자 정보 가져오기
+
   // API에서 데이터 가져오기
-  const { data, isLoading, isError } = useAssistants({
+  const { 
+    data, 
+    isLoading, 
+    isError, 
+    refetch 
+  } = useAssistants({
     page: currentPage,
     size: ITEMS_PER_PAGE
-  });
-  
+  }); 
+
   const totalPages = data?.pageCount || 0;
+  
+  // 페이지 포커스 시 데이터 갱신
+  useEffect(() => {
+    // 페이지가 포커스될 때 데이터 다시 가져오기
+    const handleFocus = () => {
+      console.log('홈 페이지 포커스 감지 - AI 데이터 갱신');
+      refetch();
+    };
     
+    window.addEventListener('focus', handleFocus);
+    
+    // 페이지 가시성 변경 감지 (탭 전환 등)
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refetch();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+        
+    // 컴포넌트 마운트 시 데이터 갱신
+    refetch();
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refetch, user?.id]); // 사용자 ID가 변경될 때도 다시 실행
+
+  useEffect(() => {
+    console.log('사용자 변경 감지 - AI 데이터 갱신');
+    // 사용자 변경 시 첫 페이지로 리셋
+    setCurrentPage(0);
+    refetch();
+  }, [user?.id, refetch]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page - 1); // UI는 1부터 시작하는 페이지 번호 사용
   };
@@ -49,8 +91,14 @@ export const HomeAiTemplate: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm p-6 h-full min-h-[700px] flex flex-col">
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between items-center">
         <Typography variant="titleMedium">AI 업무 비서</Typography>
+        <button 
+          onClick={() => refetch()} 
+          className="text-gray-500 hover:text-blue-500"
+        >
+          <RefreshIcon className="h-5 w-5" />
+        </button>
       </div>
       
       <div className="flex-grow">
