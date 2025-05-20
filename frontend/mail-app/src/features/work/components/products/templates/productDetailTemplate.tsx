@@ -273,7 +273,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     },
     onError: (error) => {
       console.error('상품 저장 실패:', error);
-      alert('상품 저장에 실패했습니다.');
+      toast.error('상품 저장을 실패했습니다.');
     }
   });
 
@@ -297,7 +297,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     },
     onError: (error) => {
       console.error('상품 저장 실패:', error);
-      alert('상품 저장에 실패했습니다.');
+      toast.error('상품 저장을 실패했습니다.');
     }
   });
 

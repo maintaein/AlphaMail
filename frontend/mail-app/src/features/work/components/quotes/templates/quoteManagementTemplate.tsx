@@ -8,6 +8,7 @@ import { quoteService } from '../../../services/quoteService';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useQuoteStore } from '@/features/work/stores/quoteStore';
+import { toast } from 'react-toastify';
 
 export const QuoteManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -46,7 +47,7 @@ export const QuoteManagementTemplate: React.FC = () => {
 
   const handleDelete = async () => {
     if (selectedQuoteIds.size === 0) {
-      alert('삭제할 견적서를 선택해주세요.');
+      toast.error('삭제할 견적서를 선택해주세요.');
       return;
     }
 
@@ -57,10 +58,10 @@ export const QuoteManagementTemplate: React.FC = () => {
     try {
       await quoteService.deleteQuotes(Array.from(selectedQuoteIds));
       setSelectedQuoteIds(new Set());
-      alert('선택한 견적서가 삭제되었습니다.');
+      toast.success('선택한 견적서가 삭제되었습니다.');
     } catch (error) {
       console.error('견적서 삭제 실패:', error);
-      alert('견적서 삭제에 실패했습니다.');
+      toast.error('견적서 삭제를 실패했습니다.');
     }
   };
 

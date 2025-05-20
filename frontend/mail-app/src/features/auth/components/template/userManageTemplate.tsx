@@ -214,11 +214,12 @@ export const UserManageTemplate: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['userInfo'] });
 
 
-      toast.success('정보가 성공적으로 수정되었습니다.');
+      toast.success('프로필이 성공적으로 수정되었습니다.');
       // setMessage({ type: 'success', text: '프로필 사진과 전화번호가 성공적으로 수정되었습니다.' });
       setProfileFile(null);
     } catch (error: any) {
-      setMessage({ type: 'error', text: error?.response?.data?.message || '수정에 실패했습니다.' });
+      toast.error('프로필 수정에 실패했습니다.');
+      // setMessage({ type: 'error', text: error?.response?.data?.message || '수정에 실패했습니다.' });
     } finally {
       setPhoneLoading(false);
       setImgLoading(false);

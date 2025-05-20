@@ -7,6 +7,7 @@ import { useOrderManagement } from '../../../hooks/useOrderManagement';
 import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useQueryClient } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const OrderManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const OrderManagementTemplate: React.FC = () => {
 
   const handleDelete = async () => {
     if (selectedOrderIds.size === 0) {
-      alert('삭제할 발주서를 선택해주세요.');
+      toast.error('삭제할 발주서를 선택해주세요.');
       return;
     }
     if (window.confirm('선택한 발주서를 삭제하시겠습니까?')) {

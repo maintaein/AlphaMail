@@ -79,7 +79,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      alert('저장에 실패했습니다.');
+      toast.error('저장에 실패했습니다.');
     }
   });
 
@@ -92,7 +92,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      alert('수정에 실패했습니다.');
+      toast.error('수정에 실패했습니다.');
     }
   });
 
