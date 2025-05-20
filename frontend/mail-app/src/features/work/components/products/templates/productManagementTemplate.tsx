@@ -78,8 +78,52 @@ export const ProductManagementTemplate: React.FC<ProductManagementTemplateProps>
     }
   };
 
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>에러가 발생했습니다.</div>;
+  if (isLoading) {
+    return (
+      <div className="p-4">
+        <div className="mb-4">
+          <ProductSearchBar
+            keyword={keyword}
+            onSearch={handleSearch}
+          />
+        </div>
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
+              <Button
+                onClick={handleAddProduct}
+                variant="text"
+                size="large"
+                className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
+              >
+                <span className="text-2xl font-bold leading-none relative -top-[-1px] text-black">+</span>
+                <Typography variant="titleSmall" className="leading-none">재고 등록하기</Typography>
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleDelete}
+                  variant="text"
+                  size="small"
+                  className="min-w-[110px] h-[40px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
+                >
+                  <Typography variant="titleSmall">삭제</Typography>
+                </Button>
+              </div>
+            </div>
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded mb-4"></div>
+              <div className="space-y-3">
+                {[...Array(5)].map((_, index) => (
+                  <div key={index} className="h-12 bg-gray-200 rounded"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (error) return <div className="p-4 text-red-500">에러가 발생했습니다.</div>;
 
   return (
     <div className="p-4">
