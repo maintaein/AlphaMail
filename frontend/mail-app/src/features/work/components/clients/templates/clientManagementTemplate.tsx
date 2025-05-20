@@ -70,7 +70,7 @@ export const ClientManagementTemplate: React.FC = () => {
               size="large"
               className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
             >
-              <span className="text-2xl font-bold leading-none relative -top-[-1px]">+</span>
+              <span className="text-2xl font-bold leading-none relative -top-[-1px] text-black">+</span>
               <Typography variant="titleSmall" className="leading-none">거래처 등록하기</Typography>
             </Button>
             <div className="flex gap-2">
