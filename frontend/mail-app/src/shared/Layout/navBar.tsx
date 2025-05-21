@@ -5,7 +5,6 @@ import { useNavbarStore } from '../stores/useNavbarStore';
 import { useUserStore } from '../stores/useUserStore';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { api } from '@/shared/lib/axiosInstance';
 
@@ -222,7 +221,6 @@ export const NavBar = () => {
                     !isCollapsed && contentVisible ? (
                         <button
                             onClick={handleLogoutClick}
-                            className="w-full py-3 text-white border border-white rounded-md hover:bg-[#5B98FB] transition-colors"
                             className="w-full py-3 text-white border border-white rounded-md hover:bg-[#5B98FB] transition-colors"
                         >
                             <Typography variant="titleSmall" color="text-white">로그아웃</Typography>
