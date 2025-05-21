@@ -176,10 +176,6 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
       };
     });
 
-    console.log("--------------------------------");
-    console.log("updatedItems", updatedItems);
-    console.log('storeProducts', storeProducts);
-    console.log("--------------------------------");
     setProducts(storeProducts);
   };
 
