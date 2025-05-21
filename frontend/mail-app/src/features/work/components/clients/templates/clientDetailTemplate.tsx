@@ -285,8 +285,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
 
       <div className="grid grid-cols-[180px_1fr] gap-y-2 w-full">
         {/* 사업자등록증 첨부 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>사업자등록증 첨부</Typography>
+        <div className=" flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">사업자등록증 첨부</Typography>
         </div>
         <div className="flex items-center h-[40px] border-b">
           <input
@@ -332,8 +332,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 거래처명 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>거래처명 <span className="text-red-500">*</span></Typography>
+        <div className=" flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">거래처명 <span className="text-red-500">*</span></Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -357,8 +357,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 대표자명 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>대표자명 <span className="text-red-500">*</span></Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">대표자명 <span className="text-red-500">*</span></Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -382,8 +382,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 사업자 번호 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>사업자 번호 <span className="text-red-500">*</span></Typography>
+        <div className=" flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">사업자 번호 <span className="text-red-500">*</span></Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -408,8 +408,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 종목 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>종목 <span className="text-red-500">*</span></Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">종목 <span className="text-red-500">*</span></Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -433,8 +433,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 업태 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>업태 <span className="text-red-500">*</span></Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">업태 <span className="text-red-500">*</span></Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -458,8 +458,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 담당자 전화번호 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>담당자 전화번호</Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">담당자 전화번호</Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -481,8 +481,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 담당자 Email */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>담당자 Email</Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body">담당자 Email</Typography>
         </div>
         <div className="h-[40px] border-b w-auto">
           <Input
@@ -506,8 +506,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         </div>
 
         {/* 주소 */}
-        <div className="bg-[#E6F4FB] flex items-center justify-end px-4 h-[40px] border-b border-white">
-          <Typography variant="body" bold>주소</Typography>
+        <div className="flex items-center justify-end px-4 h-[40px] border-b border-white">
+          <Typography variant="body" >주소</Typography>
         </div>
         <div className="flex flex-col gap-2 h-[40px] border-b justify-center w-auto">
           <div className="flex gap-2">
@@ -527,7 +527,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
           variant="primary"
           size="large"
           disabled={isSubmitting}
-          className="w-[110px] h-[40px]"
+          className="w-[80px] h-[30px]"
         >
           {isSubmitting ? '처리중...' : (id && id !== 'new' ? '수정' : '등록')}
         </Button>
@@ -537,7 +537,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
           size="large"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="w-[110px] h-[40px]"
+          className="w-[80px] h-[30px]"
         >
           취소
         </Button>
