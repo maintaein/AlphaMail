@@ -109,11 +109,10 @@ const eventsMap = React.useMemo(() => {
     while (currentDate <= endDate) {
       const dateKey = format(currentDate, 'yyyy-MM-dd');
       
-    if (!Array.isArray(result[dateKey])) {
+      if (!Array.isArray(result[dateKey])) {
         result[dateKey] = [];
-        result[dateKey].filteredEvents = []; // <-- 여기에서 filteredEvents 속성을 추가
+        result[dateKey].filteredEvents = [];
       }
-      
       
       // 날짜별 일정 목록 초기화 (모달용)
       if (!dateSchedules[dateKey]) {
@@ -128,14 +127,20 @@ const eventsMap = React.useMemo(() => {
       currentDate = addDays(currentDate, 1);
     }
   });
+
+  // 디버깅: 분류된 일정 확인
+  console.log('분류된 일정:', {
+    다중일: multiDayEvents.map(e => ({ id: e.schedule.id, name: e.schedule.name })),
+    단일일: singleDayEvents.map(e => ({ id: e.schedule.id, name: e.schedule.name }))
+  });
   
   // 2. 다중일 일정 시작 시간순 정렬
   multiDayEvents.sort((a: EventInfo, b: EventInfo) => a.startTime - b.startTime);
   
   // 3. 충돌 감지 알고리즘으로 다중일 일정 배치
-  // (이 부분이 핵심)
   const usedPositions: Record<string, Set<number>> = {}; // dateKey -> 사용된 포지션 집합
   const eventPositions: Record<string, number> = {}; // 일정 ID -> 포지션
+  const eventContinuity: Record<string, Set<string>> = {}; // dateKey -> 연속된 일정 ID 집합
   
   // 포지션 확인 및 배치 함수
   const placeEvent = (event: EventInfo) => {
@@ -170,6 +175,13 @@ const eventsMap = React.useMemo(() => {
         while (currentDate <= event.endDate) {
           const dateKey = format(currentDate, 'yyyy-MM-dd');
           usedPositions[dateKey].add(position);
+          
+          // 연속성 정보 업데이트
+          if (!eventContinuity[dateKey]) {
+            eventContinuity[dateKey] = new Set<string>();
+          }
+          eventContinuity[dateKey].add(event.schedule.id);
+          
           currentDate = addDays(currentDate, 1);
         }
         
@@ -187,13 +199,15 @@ const eventsMap = React.useMemo(() => {
     while (currentDate <= event.endDate) {
       const dateKey = format(currentDate, 'yyyy-MM-dd');
       
-      // 배열 확장
+      // 배열 확장 및 null로 초기화
       while (result[dateKey].length <= position) {
         result[dateKey].push(null);
       }
       
-      // 일정 배치
-      result[dateKey][position] = event.schedule;
+      // 일정 배치 (이미 해당 위치에 일정이 있는 경우 중복 방지)
+      if (!result[dateKey][position]) {
+        result[dateKey][position] = event.schedule;
+      }
       
       currentDate = addDays(currentDate, 1);
     }
@@ -222,17 +236,25 @@ const eventsMap = React.useMemo(() => {
     // 포지션 사용 표시
     usedPositions[dateKey].add(position);
     
+    // 연속성 정보 업데이트
+    if (!eventContinuity[dateKey]) {
+      eventContinuity[dateKey] = new Set<string>();
+    }
+    eventContinuity[dateKey].add(event.schedule.id);
+    
     // 포지션 저장
     event.position = position;
     eventPositions[event.schedule.id] = position;
     
-    // 배열 확장
+    // 배열 확장 및 null로 초기화
     while (result[dateKey].length <= position) {
       result[dateKey].push(null);
     }
     
-    // 일정 배치
-    result[dateKey][position] = event.schedule;
+    // 일정 배치 (이미 해당 위치에 일정이 있는 경우 중복 방지)
+    if (!result[dateKey][position]) {
+      result[dateKey][position] = event.schedule;
+    }
   });
   
   // 5. 각 날짜별 필터링된 일정 목록 추가 (모달용)
@@ -247,6 +269,9 @@ const eventsMap = React.useMemo(() => {
     
     // 필터링된 일정 목록 설정
     result[dateKey].filteredEvents = uniqueEvents;
+    
+    // 연속성 정보 추가
+    result[dateKey].continuityInfo = eventContinuity[dateKey] || new Set<string>();
   }
   
   console.log("일정 ID별 포지션:", eventPositions);
