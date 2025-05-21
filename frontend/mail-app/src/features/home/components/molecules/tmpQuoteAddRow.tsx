@@ -279,7 +279,7 @@ export const TmpQuoteAddRow: React.FC<TmpQuoteAddRowProps> = ({ showValidationEr
               <th className="border-t border-b border-gray-300 p-2 w-12 text-center">
               <button 
                   onClick={addItem}
-                  className="w-6 h-6 pb-1 bg-[#68A5FD] text-white rounded-md  flex items-center justify-center"
+                  className="w-6 h-6 pb-1  text-[#4885F9] rounded-md  flex items-center justify-center hover:text-gray-500"
                 >
                   +
                 </button>
@@ -313,7 +313,7 @@ export const TmpQuoteAddRow: React.FC<TmpQuoteAddRowProps> = ({ showValidationEr
                 <td className="border-b border-gray-300 p-2 text-center">
                 <button 
                     onClick={() => removeItem(item.id)}
-                    className="w-6 h-6 pb-0.5 bg-[#BCBABA] text-white rounded-md flex items-center justify-center"
+                    className="w-6 h-6 pb-0.5 bg-[#FAFAFA] text-gray-500 rounded-md flex items-center justify-center"
                   >
                     -
                   </button>

@@ -94,9 +94,9 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
   const cellHeight = weekCount === 6 ? 'min-h-[120px]' : 'min-h-[140px]';
 
   return (
-    <div className="w-full bg-white rounded-lg shadow-md" key={gridKey}>
+    <div className="w-full bg-white rounded-lg " key={gridKey}>
       {/* 월 네비게이션 */}
-      <div className="flex items-center justify-center py-4 px-2 gap-2 bg-white border-b border-gray-200">
+      <div className="flex items-center justify-center py-4 px-2 gap-2 bg-white">
         <button
           onClick={handlePrevMonth}
           className="p-2 rounded-full hover:bg-gray-100"
@@ -123,14 +123,14 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
             const today = new Date();
             onMonthChange(today.getFullYear(), today.getMonth());
           }}
-          className="ml-2 px-3 py-1 text-sm bg-blue-100 text-blue-600 rounded-md hover:bg-blue-200"
+          className=" px-3 py-1 text-sm bg-[#F2F7FF] text-[#4885F9] rounded-md hover:bg-blue-200"
         >
           오늘
         </button>
       </div>
 
       {/* 요일 헤더 */}
-      <div className="grid grid-cols-7 text-center py-2 border-b border-gray-200 bg-gray-50">
+      <div className="grid grid-cols-7 text-center py-2 ">
         {weekDays.map((day, index) => (
           <Typography 
             key={day} 
@@ -146,7 +146,7 @@ export const CalendarGrid: React.FC<CalendarGridProps> = ({
       </div>
 
       {/* 날짜 셀 - 주 단위로 렌더링 */}
-      <div className="bg-white border-t border-l border-gray-200">
+      <div className="bg-white border-t ">
         {calendarData.weeks.map((week, weekIndex) => (
           <div key={`week-${weekIndex}-${gridKey}`} className="grid grid-cols-7">
             {week.map((date, dayIndex) => {

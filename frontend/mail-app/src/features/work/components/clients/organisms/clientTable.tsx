@@ -60,25 +60,25 @@ export const ClientTable: React.FC<ClientTableProps> = ({
               />
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>순번</Typography>
+              <Typography variant="body">순번</Typography>
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>거래처명</Typography>
+              <Typography variant="body">거래처명</Typography>
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>대표자명</Typography>
+              <Typography variant="body">대표자명</Typography>
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>사업자 번호</Typography>
+              <Typography variant="body">사업자 번호</Typography>
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>전화번호</Typography>
+              <Typography variant="body">전화번호</Typography>
             </th>
             <th className="p-2 border-r border-gray-200">
-              <Typography variant="body" bold>Email</Typography>
+              <Typography variant="body">Email</Typography>
             </th>
             <th className="p-2">
-              <Typography variant="body" bold>주소</Typography>
+              <Typography variant="body">주소</Typography>
             </th>
           </tr>
         </thead>

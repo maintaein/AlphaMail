@@ -213,9 +213,9 @@ const OrderDetailTemplate: React.FC = () => {
   const showPdfButton = id && id !== 'new';
 
   return (
-    <div className="p-8 bg-white rounded shadow max-w-5xl mx-auto">
+    <div className="p-8 bg-white rounded max-w-5xl mx-auto">
       <div className="mb-6 flex justify-between items-center">
-        <Typography variant="titleSmall">
+        <Typography variant="titleMedium" bold>
           발주서 {id && id !== 'new' ? '수정' : '등록'}
         </Typography>
         <div className="flex space-x-2">

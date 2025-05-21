@@ -310,18 +310,20 @@ const eventsMap = React.useMemo(() => {
   }
   
   return (
-    <div className="relative p-4">
-      <div className="flex gap-4">
+    <div className="relative p-8">
+      <div className="flex gap-5">
         {/* 좌측: 캘린더 */}
-        <div className="flex-1">
-          <CalendarGrid 
-            year={currentDate.getFullYear()}
-            month={currentDate.getMonth()}
-            eventsMap={eventsMap}
-            onEventClick={handleEventClick}
-            onMonthChange={handleMonthChange}
-            holidayMap={holidayMap}
-          />
+        <div className="w-full p-5 md:w-4/5 lg:w-3/4 mx-auto bg-white rounded-lg">
+          <div className="flex-1m-8">
+            <CalendarGrid 
+              year={currentDate.getFullYear()}
+              month={currentDate.getMonth()}
+              eventsMap={eventsMap}
+              onEventClick={handleEventClick}
+              onMonthChange={handleMonthChange}
+              holidayMap={holidayMap}
+            />
+          </div>
         </div>
         {/* 우측: 일정 추가 버튼 + ScheduleManagerGrid */}
         <div className="w-80 flex flex-col">
@@ -331,9 +333,9 @@ const eventsMap = React.useMemo(() => {
               className="flex items-center gap-3 w-full px-2 py-2 rounded-lg hover:bg-gray-100 transition"
               type="button"
             >
-              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100">
+              <span className="flex items-center justify-center w-10 h-10 rounded-full bg-[#E0EBFB]">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 5v14M5 12h14" stroke="#38BDF8" strokeWidth="2.5" strokeLinecap="round"/>
+                  <path d="M12 5v14M5 12h14" stroke="#4885F9" strokeWidth="2.5" strokeLinecap="round"/>
                 </svg>
               </span>
               <Typography variant="titleMedium">새로운 일정 등록</Typography>

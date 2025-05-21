@@ -43,7 +43,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
 
   let dayColor = '';
   if (isHoliday || isSunday) {
-    dayColor = 'text-red-500';
+    dayColor = 'text-[#DB5757]';
   } else if (isSaturday) {
     dayColor = 'text-blue-500';
   }
@@ -68,7 +68,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
       // 완료된 일정은 회색 바로 표시
       const baseStyle = isCompleted 
         ? 'text-xs text-gray-500 bg-gray-200 cursor-pointer overflow-hidden'
-        : 'text-xs text-white bg-[#3E99C6] cursor-pointer overflow-hidden';
+        : 'text-xs text-white bg-[#4885F9] cursor-pointer overflow-hidden';
       
       // 시작일과 종료일에 둥근 모서리 적용
       if (isStart) {
@@ -86,7 +86,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
 
   const getDotColor = (event: Schedule | null) => {
     if (!event) return 'transparent';
-    return event.is_done ? '#9CA3AF' : '#3E99C6';
+    return event.is_done ? '#9CA3AF' : '#4885F9';
   };
 
   // 일정명을 표시해야 하는지 결정하는 함수
@@ -148,18 +148,18 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   return (
     <>
       <div
-        className={`min-h-[120px] border-b border-r border-gray-300 ${
+        className={`min-h-[120px] border-b  border-gray-200 ${
           !isCurrentMonth ? 'text-gray-400 bg-gray-50' : 
-          isToday ? 'bg-blue-100' : 'bg-white'
+          isToday ? 'bg-[#F2F7FF]' : 'bg-white'
         }`}
       >
         <div className={`inline-flex items-center font-medium p-2 ${
-          isToday ? 'text-blue-700 font-bold' : 
+          isToday ? 'text-[#4885F9] font-bold' : 
           !isCurrentMonth ? 'text-gray-400' : dayColor
         }`}>
           <span>{date.getDate()}</span>
           {holidayName && (
-            <span className={`ml-1 text-xs align-middle truncate max-w-[60px] ${!isCurrentMonth ? 'text-gray-400' : 'text-red-500'}`} title={holidayName}>
+            <span className={`ml-1 text-xs align-middle truncate max-w-[60px] ${!isCurrentMonth ? 'text-gray-400' : 'text-[#DB5757]'}`} title={holidayName}>
               {formatHolidayName(holidayName)}
             </span>
           )}

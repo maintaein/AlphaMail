@@ -16,7 +16,6 @@ export interface QuoteSearchParams {
 }
 
 export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
-  // 레퍼런스와 상태는 동일하게 유지
   const clientRef = useRef<HTMLInputElement>(null);
   const quoteNoRef = useRef<HTMLInputElement>(null);
   const managerRef = useRef<HTMLInputElement>(null);
@@ -25,9 +24,17 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
   const endDateRef = useRef<HTMLInputElement>(null);
   const [isProductSelectOpen, setIsProductSelectOpen] = useState(false);
 
-  // 핸들러 함수들은 동일하게 유지
+  // 검색 후 입력값 초기화
+  const resetForm = () => {
+    if (clientRef.current) clientRef.current.value = '';
+    if (quoteNoRef.current) quoteNoRef.current.value = '';
+    if (managerRef.current) managerRef.current.value = '';
+    if (itemRef.current) itemRef.current.value = '';
+    if (startDateRef.current) startDateRef.current.value = '';
+    if (endDateRef.current) endDateRef.current.value = '';
+  };
+
   const handleSearch = (e?: React.FormEvent) => {
-    // 기존 코드 그대로
     if (e) e.preventDefault();
     let startDateValue = startDateRef.current?.value || '';
     let endDateValue = endDateRef.current?.value || '';
@@ -43,6 +50,7 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
       productName: itemRef.current?.value || '',
     };
     onSearch(params);
+    resetForm();
   };
 
   const handleProductSelect = (product: { name: string }) => {
@@ -53,17 +61,17 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
   };
 
   // 모든 입력 필드에 공통으로 적용할 클래스
-  const inputClassCommon = "font-pretendard text-xs placeholder:text-xs placeholder:font-pretendard";
+  const inputClassCommon = "font-pretendard text-[14px] placeholder:text-[14px] placeholder:font-pretendard";
 
   return (
     <form
       onSubmit={handleSearch}
-      className="w-full bg-white p-4 border border-gray-200 rounded mb-4"
+      className="w-full bg-white rounded mb-4 font-pretendard"
     >
       {/* 1st row: 거래처, 견적번호, 담당자 */}
       <div className="flex flex-wrap gap-x-6 gap-y-2 items-center mb-2">
         <div className="flex items-center gap-2">
-          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-xs">거래처</Typography>
+          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-[14px]">거래처</Typography>
           <input
             ref={clientRef}
             className={`w-[240px] h-[30px] px-2 bg-white border border-gray-300 focus:outline-none pr-8 rounded-none ${inputClassCommon}`}
@@ -71,7 +79,7 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-xs">견적번호</Typography>
+          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-[14px]">견적번호</Typography>
           <input
             ref={quoteNoRef}
             className={`w-[140px] h-[30px] px-2 bg-white border border-gray-300 focus:outline-none pr-8 rounded-none ${inputClassCommon}`}
@@ -79,7 +87,7 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
           />
         </div>
         <div className="flex items-center gap-2">
-          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-xs">담당자</Typography>
+          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-[14px]">담당자</Typography>
           <input
             ref={managerRef}
             className={`w-[140px] h-[30px] px-2 bg-white border border-gray-300 focus:outline-none pr-8 rounded-none ${inputClassCommon}`}
@@ -90,7 +98,7 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
       {/* 2nd row: 견적일자, 품목, 검색버튼 */}
       <div className="flex flex-wrap gap-x-6 gap-y-2 items-center mt-2">
         <div className="flex items-center gap-2">
-          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-xs">견적일자</Typography>
+          <Typography variant="body" className="min-w-[56px] text-right text-gray-600 text-[14px]">견적일자</Typography>
           <input
             ref={startDateRef}
             type="date"
@@ -104,7 +112,7 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
           />
         </div>
         <div className="flex items-center gap-2 relative">
-          <Typography variant="body" className="min-w-[40px] text-right text-gray-600 text-xs">품목</Typography>
+          <Typography variant="body" className="min-w-[40px] text-right text-gray-600 text-[14px]">품목</Typography>
           <input
             ref={itemRef}
             className={`w-[140px] h-[30px] px-2 bg-white border border-gray-300 focus:outline-none pr-8 rounded-none cursor-pointer ${inputClassCommon}`}
@@ -114,15 +122,15 @@ export const QuoteSearchBar: React.FC<QuoteSearchBarProps> = ({ onSearch }) => {
           />
         </div>
         <button
-          type="submit"
-          className="w-[100px] h-[35px] bg-[#3E99C6] text-white rounded-lg flex items-center justify-center gap-2 ml-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
-            <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" fill="none" />
-            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-          <Typography variant="body" className="text-white">검색</Typography>
-        </button>
+        type="submit"
+        className="w-[80px] h-[30px] bg-[#4885F9] text-white rounded-sm font-semibold flex items-center justify-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" fill="none" />
+          <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <Typography variant="titleSmall" className="text-white">검색</Typography>
+      </button>
       </div>
       <ProductSelectTemplate
         isOpen={isProductSelectOpen}

@@ -76,21 +76,26 @@ export const ClientManagementTemplate: React.FC = () => {
         <div className="bg-white rounded-lg shadow">
           <div className="p-4">
             <div className="flex justify-between items-center mb-4">
-              <Button
-                onClick={handleAddClient}
-                variant="text"
-                size="large"
-                className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
-              >
-                <span className="text-2xl font-bold leading-none relative -top-[-1px] text-black">+</span>
-                <Typography variant="titleSmall" className="leading-none">거래처 등록하기</Typography>
-              </Button>
+             
+             <button
+              onClick={handleAddClient}
+              className="flex items-center gap-3 w-full px-2 py-2 rounded-lg "
+              type="button"
+            >
+              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[#E0EBFB]">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 5v14M5 12h14" stroke="#4885F9" strokeWidth="2.5" strokeLinecap="round"/>
+                </svg>
+              </span>
+              <Typography variant="titleSmall">거래처 등록</Typography>
+            </button>
+
               <div className="flex gap-2">
                 <Button
                   onClick={handleDelete}
                   variant="text"
                   size="small"
-                  className="min-w-[110px] h-[40px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
+                  className="min-w-[80px] h-[30px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
                 >
                   <Typography variant="titleSmall">삭제</Typography>
                 </Button>

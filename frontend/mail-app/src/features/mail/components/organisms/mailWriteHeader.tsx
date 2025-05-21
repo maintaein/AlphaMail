@@ -23,7 +23,7 @@ export const MailWriteHeader: React.FC<MailWriteHeaderProps> = ({
   }) => {
     return (
       <div className="flex justify-between p-2 pl-0 bg-[#F5F5F5]">
-        <Button variant="ghost" onClick={onCancel} className="bg-[#F5F5F5] flex items-center gap-1  hover:bg-[#D4D4D4]">
+        <Button onClick={onCancel} className="bg-[#F5F5F5] flex items-center gap-1  hover:bg-[#D4D4D4]">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M15 18L9 12L15 6" stroke="#616161" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>

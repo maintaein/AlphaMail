@@ -358,7 +358,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                     rows={3}
                     maxLength={50}
                     placeholder="설명을 입력하세요 (최대 50자)"
-                    style={{ paddingBottom: '1.5rem' }}
+                    style={{ paddingBottom: '1.5rem', fontSize: '14px'}}
                   />
                   <div className="absolute bottom-2 right-2 text-xs text-gray-500">
                     {schedule.description?.length ?? 0}/50

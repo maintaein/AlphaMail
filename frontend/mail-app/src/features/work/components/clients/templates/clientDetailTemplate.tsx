@@ -278,8 +278,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <form onSubmit={handleSubmit} className="p-8 bg-white rounded shadow max-w-5xl mx-auto">
-      <Typography variant="titleLarge" bold className="mb-6">
+    <form onSubmit={handleSubmit} className="p-8 bg-white max-w-5xl mx-auto">
+      <Typography variant="titleMedium" bold className="mb-6">
         거래처 {id && id !== 'new' ? '수정' : '등록'}
       </Typography>
 
@@ -341,7 +341,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.corpName}
             onChange={handleChange}
             placeholder="거래처명을 입력하세요."
-            size="large"
+            size="medium"
             className="!w-[400px]"
             maxLength={50}
           />
@@ -366,7 +366,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.representative}
             onChange={handleChange}
             placeholder="대표자명을 입력하세요."
-            size="large"
+            size="medium"
             className="!w-[400px]"
             maxLength={10}
           />
@@ -391,7 +391,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.licenseNum}
             onChange={handleChange}
             placeholder="사업자 번호를 입력하세요."
-            size="large"
+            size="medium"
             className="!w-[400px]"
             inputMode='numeric'
             maxLength={12}
@@ -417,7 +417,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.businessItem}
             onChange={handleChange}
             placeholder="종목을 입력하세요."
-            size="large"
+            size="medium"
             className="!w-[400px]"
             maxLength={100}
           />
@@ -442,7 +442,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.businessType}
             onChange={handleChange}
             placeholder="업태를 입력하세요."
-            size="large"
+            size="medium"
             className="!w-[400px]"
             maxLength={100}
           />
@@ -469,7 +469,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             maxLength={13}
             inputMode='numeric'
             placeholder="전화번호"
-            size="large"
+            size="medium"
             className="!w-[400px]"
           />
           {form.phoneNum && !isValidPhoneNumber(form.phoneNum) && (
@@ -490,7 +490,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             value={form.email}
             onChange={handleChange}
             placeholder="Email"
-            size="large"
+            size="medium"
             className="!w-[400px]"
             maxLength={128}
           />

@@ -414,7 +414,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
   return (
     <div className="p-6 bg-white rounded-lg shadow">
       <div className="flex justify-between items-center mb-6">
-        <Typography variant="titleMedium">
+        <Typography variant="titleMedium" bold>
           {id && id !== 'new' ? '상품 상세' : '상품 등록'}
         </Typography>
         {onBack && (
