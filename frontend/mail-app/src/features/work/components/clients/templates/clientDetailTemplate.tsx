@@ -226,6 +226,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     }
 
     setForm((prev: ClientDetail) => ({ ...prev, [name]: value }));
+    
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -262,8 +263,10 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
 
     if (id && id !== 'new') {
       updateMutation.mutate({ id, data: form });
+      showToast('거래처가 수정되었습니다.', 'success');
     } else {
       createMutation.mutate(form);
+      showToast('거래처가 등록되었습니다.', 'success');
     }
   };
 

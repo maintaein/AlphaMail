@@ -4,7 +4,7 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { useNavbarStore } from '../stores/useNavbarStore';
 import { useUserStore } from '../stores/useUserStore';
 import { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { api } from '@/shared/lib/axiosInstance';
 
@@ -57,7 +57,7 @@ export const NavBar = () => {
                 pauseOnHover: true,
                 draggable: true
             });
-        } catch (error) {
+        } catch {
             setShowLogoutModal(false);
             toast.error('로그아웃 중 오류가 발생했습니다.', {
                 position: "top-right",
@@ -284,7 +284,7 @@ export const NavBar = () => {
             )}
             
             {/* 토스트 컨테이너 */}
-            <ToastContainer />
+            {/* <ToastContainer /> */}
         </div>
     );
 };
