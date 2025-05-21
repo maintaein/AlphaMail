@@ -258,7 +258,7 @@ export const QuoteDetailTemplate = () => {
         <button
           type="button"
           onClick={() => navigate('/work/quotes')}
-          className="text-gray-500 hover:text-gray-700 text-sm flex items-center"
+          className="text-gray-500 hover:text-gray-700 text-sm flex items-center font-pretendard text-sm "
         >
           ← 목록으로
         </button>
