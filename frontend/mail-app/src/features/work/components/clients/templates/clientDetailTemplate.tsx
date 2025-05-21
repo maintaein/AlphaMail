@@ -8,7 +8,7 @@ import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import AddressInput from '@/shared/components/atoms/addressInput';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface ClientDetailTemplateProps {
   onSave?: (data: ClientDetail) => void;
@@ -73,7 +73,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
       }
 
-    } catch (error) {
+    } catch  {
       // API 호출 실패 등 모든 오류에 대해 동일한 메시지 사용
       setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
     } finally {
@@ -132,7 +132,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      toast.error('저장에 실패했습니다.');
+      showToast('저장에 실패했습니다.', 'error');
     }
   });
 
@@ -145,14 +145,14 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      toast.error('수정에 실패했습니다.');
+      showToast('수정에 실패했습니다.', 'error');
     }
   });
 
 
   const handleDownloadBusinessLicense = async () => {
     if (!clientData?.businessLicenseUrl) {
-      toast.error('다운로드할 사업자등록증 파일이 없습니다.');
+      showToast('다운로드할 사업자등록증 파일이 없습니다.', 'error');
       return;
     }
 
@@ -160,8 +160,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       setIsDownloading(true);
       await clientService.downloadBusinessLicense(clientData.businessLicenseUrl);
       setIsDownloading(false);
-    } catch (error) {
-      toast.error('파일 다운로드에 실패했습니다.');
+    } catch  {
+      showToast('파일 다운로드에 실패했습니다.', 'error');
       setIsDownloading(false);
     }
   };
@@ -233,19 +233,19 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     setIsSubmitted(true);
     // 필수 입력값 체크
     if (!form.corpName.trim()) {
-      toast.error('거래처명을 입력해 주세요.');
+      showToast('거래처명을 입력해 주세요.', 'error');
       return;
     } else if (!form.representative.trim()) {
-      toast.error('대표자명을 입력해 주세요.');
+      showToast('대표자명을 입력해 주세요.', 'error');
       return;
     } else if (!form.licenseNum.trim()) {
-      toast.error('사업자번호를 입력해 주세요.');
+      showToast('사업자번호를 입력해 주세요.', 'error');
       return;
     } else if (!form.businessItem.trim()) {
-      toast.error('종목을 입력해 주세요.');
+      showToast('종목을 입력해 주세요.', 'error');
       return;
     } else if (!form.businessType.trim()) {
-      toast.error('업태를 입력해 주세요.');
+      showToast('업태를 입력해 주세요.', 'error');
       return;
     }
 

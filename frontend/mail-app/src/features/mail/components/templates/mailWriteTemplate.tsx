@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { MailWriteHeader } from '../organisms/mailWriteHeader';
 import { MailWriteForm } from '../organisms/mailWriteForm';
@@ -7,7 +7,6 @@ import { RecentEmailItem, SendMailRequest } from '../../types/mail';
 import { Spinner } from '@/shared/components/atoms/spinner';
 import { mailService } from '../../services/mailService';
 import { useQuery } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
 import { useMailStore } from '../../stores/useMailStore';
 import { ko } from 'date-fns/locale';
 import { format } from 'date-fns';
@@ -15,6 +14,7 @@ import AiPageTemplate from './aiPageTemplate';
 import { useAiStore } from '../../stores/useAiStore';
 import { useUser } from '@/features/auth/hooks/useUser'; // useUser 훅 임포트
 import { useHeaderStore } from '@/shared/stores/useHeaderStore';
+import { showToast } from '@/shared/components/atoms/toast';
 
 const FONT_OPTIONS = [
   { value: 'pretendard', label: '프리텐다드' },
@@ -78,7 +78,7 @@ const MailWriteTemplate: React.FC = () => {
   const location = useLocation();
   const { sendMail } = useMail();
   const { attachments, clearAttachments } = useMailStore();
-  const lastToastIdRef = useRef<string | number | null>(null);
+
   const { 
     isAiAssistantOpen, 
     openAiAssistant, 
@@ -142,25 +142,6 @@ const { data: threadInfo } = useQuery({
   enabled: !!originalMail && replyToId !== null,
   staleTime: 0,
 });  
-  // 토스트 메시지 표시 함수 (중복 방지)
-  const showToast = (message: string, type: 'error' | 'warning' | 'info' | 'success' = 'error') => {
-    // 이전 토스트가 있으면 닫기
-    if (lastToastIdRef.current) {
-      toast.dismiss(lastToastIdRef.current);
-    }
-    
-    // 새 토스트 표시 및 ID 저장
-    const toastId = toast[type](message, {
-      position: "top-right",
-      autoClose: 3000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-    
-    lastToastIdRef.current = toastId;
-  };
   
   // 한국 시간 형식으로 변환하는 함수
   const formatKoreanDateTime = (dateString: string): string => {

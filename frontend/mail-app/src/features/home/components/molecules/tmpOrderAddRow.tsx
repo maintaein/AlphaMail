@@ -4,8 +4,8 @@ import { Input } from '@/shared/components/atoms/input';
 import { useTmpOrderStore } from '../../stores/useTmpOrderStore';
 import ProductInput from '@/shared/components/atoms/productInput';
 import { Product } from '@/features/work/types/product';
-import { toast } from 'react-toastify';
 import { FaSearch } from 'react-icons/fa';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface TmpOrderAddRowProps {
   showValidationErrors?: boolean;
@@ -198,7 +198,7 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
     // 재고 수량 초과 시 최대값으로 제한
     if (maxStock !== undefined && numValue > maxStock) {
       value = maxStock.toString();
-      toast.error(`최대 주문 가능 수량은 ${maxStock}개입니다.`);
+      showToast(`최대 주문 가능 수량은 ${maxStock}개입니다.`, 'error');
     }
   
     // 가격 문자열에서 숫자로 변환 (콤마 제거)

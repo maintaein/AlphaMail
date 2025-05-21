@@ -6,8 +6,8 @@ import { TmpOrderAddAddress } from '../molecules/tmpOrderAddAddress';
 import { FileUploadInput } from '../molecules/fileUploadInput';
 import { useTmpClientStore } from '../../stores/useTmpClientStore';
 import { useHome } from '../../hooks/useHome';
-import { toast } from 'react-toastify';
 import { useUser } from '@/features/auth/hooks/useUser'
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface RowTmpClientsAddProps {
   temporaryClientId?: number;
@@ -91,27 +91,27 @@ export const RowTmpClientsAdd: React.FC<RowTmpClientsAddProps> = ({ temporaryCli
       
       // 유효성 검사
       if (!clientName) {
-        toast.error('거래처명을 입력해주세요.');
+        showToast('거래처명을 입력해주세요.', 'error');
         return;
       }
       
       if (!representative) {
-        toast.error('대표자명을 입력해주세요.');
+        showToast('대표자명을 입력해주세요.', 'error');
         return;
       }
       
       if (!licenseNumber) {
-        toast.error('사업자 번호를 입력해주세요.');
+        showToast('사업자 번호를 입력해주세요.', 'error');
         return;
       }
       
       if (!businessType) {
-        toast.error('종목을 입력해주세요.');
+        showToast('종목을 입력해주세요.', 'error');
         return;
       }
       
       if (!businessItem) {
-        toast.error('업태를 입력해주세요.');
+        showToast('업태를 입력해주세요.', 'error');
         return;
       }
       

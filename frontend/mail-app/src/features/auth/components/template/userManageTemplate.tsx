@@ -4,9 +4,8 @@ import { api } from '@/shared/lib/axiosInstance';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 
 // 메인 컴포넌트 시작
 export const UserManageTemplate: React.FC = () => {
@@ -60,25 +59,25 @@ export const UserManageTemplate: React.FC = () => {
 
     // 현재 비밀번호 입력 확인
     if (!currentPassword) {
-      toast.error('현재 비밀번호를 입력해주세요.');
+      showToast('현재 비밀번호를 입력해주세요.', 'error');
       return;
     }
 
     // 새 비밀번호 입력 확인
     if (!newPassword) {
-      toast.error('새 비밀번호를 입력해주세요.');
+      showToast('새 비밀번호를 입력해주세요.', 'error');
       return;
     }
 
     // 새 비밀번호 길이 검사 (8자 이상)
     if (newPassword.length < 8) {
-      toast.error('새 비밀번호는 8자 이상이어야 합니다.');
+      showToast('새 비밀번호는 8자 이상이어야 합니다.', 'error');
       return;
     }
 
     // 새 비밀번호 확인 일치 검사
     if (newPassword !== confirmPassword) {
-      toast.error('새 비밀번호가 일치하지 않습니다.');
+      showToast('새 비밀번호가 일치하지 않습니다.', 'error');
       return;
     }
 
@@ -90,16 +89,15 @@ export const UserManageTemplate: React.FC = () => {
       });
 
       // 성공 메시지
-      toast.success('비밀번호가 성공적으로 변경되었습니다.');
+      showToast('비밀번호가 성공적으로 변경되었습니다.', 'success');
 
       // 입력 필드 초기화
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error) {
-      const axiosError = error as AxiosError<{ message: string }>;
-      const errorMsg = axiosError.response?.data?.message || '비밀번호 변경에 실패했습니다.';
-      toast.error(errorMsg);
+    } catch (error: any) {
+      const errorMsg = error?.response?.data?.message || '비밀번호 변경에 실패했습니다.';
+      showToast(errorMsg, 'error');
     } finally {
       setIsLoading(false);
     }
@@ -152,20 +150,20 @@ export const UserManageTemplate: React.FC = () => {
       // 파일 확장자 검사
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (ext !== 'png' && ext !== 'jpg' && ext !== 'jpeg') {
-        toast.error('이미지는 .png, .jpg, .jpeg 파일만 업로드할 수 있습니다.');
+        showToast('이미지는 .png, .jpg, .jpeg 파일만 업로드할 수 있습니다.', 'error'); // alert -> toast.error
         return;
       }
 
       // 파일 크기 제한 (2MB)
       const maxSizeInBytes = 2 * 1024 * 1024;
       if (file.size > maxSizeInBytes) {
-        toast.error('이미지는 2MB 이하만 업로드할 수 있습니다.');
+        showToast('이미지는 2MB 이하만 업로드할 수 있습니다.', 'error'); // alert -> toast.error
         return;
       }
 
       // MIME 타입 검사
       if (!file.type.startsWith('image/')) {
-        toast.error('유효한 이미지 파일이 아닙니다.');
+        showToast('유효한 이미지 파일이 아닙니다.', 'error'); // alert -> toast.error
         return;
       }
 
@@ -180,14 +178,12 @@ export const UserManageTemplate: React.FC = () => {
               setProfileImg(ev.target.result.toString());
             }
           };
-          img.onerror = (): void => {
-            toast.error('손상되었거나 유효하지 않은 이미지 파일입니다.');
+          img.onerror = () => {
+            showToast('손상되었거나 유효하지 않은 이미지 파일입니다.', 'error'); // alert -> toast.error
           };
-          if (ev.target?.result) {
-            img.src = ev.target.result.toString();
-          }
-        } catch (error) {
-          toast.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
+          img.src = ev.target?.result as string;
+        } catch {
+          showToast('이미지 파일을 읽는 중 오류가 발생했습니다.', 'error'); // alert -> toast.error
         }
       };
       reader.readAsDataURL(file);
@@ -197,11 +193,11 @@ export const UserManageTemplate: React.FC = () => {
   // 프로필 및 전화번호 업데이트 핸들러
   const handleProfileAndPhoneUpdate = async (): Promise<void> => {
     if (!formData.phone) {
-      toast.error('전화번호를 입력해주세요.');
+      showToast('전화번호를 입력해주세요.', 'error');
       return;
     }
     if (formData.phone && !isValidPhoneNumber(formData.phone)) {
-      toast.error('전화번호 형식이 올바르지 않습니다.');
+      showToast('전화번호 형식이 올바르지 않습니다.', 'error');
       return;
     }
     setPhoneLoading(true);
@@ -225,10 +221,14 @@ export const UserManageTemplate: React.FC = () => {
 
       // 유저 정보 갱신
       queryClient.invalidateQueries({ queryKey: ['userInfo'] });
-      toast.success('프로필이 성공적으로 수정되었습니다.');
+
+
+      showToast('프로필이 성공적으로 수정되었습니다.', 'success');
+      // setMessage({ type: 'success', text: '프로필 사진과 전화번호가 성공적으로 수정되었습니다.' });
       setProfileFile(null);
-    } catch (error) {
-      toast.error('프로필 수정에 실패했습니다.');
+    } catch  {
+      showToast('프로필 수정에 실패했습니다.', 'error');
+      // setMessage({ type: 'error', text: error?.response?.data?.message || '수정에 실패했습니다.' });
     } finally {
       setPhoneLoading(false);
       setImgLoading(false);
