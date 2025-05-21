@@ -26,6 +26,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const [uploadSuccess, setUploadSuccess] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const { data: clientData } = useQuery({
     queryKey: ['client', id],
@@ -68,12 +69,13 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         // 성공 메시지 표시
         setUploadSuccess('사업자등록증이 성공적으로 인식되었습니다.');
       } else {
-        // OCR 처리는 되었지만 인식 실패
+        // OCR 처리에 실패한 경우
         setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
       }
 
     } catch (error) {
-      setUploadError((error as any).message || 'OCR 처리 중 오류가 발생했습니다.');
+      // API 호출 실패 등 모든 오류에 대해 동일한 메시지 사용
+      setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
     } finally {
       setIsUploading(false);
     }
@@ -89,7 +91,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     address: clientData?.address || '',
     businessType: clientData?.businessType || '',
     businessItem: clientData?.businessItem || '',
-    businessLicense: clientData?.businessLicense || '',
+    businessLicenseUrl: clientData?.businessLicenseUrl || '',
+    businessLicenseName: clientData?.businessLicenseName || '',
     createdAt: new Date().toISOString(),
     updatedAt: null
   });
@@ -108,7 +111,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         address: clientData.address,
         businessType: clientData.businessType,
         businessItem: clientData.businessItem,
-        businessLicense: clientData.businessLicense,
+        businessLicenseUrl: clientData.businessLicenseUrl,
+        businessLicenseName: clientData.businessLicenseName,
         createdAt: clientData.createdAt,
         updatedAt: clientData.updatedAt
       });
@@ -144,6 +148,25 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       toast.error('수정에 실패했습니다.');
     }
   });
+
+
+  const handleDownloadBusinessLicense = async () => {
+    if (!clientData?.businessLicenseUrl) {
+      toast.error('다운로드할 사업자등록증 파일이 없습니다.');
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+      await clientService.downloadBusinessLicense(clientData.businessLicenseUrl);
+      setIsDownloading(false);
+    } catch (error) {
+      toast.error('파일 다운로드에 실패했습니다.');
+      setIsDownloading(false);
+    }
+  };
+
+
 
   const formatBusinessLicense = (value: string) => {
     const onlyNums = value.replace(/\D/g, '').slice(0, 10); // 숫자만, 최대 10자리
@@ -193,9 +216,6 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     if (name === 'licenseNum') {
       const formatted = formatBusinessLicense(value);
       setForm((prev) => ({ ...prev, licenseNum: formatted }));
-      // const onlyNumbers = value.replace(/\D/g, '').slice(0, 10);
-      // setForm((prev: ClientDetail) => ({ ...prev, [name]: onlyNumbers }));
-
       return;
     }
 
@@ -269,17 +289,37 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
             className="hidden"
             id="businessLicenseFile"
           />
-          <label htmlFor="businessLicenseFile" className="cursor-pointer">
+          <label htmlFor="businessLicenseFile" className="cursor-pointer mr-2">
             {isUploading ? (
               <span className="px-4 py-2 text-sm bg-gray-200 text-gray-600 rounded">업로드 중...</span>
             ) : (
               <span className="px-4 py-2 text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 rounded cursor-pointer">첨부파일</span>
             )}
           </label>
+          
+          {/* 다운로드 버튼 - 수정 모드에서만 표시 */}
+          {id && id !== 'new' && clientData?.businessLicenseUrl && (
+            <button
+              type="button"
+              onClick={handleDownloadBusinessLicense}
+              disabled={isDownloading}
+              className="ml-2 px-4 py-2 text-sm bg-green-50 text-green-600 hover:bg-green-100 rounded cursor-pointer"
+            >
+              {isDownloading ? '다운로드 중...' : '파일 다운로드'}
+            </button>
+          )}
+          
           {uploadError && <span className="text-red-500 text-xs ml-2">{uploadError}</span>}
           {uploadSuccess && <span className="text-green-500 text-xs ml-2">{uploadSuccess}</span>}
-          {form.businessLicense && !uploadError && !uploadSuccess && (
-            <span className="text-blue-500 text-xs ml-2">파일: {form.businessLicense}</span>
+          
+          {/* 파일명 표시 - 클릭 시 다운로드 */}
+          {form.businessLicenseUrl && (
+            <span
+              className="text-blue-500 text-xs ml-2 cursor-pointer hover:underline"
+              onClick={() => clientService.downloadBusinessLicense(form.businessLicenseUrl)}
+            >
+              파일: {form.businessLicenseName}
+            </span>
           )}
         </div>
 
