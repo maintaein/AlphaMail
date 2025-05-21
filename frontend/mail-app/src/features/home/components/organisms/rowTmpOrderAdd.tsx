@@ -11,6 +11,7 @@ import { useHome } from '../../hooks/useHome';
 import { UpdateTemporaryPurchaseOrderRequest } from '../../types/home';
 import { useUser } from '@/features/auth/hooks/useUser'; // 추가
 import { showToast } from '@/shared/components/atoms/toast';
+import { PhoneInput } from '@/shared/components/atoms/phoneInput';
 
 interface RowTmpOrderAddProps {
   temporaryPurchaseOrderId: number;
@@ -47,6 +48,7 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
   const registerPurchaseOrder = useRegisterPurchaseOrder();
   const { data: user } = useUser(); 
   const [showValidationErrors, setShowValidationErrors] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (orderDetail) {
@@ -170,6 +172,36 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
   // 입력 필드 높이를 일관되게 유지하기 위한 스타일
   const inputStyle = "h-10";
   
+  const validate = (value: string) => {
+    let error = '';
+    if (value && value.trim() !== '') {
+      // 하이픈 제거 후 숫자만 남기기
+      const numbersOnly = value.replace(/[^0-9]/g, '');
+      
+      // 서울 지역번호(02) 또는 휴대폰(010, 011, 016, 017, 018, 019) 또는 지역번호(031~099)
+      const isValidFormat = /^(02|010|011|016|017|018|019|0[3-9][0-9])\d{7,8}$/.test(numbersOnly);
+      
+      if (!isValidFormat) {
+        error = '올바른 전화번호 형식이 아닙니다. (예: 02-1234-5678, 010-1234-5678)';
+      }
+    }
+    return error;
+  };
+
+  const handleManagerContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const error = validate(value);
+    setErrors(prev => ({ ...prev, managerContact: error }));
+    setManagerContact(value);
+  };
+
+  const handleClientContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    const error = validate(value);
+    setErrors(prev => ({ ...prev, clientContact: error }));
+    setClientContact(value);
+  };
+
   if (isLoading) {
     return (
       <div className="mt-4 border-t border-gray-200 pt-4 bg-white rounded-sm p-4">
@@ -272,11 +304,12 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
           </Typography>
         </div>
         <div className="col-span-2">
-          <Input 
-            value={managerContact} 
-            onChange={(e) => setManagerContact(e.target.value)} 
-            placeholder="" 
+          <PhoneInput
+            value={managerContact}
+            onChange={handleManagerContactChange}
+            name="managerContact"
             className={inputStyle}
+            errorMessage={errors.managerContact}
           />
         </div>
         
@@ -295,12 +328,13 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
           </Typography>
         </div>
         <div className="col-span-2">
-          <Input 
-              value={clientContact}
-              onChange={(e) => setClientContact(e.target.value)}
-              placeholder="" 
-              className={inputStyle} 
-            />
+          <PhoneInput
+            value={clientContact}
+            onChange={handleClientContactChange}
+            name="clientContact"
+            className={inputStyle}
+            errorMessage={errors.clientContact}
+          />
         </div>
         
         <div className="col-span-1 flex items-center">
