@@ -38,7 +38,6 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 파일 형식 검증
     if (!clientService.validateBusinessLicense(file)) {
       setUploadError('사업자등록증은 PDF, JPG, JPEG 또는 PNG 형식만 업로드 가능합니다.');
       return;
@@ -47,13 +46,22 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     try {
       setIsUploading(true);
       setUploadError('');
+      setUploadSuccess('');
 
-      // OCR 처리 API 호출
+      // 1. S3 업로드 먼저
+      const s3Result = await clientService.uploadBusinessLicense(file);
+
+      // 2. S3 업로드 성공 시 form에 URL/이름 저장
+      setForm(prev => ({
+        ...prev,
+        businessLicenseUrl: s3Result.s3Key, // 실제로는 s3Key가 전체 URL이어야 함
+        businessLicenseName: file.name
+      }));
+
+      // 3. OCR 요청
       const ocrResult = await clientService.uploadBusinessLicenseOCR(file);
 
-      // OCR 처리 성공 여부 확인
       if (ocrResult.success) {
-        // OCR 결과로 폼 필드 자동 채우기
         setForm(prev => ({
           ...prev,
           licenseNum: ocrResult.licenseNum || prev.licenseNum,
@@ -65,15 +73,12 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
           // 파일 자체는 별도로 저장할 필요가 있다면 여기에 추가
           businessLicense: file.name // 파일 이름이나 다른 식별자 저장
         }));
-
-        // 성공 메시지 표시
         setUploadSuccess('사업자등록증이 성공적으로 인식되었습니다.');
       } else {
-        // OCR 처리에 실패한 경우
         setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
       }
 
-    } catch  {
+    } catch (error) {
       // API 호출 실패 등 모든 오류에 대해 동일한 메시지 사용
       setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
     } finally {
