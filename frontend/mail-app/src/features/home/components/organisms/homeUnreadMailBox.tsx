@@ -43,7 +43,7 @@ export const HomeUnreadMailBox: React.FC = () => {
   
   // 날짜 포맷팅 함수
   const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+    const date = new Date(dateString + 'Z');
     return format(date, 'yy-MM-dd HH:mm', { locale: ko });
   };
 
