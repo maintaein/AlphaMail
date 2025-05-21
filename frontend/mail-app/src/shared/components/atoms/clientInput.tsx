@@ -34,7 +34,7 @@ const ClientInput = forwardRef<HTMLInputElement, ClientInputProps>(
           onFocus={onFocus}
           readOnly
           placeholder={placeholder}
-          className={`w-full border border-gray-300 shadow-sm p-2 cursor-pointer hover:bg-gray-50 ${className}`}
+           className={`w-full border border-gray-300 shadow-sm p-2 cursor-pointer hover:bg-gray-50 font-pretendard text-sm ${className}`}
         />
         <ClientSelectTemplate
           isOpen={isModalOpen}
