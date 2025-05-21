@@ -5,7 +5,7 @@ import { ScheduleDayModal } from './ScheduleDayModal';
 
 interface CalendarDayCellProps {
   date: Date;
-  events: any; // (Schedule | null)[] & { filteredEvents?: Schedule[] };
+  events: any; // (Schedule | null)[] & { filteredEvents?: Schedule[], continuityInfo?: Set<string> };
   isToday: boolean;
   isCurrentMonth: boolean;
   cellHeightClass?: string;
@@ -23,6 +23,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   holidayMap = {},
   
 }) => {
+  
   // 각 셀에 표시할 최대 일정 수
   const MAX_VISIBLE_EVENTS = 3;
 
@@ -47,8 +48,9 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     dayColor = 'text-blue-500';
   }
 
-  const getEventStyle = (event: Schedule) => {
-    if (!event) return 'text-xs text-black cursor-pointer p-1 overflow-hidden flex items-center';
+  const getEventStyle = (event: Schedule | null) => {
+    
+    if (!event) return 'invisible w-full h-[24px]';
 
     const currentDate = startOfDay(date);
     const startDate = startOfDay(new Date(event.start_time));
@@ -60,7 +62,6 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     const isMultiDay = !isSingleDay;
 
     const isCompleted = event.is_done;
-    // const duration = differenceInDays(endDate, startDate) + 1;
 
     // 여러 날짜에 걸친 일정만 배경색 적용
     if (isMultiDay) {
@@ -83,13 +84,13 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
     return `text-xs ${isCompleted ? 'text-gray-400' : 'text-black'} cursor-pointer p-1 overflow-hidden flex items-center`;
   };
 
-  const getDotColor = (event: Schedule) => {
-    if (!event) return '#3E99C6'; // 기본 색상
-    return event.is_done ? '#9CA3AF' : '#3E99C6'; // 완료된 일정은 회색, 미완료는 파란색
+  const getDotColor = (event: Schedule | null) => {
+    if (!event) return 'transparent';
+    return event.is_done ? '#9CA3AF' : '#3E99C6';
   };
 
   // 일정명을 표시해야 하는지 결정하는 함수
-  const shouldShowEventName = (event: Schedule) => {
+  const shouldShowEventName = (event: Schedule | null) => {
     if (!event) return false;
     
     const currentDate = startOfDay(date);
@@ -117,18 +118,14 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   // 연속된 일정은 위치가 유지되도록 하고, 모달에는 모든 일정이 표시되도록 수정
   const eventsArray = Array.isArray(events) ? events : [];
   
-  // null이 아닌 실제 일정만 필터링
-  const nonNullEvents = eventsArray.filter(event => event !== null) as Schedule[];
-  
-  // 중복을 제거한 고유 일정 목록
-  const uniqueEvents = [...new Map(nonNullEvents.map(event => [event.id, event])).values()];
-  
   // 모달에 표시할 필터링된 일정 목록
-  const filteredEvents = events.filteredEvents || uniqueEvents;
+  const filteredEvents = events.filteredEvents || eventsArray.filter(event => event !== null);
   
-  // 정확히 MAX_VISIBLE_EVENTS개까지만 보여주기
-  const visibleEvents = nonNullEvents.slice(0, MAX_VISIBLE_EVENTS);
-  
+  // 표시할 일정 결정 (최대 3개)
+  const visibleEvents = React.useMemo(() => {
+    return eventsArray.slice(0, MAX_VISIBLE_EVENTS);
+  }, [eventsArray]);
+
   // 고유 일정 개수와 표시 일정 개수 비교하여 더보기 버튼 표시 여부 결정
   const realEventCount = filteredEvents.length;
   const hiddenEventsCount = Math.max(0, realEventCount - visibleEvents.length);
@@ -137,27 +134,29 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       const dateStr = format(date, 'yyyy-MM-dd');
-      if (nonNullEvents.length > 0 || filteredEvents.length > 0) {
+      if (eventsArray.length > 0 || filteredEvents.length > 0) {
         console.log(`${dateStr} 일정 정보:`, {
           전체: eventsArray.length,
-          실제: nonNullEvents.length,
-          고유: uniqueEvents.length,
           필터링됨: filteredEvents.length,
           표시: visibleEvents.length,
           숨김: hiddenEventsCount
         });
       }
     }
-  }, [date, eventsArray.length, nonNullEvents.length, uniqueEvents.length, filteredEvents.length, visibleEvents.length, hiddenEventsCount]);
+  }, [date, eventsArray.length, filteredEvents.length, visibleEvents.length, hiddenEventsCount]);
 
   return (
     <>
       <div
-        className={`min-h-[120px] border-b border-r border-gray-300 bg-white ${
-          !isCurrentMonth ? 'text-gray-400 bg-gray-50' : ''
-        } ${isToday ? 'bg-blue-50' : ''}`}
+        className={`min-h-[120px] border-b border-r border-gray-300 ${
+          !isCurrentMonth ? 'text-gray-400 bg-gray-50' : 
+          isToday ? 'bg-blue-100' : 'bg-white'
+        }`}
       >
-        <div className={`inline-flex items-center font-medium p-2 ${isToday ? 'text-blue-600 font-bold' : ''} ${!isCurrentMonth ? 'text-gray-400' : dayColor}`}>
+        <div className={`inline-flex items-center font-medium p-2 ${
+          isToday ? 'text-blue-700 font-bold' : 
+          !isCurrentMonth ? 'text-gray-400' : dayColor
+        }`}>
           <span>{date.getDate()}</span>
           {holidayName && (
             <span className={`ml-1 text-xs align-middle truncate max-w-[60px] ${!isCurrentMonth ? 'text-gray-400' : 'text-red-500'}`} title={holidayName}>
@@ -168,6 +167,16 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
         <div className="space-y-0.5">
           {/* 표시할 일정만 매핑 (최대 MAX_VISIBLE_EVENTS개) */}
           {visibleEvents.map((event, index) => {
+            if (!event) {
+              return (
+                <div
+                  key={`empty-${index}`}
+                  className="invisible w-full h-[24px]"
+                  aria-hidden="true"
+                />
+              );
+            }
+
             const isStart = isSameDay(date, new Date(event.start_time));
             const isEnd = isSameDay(date, new Date(event.end_time));
             const isSingleDay = isStart && isEnd;
@@ -178,7 +187,7 @@ export const CalendarDayCell: React.FC<CalendarDayCellProps> = ({
               <div
                 key={`${event.id}-${index}`}
                 className={getEventStyle(event) + " w-full h-[24px]"}
-                onClick={() => event && onEventClick?.(event)}
+                onClick={() => onEventClick?.(event)}
               >
                 {(isStart || showEventName) ? (
                   <div className="flex items-center w-full min-w-0">

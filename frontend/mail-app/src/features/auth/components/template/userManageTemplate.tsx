@@ -6,10 +6,13 @@ import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
 import { showToast } from '@/shared/components/atoms/toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
+// 메인 컴포넌트 시작
 export const UserManageTemplate: React.FC = () => {
+  // 유저 정보 가져오기
   const { data: userInfo } = useUserInfo();
-  const queryClient = useQueryClient(); // 추가: QueryClient 가져오기
+  const queryClient = useQueryClient();
 
   const [formData, setFormData] = useState({
     id: 0,
@@ -27,12 +30,13 @@ export const UserManageTemplate: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [profileImg, setProfileImg] = useState<string | null>(null);
+  const [profileImg, setProfileImg] = useState<string>('');
   const [profileFile, setProfileFile] = useState<File | null>(null);
   const [imgLoading, setImgLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [phoneLoading, setPhoneLoading] = useState(false);
 
+  // 유저 정보가 로드되면 폼 데이터 설정
   useEffect(() => {
     if (userInfo) {
       setFormData({
@@ -50,7 +54,8 @@ export const UserManageTemplate: React.FC = () => {
     }
   }, [userInfo]);
 
-  const handlePasswordChange = async () => {
+  // 비밀번호 변경 처리
+  const handlePasswordChange = async (): Promise<void> => {
     setMessage({ type: '', text: '' });
 
     // 현재 비밀번호 입력 확인
@@ -99,7 +104,8 @@ export const UserManageTemplate: React.FC = () => {
     }
   };
 
-  const formatPhoneNumber = (value: string) => {
+  // 전화번호 형식 변환
+  const formatPhoneNumber = (value: string): string => {
     const numbersOnly = value.replace(/\D/g, '');
 
     if (numbersOnly.startsWith('02')) {
@@ -120,24 +126,26 @@ export const UserManageTemplate: React.FC = () => {
     }
   };
 
-  const isValidPhoneNumber = (value: string) => {
+  // 전화번호 유효성 검사
+  const isValidPhoneNumber = (value: string): boolean => {
     const phoneRegex = /^(010-\d{4}-\d{4}|01[16789]-\d{3,4}-\d{4}|02-\d{3,4}-\d{4}|(031|032|033|041|042|043|044|051|052|053|054|055|061|062|063|064)-\d{3,4}-\d{4})$/;
     return phoneRegex.test(value);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 입력 필드 변경 핸들러
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
 
-    // 전화번호 필드인 경우 특별한 처리를 합니다
+    // 전화번호 필드 특별 처리
     if (name === 'phone') {
-      // 입력된 값에서 모든 하이픈을 제거합니다
       const formatted = formatPhoneNumber(value);
       setFormData((prev) => ({ ...prev, phone: formatted }));
       return;
     }
   };
 
-  const handleProfileImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 프로필 이미지 변경 핸들러
+  const handleProfileImgChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file) {
       // 파일 확장자 검사
@@ -147,29 +155,29 @@ export const UserManageTemplate: React.FC = () => {
         return;
       }
 
-      // 파일 크기 제한 (예: 2MB)
-      const maxSizeInBytes = 2 * 1024 * 1024; // 2MB
+      // 파일 크기 제한 (2MB)
+      const maxSizeInBytes = 2 * 1024 * 1024;
       if (file.size > maxSizeInBytes) {
         showToast('이미지는 2MB 이하만 업로드할 수 있습니다.', 'error'); // alert -> toast.error
         return;
       }
 
-      // MIME 타입 검사 (실제 파일 타입 확인)
+      // MIME 타입 검사
       if (!file.type.startsWith('image/')) {
         showToast('유효한 이미지 파일이 아닙니다.', 'error'); // alert -> toast.error
         return;
       }
 
-      // 추가적인 보안 검사: 파일의 실제 내용 확인
+      // 이미지 콘텐츠 검증
       const reader = new FileReader();
-      reader.onload = (ev) => {
+      reader.onload = (ev: ProgressEvent<FileReader>): void => {
         try {
-          // 이미지 객체 생성을 통한 추가 검증
           const img = new Image();
-          img.onload = () => {
-            // 유효한 이미지인 경우에만 상태 업데이트
+          img.onload = (): void => {
             setProfileFile(file);
-            setProfileImg(ev.target?.result as string);
+            if (ev.target?.result) {
+              setProfileImg(ev.target.result.toString());
+            }
           };
           img.onerror = () => {
             showToast('손상되었거나 유효하지 않은 이미지 파일입니다.', 'error'); // alert -> toast.error
@@ -183,13 +191,14 @@ export const UserManageTemplate: React.FC = () => {
     }
   };
 
-
-  const handleProfileAndPhoneUpdate = async () => {
+  // 프로필 및 전화번호 업데이트 핸들러
+  const handleProfileAndPhoneUpdate = async (): Promise<void> => {
     if (!formData.phone) {
       showToast('전화번호를 입력해주세요.', 'error');
       return;
     }
     if (formData.phone && !isValidPhoneNumber(formData.phone)) {
+      showToast('전화번호 형식이 올바르지 않습니다.', 'error');
       return;
     }
     setPhoneLoading(true);
@@ -200,7 +209,7 @@ export const UserManageTemplate: React.FC = () => {
       if (profileFile) {
         const formDataObj = new FormData();
         formDataObj.append('image', profileFile);
-        // TODO: S3 업로드 전 기존 이미지 삭제
+        // S3 업로드
         const res = await api.post('/api/s3/images', formDataObj, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
@@ -211,6 +220,7 @@ export const UserManageTemplate: React.FC = () => {
         image: profileImgUrl,
       });
 
+      // 유저 정보 갱신
       queryClient.invalidateQueries({ queryKey: ['userInfo'] });
 
 
@@ -226,6 +236,7 @@ export const UserManageTemplate: React.FC = () => {
     }
   };
 
+  // 로딩 중이면 스피너 표시
   if (!userInfo) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -234,209 +245,229 @@ export const UserManageTemplate: React.FC = () => {
     );
   }
 
+  // 메인 렌더링
   return (
-    <div className="p-4">
-      <div className="mb-6">
-        <Typography variant="titleMedium" >기본 정보</Typography>
-      </div>
-      {message.text && (
-        <div className={`mb-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-          }`}>
-          <Typography variant="body">{message.text}</Typography>
-        </div>
-      )}
-      <form className="max-w-2xl">
-        <table className="w-full border mb-8">
-          <tbody>
-            <tr>
-              <td className="w-40 bg-gray-50 text-center align-middle font-medium">
-                <Typography variant="body">프로필 사진</Typography>
-              </td>
-              <td>
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer border border-gray-300"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    {profileImg ? (
-                      <img
-                        src={profileImg}
-                        alt="프로필"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-2xl font-medium text-gray-700">
-                        {formData.name.charAt(0) || '?'}
-                      </span>
-                    )}
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/png, image/jpeg"
-                    ref={fileInputRef}
-                    style={{ display: 'none' }}
-                    onChange={handleProfileImgChange}
-                  />
-                  <Button
-                    type="button"
-                    size="small"
-                    variant="secondary"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <Typography variant="body">사진 변경</Typography>
-                  </Button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="w-40 bg-gray-50 text-center align-middle font-medium">
-                <Typography variant="body">이름</Typography>
-              </td>
-              <td>
-                <Typography variant="body" className="bg-gray-100 rounded px-3 py-2 inline-block w-60">{formData.name}</Typography>
-              </td>
-            </tr>
-            <tr>
-              <td className="bg-gray-50 text-center font-medium">
-                <Typography variant="body">이메일주소</Typography>
-              </td>
-              <td>
-                <Typography variant="body" className="bg-gray-100 rounded px-3 py-2 inline-block w-60">{formData.email}</Typography>
-              </td>
-            </tr>
-            <tr>
-              <td className="bg-gray-50 text-center font-medium">
-                <Typography variant="body">전화번호</Typography>
-              </td>
-              <td>
-                <Input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  maxLength={13}
-                  inputMode='numeric'
-                  placeholder="전화번호를 입력해주세요"
-                  className="w-60 h-9 px-2 border border-gray-300 rounded focus:outline-none"
-                  required
-                />
-                {formData.phone && !isValidPhoneNumber(formData.phone) && (
-                  <div className="mt-1 flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                    <span className="ml-2 text-xs text-red-500">전화번호 형식이 올바르지 않습니다.</span>
-                  </div>
-                )}
-                {formData.phone && isValidPhoneNumber(formData.phone) && (
-                  <div className="mt-1 flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="ml-2 text-xs text-green-500">올바른 전화번호 형식입니다.</span>
-                  </div>
-                )} 
-              </td>
-            </tr>
-            <tr>
-              <td className="bg-gray-50"></td>
-              <td>
-                <div className="flex justify-end mt-2">
-                  <Button
-                    type="button"
-                    size="small"
-                    variant="primary"
-                    onClick={handleProfileAndPhoneUpdate}
-                    disabled={phoneLoading || imgLoading}
-                  >
-                    <Typography variant="body" className="text-white">
-                      {(phoneLoading || imgLoading) ? '저장 중...' : '수정'}
-                    </Typography>
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+    <div className="bg-gray-50 min-h-screen p-6">
+      <div className="max-w-4xl mx-auto">
 
-        <Typography variant="titleMedium" className="mb-2">비밀번호 변경</Typography>
-        <div className="w-full border rounded-lg overflow-hidden mb-8 shadow-sm">
-          <div className="p-6 bg-white">
-            <div className="flex flex-col space-y-4">
-              {/* 현재 비밀번호 */}
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm font-medium text-gray-700">
+        {/* 알림 메시지 */}
+        {message.text && (
+          <div className={`mb-4 p-4 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            <Typography variant="body">{message.text}</Typography>
+          </div>
+        )}
+
+        {/* 프로필 정보 섹션 */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-6">
+          <div className="p-6 border-b border-gray-100">
+            <Typography variant="titleMedium" as="h2" className="font-semibold text-gray-800 mb-4">프로필 정보</Typography>
+            
+            <div className="flex flex-col md:flex-row gap-8">
+              {/* 프로필 이미지 */}
+              <div className="flex flex-col items-center">
+                <div 
+                  className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden cursor-pointer border-4 border-blue-50 hover:border-blue-100 transition-all mb-3"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {profileImg ? (
+                    <img
+                      src={profileImg}
+                      alt="프로필"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <span className="text-4xl font-medium text-blue-500">
+                      {formData.name.charAt(0) || '?'}
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleProfileImgChange}
+                />
+                <Button
+                  type="button"
+                  size="small"
+                  variant="secondary"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-3 py-1 text-sm"
+                >
+                  <Typography variant="body" className="text-blue-500">사진 변경</Typography>
+                </Button>
+              </div>
+              
+              {/* 사용자 정보 */}
+              <div className="flex-1 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">이름</Typography>
+                    <div className="bg-gray-50 rounded-md py-2 px-3 text-gray-700">
+                      <Typography variant="body">{formData.name}</Typography>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">이메일</Typography>
+                    <div className="bg-gray-50 rounded-md py-2 px-3 text-gray-700">
+                      <Typography variant="body">{formData.email}</Typography>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">직급</Typography>
+                    <div className="bg-gray-50 rounded-md py-2 px-3 text-gray-700">
+                      <Typography variant="body">{formData.position || '미설정'}</Typography>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">부서</Typography>
+                    <div className="bg-gray-50 rounded-md py-2 px-3 text-gray-700">
+                      <Typography variant="body">{formData.department || '미설정'}</Typography>
+                    </div>
+                  </div>
+                </div>
+                
+                <div>
+                  <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">
+                    전화번호 <span className="text-red-500">*</span>
+                  </Typography>
+                  <div className="flex items-center">
+                    <Input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      maxLength={13}
+                      inputMode="numeric"
+                      placeholder="전화번호를 입력해주세요 (예: 010-1234-5678)"
+                      className="w-full rounded-md"
+                    />
+                    
+                    <Button
+                      type="button"
+                      size="small"
+                      variant="primary"
+                      onClick={handleProfileAndPhoneUpdate}
+                      disabled={phoneLoading || imgLoading}
+                      className="ml-3 px-5"
+                    >
+                      <Typography variant="body" className="text-white">
+                        {(phoneLoading || imgLoading) ? (
+                          <div className="flex items-center justify-center">
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                            <span>저장 중...</span>
+                          </div>
+                        ) : '저장'}
+                      </Typography>
+                    </Button>
+                  </div>
+                  
+                  {formData.phone && !isValidPhoneNumber(formData.phone) && (
+                    <div className="mt-1 flex items-center text-red-500">
+                      <div className="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
+                      <Typography variant="caption" className="text-red-500">전화번호 형식이 올바르지 않습니다.</Typography>
+                    </div>
+                  )}
+                  
+                  {formData.phone && isValidPhoneNumber(formData.phone) && (
+                    <div className="mt-1 flex items-center text-green-500">
+                      <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                      <Typography variant="caption" className="text-green-500">올바른 전화번호 형식입니다.</Typography>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 비밀번호 변경 섹션 */}
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+          <div className="p-6">
+            <Typography variant="titleMedium" as="h2" className="font-semibold text-gray-800 mb-4">비밀번호 변경</Typography>
+            
+            <div className="space-y-4 max-w-md">
+              <div>
+                <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">
                   현재 비밀번호 <span className="text-red-500">*</span>
-                </label>
+                </Typography>
                 <Input
                   type="password"
                   value={currentPassword}
-                  onChange={e => setCurrentPassword(e.target.value)}
-                  className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="w-full"
                   placeholder="현재 비밀번호 입력"
                 />
               </div>
-
-              {/* 새 비밀번호 */}
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm font-medium text-gray-700">
+              
+              <div>
+                <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">
                   새 비밀번호 <span className="text-red-500">*</span>
-                </label>
+                </Typography>
                 <Input
                   type="password"
                   value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                  className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="새 비밀번호 입력"
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full"
+                  placeholder="새 비밀번호 입력 (8자 이상)"
                 />
                 <div className="mt-1 flex items-center">
                   <div className={`w-2 h-2 rounded-full ${newPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                  <span className="ml-2 text-xs text-gray-500">8자 이상</span>
+                  <Typography variant="caption" className={newPassword.length >= 8 ? 'text-green-500' : 'text-gray-500'}>8자 이상</Typography>
                 </div>
               </div>
-
-              {/* 새 비밀번호 확인 */}
-              <div className="flex flex-col space-y-1">
-                <label className="text-sm font-medium text-gray-700">
+              
+              <div>
+                <Typography variant="body" as="label" className="block font-medium text-gray-600 mb-1">
                   새 비밀번호 확인 <span className="text-red-500">*</span>
-                </label>
+                </Typography>
                 <Input
                   type="password"
                   value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  className="w-full h-10 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="w-full"
                   placeholder="새 비밀번호 다시 입력"
                 />
                 {newPassword && confirmPassword && (
                   <div className="mt-1 flex items-center">
                     <div className={`w-2 h-2 rounded-full ${newPassword === confirmPassword ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className={`ml-2 text-xs ${newPassword === confirmPassword ? 'text-green-500' : 'text-red-500'}`}>
+                    <Typography 
+                      variant="caption" 
+                      className={newPassword === confirmPassword ? 'text-green-500' : 'text-red-500'}
+                    >
                       {newPassword === confirmPassword ? '비밀번호 일치' : '비밀번호 불일치'}
-                    </span>
+                    </Typography>
                   </div>
                 )}
               </div>
-
-              {/* 버튼 영역 */}
-              <div className="flex justify-end pt-2">
+              
+              <div className="pt-2">
                 <Button
                   type="button"
                   size="small"
                   variant="primary"
                   onClick={handlePasswordChange}
                   disabled={isLoading}
-                  className="px-4 py-2 rounded-md"
+                  className="w-full md:w-auto px-5"
                 >
                   {isLoading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                      <span>변경 중...</span>
+                    <div className="flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                      <Typography variant="body" className="text-white">변경 중...</Typography>
                     </div>
                   ) : (
-                    '비밀번호 변경'
+                    <Typography variant="body" className="text-white">비밀번호 변경</Typography>
                   )}
                 </Button>
               </div>
             </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 };

@@ -361,7 +361,7 @@ export const ScheduleDetailTemplate: React.FC<ScheduleDetailTemplateProps> = ({
                     style={{ paddingBottom: '1.5rem' }}
                   />
                   <div className="absolute bottom-2 right-2 text-xs text-gray-500">
-                    {schedule.description.length}/50
+                    {schedule.description?.length ?? 0}/50
                   </div>
                 </div>
                 {errors.description && (
