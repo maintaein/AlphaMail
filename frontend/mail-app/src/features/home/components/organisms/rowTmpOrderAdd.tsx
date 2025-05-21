@@ -122,6 +122,7 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
       return;
     }
     
+    console.log('products', products);
     const invalidProducts = products.filter(product => !product.productId);
     if (invalidProducts.length > 0) {
       setShowValidationErrors(true);

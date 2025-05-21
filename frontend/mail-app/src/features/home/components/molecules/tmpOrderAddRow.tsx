@@ -123,6 +123,11 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
       const filtered = prev.filter(p => 
         !items.some(item => item.id === id && item.name === p.name)
       );
+
+      console.log("--------------------------------");
+      console.log('filtered', filtered);
+      console.log('product', product);
+      console.log("--------------------------------");
       return [...filtered, product];
     });
     
@@ -155,10 +160,14 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
     
     // 스토어 업데이트 시 productId 포함하여 업데이트
     const storeProducts = updatedItems.map(item => {
+      // 기존 products에서 해당 아이템의 productId 찾기
+      const existingProduct = products.find(p => p.id === item.id);
+      
       return {
         id: item.id,
         // 현재 선택한 품목인 경우 product.id를 productId로 설정
-        productId: item.id === id ? product.id : null,
+        // 그렇지 않은 경우 기존 productId 유지
+        productId: item.id === id ? product.id : (existingProduct?.productId || null),
         productName: item.name,
         standard: item.spec,
         price: parseInt(item.price.replace(/,/g, '')) || 0,
@@ -166,7 +175,11 @@ export const TmpOrderAddRow: React.FC<TmpOrderAddRowProps> = ({ showValidationEr
         maxStock: item.id === id ? product.stock : item.maxStock
       };
     });
-    
+
+    console.log("--------------------------------");
+    console.log("updatedItems", updatedItems);
+    console.log('storeProducts', storeProducts);
+    console.log("--------------------------------");
     setProducts(storeProducts);
   };
 
