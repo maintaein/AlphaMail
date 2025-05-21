@@ -19,7 +19,7 @@ export const ClientManagementTemplate: React.FC = () => {
   const [selectedClientIds, setSelectedClientIds] = useState<Set<number>>(new Set());
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const { data, refetch, isLoading } = useClients({
+  const { data, refetch } = useClients({
     query: searchKeyword,
     page: currentPage,
     size: pageSize,

@@ -73,7 +73,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
         setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
       }
 
-    } catch (error) {
+    } catch  {
       // API 호출 실패 등 모든 오류에 대해 동일한 메시지 사용
       setUploadError('사업자등록증을 인식하지 못했습니다. 수동으로 정보를 입력해주세요.');
     } finally {
@@ -152,7 +152,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
 
   const handleDownloadBusinessLicense = async () => {
     if (!clientData?.businessLicenseUrl) {
-      toast.error('다운로드할 사업자등록증 파일이 없습니다.');
+      showToast('다운로드할 사업자등록증 파일이 없습니다.', 'error');
       return;
     }
 
@@ -160,8 +160,8 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       setIsDownloading(true);
       await clientService.downloadBusinessLicense(clientData.businessLicenseUrl);
       setIsDownloading(false);
-    } catch (error) {
-      toast.error('파일 다운로드에 실패했습니다.');
+    } catch  {
+      showToast('파일 다운로드에 실패했습니다.', 'error');
       setIsDownloading(false);
     }
   };

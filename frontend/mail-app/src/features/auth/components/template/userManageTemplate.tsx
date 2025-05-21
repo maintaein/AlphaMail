@@ -6,7 +6,6 @@ import { Button } from '@/shared/components/atoms/button';
 import { Input } from '@/shared/components/atoms/input';
 import { showToast } from '@/shared/components/atoms/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { AxiosError } from 'axios';
 
 // 메인 컴포넌트 시작
 export const UserManageTemplate: React.FC = () => {
