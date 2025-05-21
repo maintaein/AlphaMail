@@ -147,14 +147,14 @@ export const RowTmpClientsAdd: React.FC<RowTmpClientsAddProps> = ({ temporaryCli
       <div className="grid grid-cols-6 gap-1">
         <div className="col-span-1 flex items-center  p-2">
           <Typography variant="caption" className="text-gray-700">
-            사업자등록증 첨부
+            사업자등록증
           </Typography>
         </div>
         <div className="col-span-5">
           <FileUploadInput
             value={businessLicenseFileName}
             onChange={setBusinessLicense}
-            placeholder="사업자등록증 파일을 첨부하세요"
+            placeholder=""
             className="w-full"
           />
         </div>

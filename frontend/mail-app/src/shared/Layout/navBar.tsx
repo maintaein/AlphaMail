@@ -200,14 +200,14 @@ export const NavBar = () => {
                     !isCollapsed && contentVisible ? (
                         <button
                             onClick={handleLogin}
-                            className="w-full py-3 text-white border border-white rounded-md hover:bg-[#3E99C6] transition-colors"
+                            className="w-full py-3 text-white border border-white rounded-md hover:bg-[#5B98FB] transition-colors"
                         >
                             <Typography variant="titleSmall" color="text-white">로그인</Typography>
                         </button>
                     ) : (
                         <button
                             onClick={handleLogin}
-                            className="w-full flex justify-center py-3 text-white border border-white rounded-md hover:bg-[#3E99C6] transition-colors"
+                            className="w-full flex justify-center py-3 text-white border border-white rounded-md hover:bg-[#5B98FB] transition-colors"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
@@ -221,7 +221,7 @@ export const NavBar = () => {
                     !isCollapsed && contentVisible ? (
                         <button
                             onClick={handleLogoutClick}
-                            className="w-full py-3 text-white border border-white rounded-md hover:bg-[#3E99C6] transition-colors"
+                            className="w-full py-3 text-white border border-white rounded-md hover:bg-[#5B98FB] transition-colors"
                         >
                             <Typography variant="titleSmall" color="text-white">로그아웃</Typography>
                         </button>
