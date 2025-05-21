@@ -28,13 +28,13 @@ import com.alphamail.api.erp.application.usecase.client.ModifyClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.RegistClientUseCase;
 import com.alphamail.api.erp.application.usecase.client.RemoveAllClientsUseCase;
 import com.alphamail.api.erp.application.usecase.client.RemoveClientUseCase;
-import com.alphamail.api.erp.presentation.dto.OcrResponse;
 import com.alphamail.api.erp.presentation.dto.client.GetAllClientsResponse;
 import com.alphamail.api.erp.presentation.dto.client.GetClientResponse;
 import com.alphamail.api.erp.presentation.dto.client.RegistClientRequest;
 import com.alphamail.api.global.dto.GetPageResponse;
 import com.alphamail.api.global.dto.RegistErpResponse;
 import com.alphamail.api.global.dto.RemoveAllErpRequest;
+import com.alphamail.api.global.s3.service.S3Service;
 import com.alphamail.common.annotation.Auth;
 import com.alphamail.common.constants.ApiPaths;
 import com.alphamail.common.exception.BadRequestException;
@@ -54,6 +54,7 @@ public class ClientController {
 	private final RemoveAllClientsUseCase removeAllClientsUseCase;
 	private final RemoveClientUseCase removeClientUseCase;
 	private final OcrReadUseCase ocrReadUseCase;
+	private final S3Service s3Service;
 
 	@GetMapping(ApiPaths.COMPANIES_BASE_API + ApiPaths.CLIENTS_BASE_API)
 	public ResponseEntity<GetPageResponse<GetAllClientsResponse>> getAll(
@@ -150,10 +151,13 @@ public class ClientController {
 			throw new BadRequestException(ErrorMessage.INVALID_FILE_FORMAT);
 		}
 
+		String s3Key = s3Service.uploadFile(file);
+
 		try {
 			// OCR 처리
 			InputStream inputStream = file.getInputStream();
 			EmailOCR result = ocrReadUseCase.execute(inputStream, filename, contentType, userId.toString());
+
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process OCR", e);
