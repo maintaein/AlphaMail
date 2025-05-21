@@ -53,6 +53,7 @@ export interface TemporaryScheduleDetail {
     emailStatus: string | null;
     originalFolderId: number | null;
   };
+  emailAttachments: Attachment[];
   name: string;
   startTime: string;
   endTime: string;

@@ -22,18 +22,8 @@ export const RowTmpMail: React.FC<RowTmpMailProps> = ({ type, id }) => {
   const getAttachments = () => {
     if (!detailData) return [];
     
-    // 각 타입별로 첨부파일 데이터 가져오기
-    switch (type) {
-      case 'PURCHASE_ORDER':
-      case 'QUOTE':
-      case 'CLIENT':
-        // emailAttachments 필드가 있는 타입들
-        return 'emailAttachments' in detailData ? detailData.emailAttachments || [] : [];
-      case 'SCHEDULE':
-      default:
-        // emailAttachments 필드가 없는 타입들
-        return detailData.email?.hasAttachment ? [{ name: '첨부파일', size: '0' }] : [];
-    }
+    // 모든 타입에 대해 동일한 방식으로 첨부파일 처리
+    return 'emailAttachments' in detailData ? detailData.emailAttachments || [] : [];
   };
 
   // API 데이터 형식에 맞게 변환
