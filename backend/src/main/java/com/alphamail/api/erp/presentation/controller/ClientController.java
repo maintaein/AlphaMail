@@ -151,13 +151,10 @@ public class ClientController {
 			throw new BadRequestException(ErrorMessage.INVALID_FILE_FORMAT);
 		}
 
-		String s3Key = s3Service.uploadFile(file);
-
 		try {
 			// OCR 처리
 			InputStream inputStream = file.getInputStream();
 			EmailOCR result = ocrReadUseCase.execute(inputStream, filename, contentType, userId.toString());
-
 			return ResponseEntity.ok(result);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to process OCR", e);

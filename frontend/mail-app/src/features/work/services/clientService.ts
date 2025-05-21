@@ -28,6 +28,16 @@ interface S3UploadResponse {
   s3Key: string;
 }
 
+api.interceptors.request.use(config => {
+  console.log('[API 요청]', config.method, config.url, config.data || config.params);
+  return config;
+});
+
+api.interceptors.response.use(response => {
+  console.log('[API 응답]', response.config.url, response.data);
+  return response;
+});
+
 export const clientService = {
   
   // 파일 형식 검증
@@ -58,7 +68,7 @@ export const clientService = {
       console.log('파일 업로드 시작:', file.name);
       
       // /documents 엔드포인트로 파일 업로드
-      const response = await api.post<S3UploadResponse>('/api/erp/documents', formData, {
+      const response = await api.post<S3UploadResponse>('/api/s3/documents', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -214,7 +224,9 @@ export const clientService = {
 
   // 거래처 상세 조회
   getClient: async (id: string) => {
+    console.log('거래처 상세 조회 요청:', id);
     const response = await api.get<ClientDetail>(`/api/erp/clients/${id}`);
+    console.log('거래처 상세 조회 응답:', response.data);
     return response.data;
   },
 
@@ -231,11 +243,12 @@ export const clientService = {
       address: client.address,
       businessType: client.businessType,
       businessItem: client.businessItem,
-      businessLicense: client.businessLicenseUrl,
+      businessLicenseUrl: client.businessLicenseUrl,
       businessLicenseName: client.businessLicenseName,
     };
-
+    console.log('거래처 생성 요청:', requestData);
     const response = await api.post<Client>('/api/erp/clients', requestData);
+    console.log('거래처 생성 응답:', response.data);
     return response.data;
   },
 
@@ -250,7 +263,7 @@ export const clientService = {
       address: client.address,
       businessType: client.businessType,
       businessItem: client.businessItem,
-      businessLicense: client.businessLicenseUrl,
+      businessLicenseUrl: client.businessLicenseUrl,
       businessLicenseName: client.businessLicenseName
     };
 
