@@ -6,8 +6,8 @@ import { ko } from 'date-fns/locale';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { queryClient } from '@/shared/lib/queryClient';
 import { ArrowPathIcon as RefreshIcon } from '@heroicons/react/24/outline';
-import { toast } from 'react-toastify';
 import { AnimatePresence, motion } from "framer-motion";
+import { showToast } from '@/shared/components/atoms/toast';
 
 export const HomeUnreadMailBox: React.FC = () => {
   const { data: unreadMailsData, isLoading, error, refetch } = useUnreadMails(10);
@@ -104,14 +104,7 @@ export const HomeUnreadMailBox: React.FC = () => {
 
   const refreshData = () => {
     // 토스트 알림 표시
-    toast.info('안읽은 메일 목록을 새로고침합니다.', {
-      position: 'bottom-right',
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
+    showToast('안읽은 메일 목록을 새로고침합니다.', 'info');
     
     // 쿼리 무효화 및 새로고침
     queryClient.invalidateQueries({ 

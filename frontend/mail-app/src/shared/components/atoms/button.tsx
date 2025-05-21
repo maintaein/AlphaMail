@@ -2,7 +2,7 @@ import { cn } from '@/shared/utils/cn';
 import React from 'react';
 
 type Size = 'small' | 'large';
-type Variant = 'primary' | 'secondary' | 'ghost' | 'text';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'text' | 'danger';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
@@ -33,6 +33,7 @@ export const Button = ({
     secondary: 'bg-[#AFAFAF] text-white hover:bg-opacity-90 border-none',
     ghost: 'bg-white border border-[#3E99C6] text-[#3E99C6] hover:bg-[#3E99C6]/10 border-none',
     text: 'bg-white text-[#3D3D3D] border hover:bg-[#ECECEC]',
+    danger: 'bg-[#F05650] text-white hover:bg-[#c84139] border-none', // danger 추가
   };
 
   return (

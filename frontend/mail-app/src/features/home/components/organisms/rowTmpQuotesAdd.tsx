@@ -8,8 +8,8 @@ import { useTmpQuoteStore } from '../../stores/useTmpQuoteStore';
 import { TmpQuoteAddClient } from '../molecules/tmpQuoteAddClient';
 import { useHome } from '../../hooks/useHome';
 import { useUser } from '@/features/auth/hooks/useUser';
-import { toast } from 'react-toastify';
 import { TmpQuoteAddRow } from '../molecules/tmpQuoteAddRow';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface RowTmpQuotesAddProps {
   temporaryQuoteId?: number;
@@ -85,20 +85,20 @@ export const RowTmpQuotesAdd: React.FC<RowTmpQuotesAddProps> = ({ temporaryQuote
     // 유효성 검사
     if (!clientId) {
       setShowValidationErrors(true);
-      toast.error('거래처를 선택해주세요.');
+      showToast('거래처를 선택해주세요.', 'error');
       return;
     }
     
     if (!products || products.length === 0) {
       setShowValidationErrors(true);
-      toast.error('최소 1개 이상의 품목을 추가해주세요.');
+      showToast('최소 1개 이상의 품목을 추가해주세요.', 'error');
       return;
     }
     
     const invalidProducts = products.filter(product => !product.productId);
     if (invalidProducts.length > 0) {
       setShowValidationErrors(true);
-      toast.error('모든 품목은 검색을 통해 등록해야 합니다.');
+      showToast('모든 품목은 검색을 통해 등록해야 합니다.', 'error');
       return;
     }
     
@@ -195,7 +195,7 @@ export const RowTmpQuotesAdd: React.FC<RowTmpQuotesAddProps> = ({ temporaryQuote
         </div>
         <div className="col-span-5">
           <div className="w-full">
-            <TmpQuoteAddClient />
+            <TmpQuoteAddClient initialClientName={clientName} />
           </div>
         </div>
         

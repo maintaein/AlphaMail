@@ -10,7 +10,7 @@ import { TmpOrderAddClient } from '../molecules/tmpOrderAddClient';
 import { useHome } from '../../hooks/useHome';
 import { UpdateTemporaryPurchaseOrderRequest } from '../../types/home';
 import { useUser } from '@/features/auth/hooks/useUser'; // 추가
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface RowTmpOrderAddProps {
   temporaryPurchaseOrderId: number;
@@ -106,26 +106,26 @@ export const RowTmpOrderAdd: React.FC<RowTmpOrderAddProps> = ({ temporaryPurchas
     // 유효성 검사
     if (!clientId) {
       setShowValidationErrors(true);
-      toast.error('거래처를 선택해주세요.');
+      showToast('거래처를 선택해주세요.', 'error');
       return;
     }
     
     if (!deliverAt) {
       setShowValidationErrors(true);
-      toast.error('납기일자를 선택해주세요.');
+      showToast('납기일자를 선택해주세요.', 'error');
       return;
     }
     
     if (!products || products.length === 0) {
       setShowValidationErrors(true);
-      toast.error('최소 1개 이상의 품목을 추가해주세요.');
+      showToast('최소 1개 이상의 품목을 추가해주세요.', 'error');
       return;
     }
     
     const invalidProducts = products.filter(product => !product.productId);
     if (invalidProducts.length > 0) {
       setShowValidationErrors(true);
-      toast.error('모든 품목은 검색을 통해 등록해야 합니다.');
+      showToast('모든 품목은 검색을 통해 등록해야 합니다.', 'error');
       return;
     }
     

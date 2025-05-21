@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'; // Quill 스타일시트
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 // 커스텀 스타일 추가
 const customStyles = {
@@ -92,7 +92,7 @@ export const MailQuillEditor: React.FC<MailQuillEditorProps> = ({
         onChange(newContent);
       }
     } else {
-      toast.error('메일 본문이 최대 용량(1MB)을 초과했습니다.'); // 토스트 알림 추가
+      showToast('메일 본문이 최대 용량(1MB)을 초과했습니다.', 'error'); // 토스트 알림 추가
     }
   };
 

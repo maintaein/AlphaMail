@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useMail } from '@/features/mail/hooks/useMail';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface Attachment {
   id?: number;
@@ -22,7 +22,7 @@ export const TmpMailAttachments: React.FC<TmpMailAttachmentsProps> = ({ attachme
   
   const handleDownload = (attachment: Attachment) => {
     if (!emailId || !attachment.id) {
-      toast.error('다운로드에 필요한 정보가 없습니다.');
+      showToast('다운로드에 필요한 정보가 없습니다.', 'error');
       return;
     }
     

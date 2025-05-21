@@ -10,7 +10,7 @@ import { Typography } from '@/shared/components/atoms/Typography';
 import { useParams } from 'react-router-dom';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import { PhoneInput } from '@/shared/components/atoms/phoneInput';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 const MAX_LENGTHS = {
   orderNo: 255,
@@ -130,7 +130,7 @@ const OrderBasicInfoForm: React.FC<OrderBasicInfoFormProps> = ({
       }
     } catch (error) {
       console.error('거래처 정보 조회 실패:', error);
-      toast.error('거래처 정보를 불러오는데 실패했습니다.');
+      showToast('거래처 정보를 불러오는데 실패했습니다.', 'error');
     }
   };
 

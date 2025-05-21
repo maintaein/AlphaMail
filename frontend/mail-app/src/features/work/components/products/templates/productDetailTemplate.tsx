@@ -8,8 +8,8 @@ import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import { Input } from '@/shared/components/atoms/input';
 import { Button } from '@/shared/components/atoms/button';
 import { TooltipPortal } from '@/shared/components/atoms/TooltipPortal';
-import { toast } from 'react-toastify';
 import { Spinner } from '@/shared/components/atoms/spinner';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface ProductDetailTemplateProps {
   onBack?: () => void;
@@ -218,20 +218,20 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
       // 파일 확장자 검사
       const ext = file.name.split('.').pop()?.toLowerCase();
       if (ext !== 'png' && ext !== 'jpg' && ext !== 'jpeg') {
-        toast.error('이미지는 .png, .jpg, .jpeg 파일만 업로드할 수 있습니다.');
+        showToast('이미지는 .png, .jpg, .jpeg 파일만 업로드할 수 있습니다.', 'error');
         return;
       }
 
       // 파일 크기 제한 (2MB)
       const maxSizeInBytes = 2 * 1024 * 1024;
       if (file.size > maxSizeInBytes) {
-        toast.error('이미지는 2MB 이하만 업로드할 수 있습니다.');
+        showToast('이미지는 2MB 이하만 업로드할 수 있습니다.', 'error');
         return;
       }
 
       // MIME 타입 검사
       if (!file.type.startsWith('image/')) {
-        toast.error('유효한 이미지 파일이 아닙니다.');
+        showToast('유효한 이미지 파일이 아닙니다.', 'error');
         return;
       }
 
@@ -246,11 +246,11 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
             setImageUrl(ev.target?.result as string);
           };
           img.onerror = () => {
-            toast.error('손상되었거나 유효하지 않은 이미지 파일입니다.');
+            showToast('손상되었거나 유효하지 않은 이미지 파일입니다.', 'error');
           };
           img.src = ev.target?.result as string;
-        } catch (error) {
-          toast.error('이미지 파일을 읽는 중 오류가 발생했습니다.');
+        } catch  {
+          showToast('이미지 파일을 읽는 중 오류가 발생했습니다.', 'error');
         }
       };
       reader.readAsDataURL(file);
@@ -273,7 +273,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     },
     onError: (error) => {
       console.error('상품 저장 실패:', error);
-      toast.error('상품 저장을 실패했습니다.');
+      showToast('상품 저장을 실패했습니다.', 'error');
     }
   });
 
@@ -297,7 +297,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
     },
     onError: (error) => {
       console.error('상품 저장 실패:', error);
-      toast.error('상품 저장을 실패했습니다.');
+      showToast('상품 저장을 실패했습니다.', 'error');
     }
   });
 
@@ -363,7 +363,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
           finalImageUrl = await s3Service.uploadImage(imageFile);
         } catch (error) {
           console.error('이미지 처리 실패:', error);
-          toast.error('이미지 업로드에 실패했습니다.');
+          showToast('이미지 업로드에 실패했습니다.', 'error');
           return;
         }
       }
@@ -375,10 +375,10 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
 
       if (id && id !== 'new') {
         await updateMutation.mutateAsync(submitData);
-        toast.success('상품이 수정되었습니다.');
+        showToast('상품이 수정되었습니다.', 'success');
       } else {
         await createMutation.mutateAsync(submitData);
-        toast.success('상품이 등록되었습니다.');
+        showToast('상품이 등록되었습니다.', 'success');
       }
 
       if (onBack) {
@@ -388,7 +388,7 @@ export const ProductDetailTemplate: React.FC<ProductDetailTemplateProps> = ({
       }
     } catch (error) {
       console.error('상품 저장 실패:', error);
-      toast.error('상품 저장에 실패했습니다.');
+      showToast('상품 저장에 실패했습니다.', 'error');
     } finally {
       setIsLoading(false);
     }

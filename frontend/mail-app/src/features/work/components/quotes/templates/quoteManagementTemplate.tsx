@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Quote } from '../../../types/quote';
 import { QuoteSearchBar } from '../molecules/quoteSearchBar';
@@ -9,7 +9,9 @@ import { Button } from '@/shared/components/atoms/button';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useQuoteStore } from '@/features/work/stores/quoteStore';
 import { useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { WarningModal } from '@/shared/components/warningModal';
 
 export const QuoteManagementTemplate: React.FC = () => {
   const navigate = useNavigate();
@@ -27,6 +29,8 @@ export const QuoteManagementTemplate: React.FC = () => {
     setSelectedQuoteIds,
     clearSelection 
   } = useQuoteStore();
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const { data: quoteResponse, isLoading, error } = useQuotes({
     ...searchParams,
@@ -61,24 +65,29 @@ export const QuoteManagementTemplate: React.FC = () => {
 
   const handleDelete = async () => {
     if (selectedQuoteIds.size === 0) {
-      toast.error('삭제할 견적서를 선택해주세요.');
+      showToast('삭제할 견적서를 선택해주세요.', 'error');
       return;
     }
 
-    if (!window.confirm('선택한 견적서를 삭제하시겠습니까?')) {
-      return;
-    }
+    // 모달 열기
+    setIsDeleteModalOpen(true);
+  };
 
+  // 실제 삭제 처리 함수
+  const confirmDelete = async () => {
     try {
       await quoteService.deleteQuotes(Array.from(selectedQuoteIds));
       await queryClient.invalidateQueries({ queryKey: ['quotes'] });
       await queryClient.invalidateQueries({ queryKey: ['quoteDetail'] });
       clearSelection();
       setSelectedQuoteIds(new Set());
-      toast.success('선택한 견적서가 삭제되었습니다.');
+      showToast('선택한 견적서가 삭제되었습니다.', 'success');
     } catch (error) {
       console.error('견적서 삭제 실패:', error);
-      toast.error('견적서 삭제를 실패했습니다.');
+      showToast('견적서 삭제를 실패했습니다.', 'error');
+    } finally {
+      // 모달 닫기
+      setIsDeleteModalOpen(false);
     }
   };
 
@@ -100,58 +109,89 @@ export const QuoteManagementTemplate: React.FC = () => {
   if (error) return <div>에러가 발생했습니다.</div>;
 
   return (
-    <div className="p-4">
-      <div className="mb-4">
-        <QuoteSearchBar onSearch={handleSearch} />
-      </div>
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-4">
-          <div className="flex justify-between items-center mb-4">
-            <Button
-              onClick={handleAddQuote}
-              variant="text"
-              size="large"
-              className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
-            >
-              <span className="text-2xl font-bold leading-none relative -top-[-1px] text-black" >+</span>
-              <Typography variant="titleSmall" className="leading-none">견적서 등록하기</Typography>
-            </Button>
-            <div className="flex gap-2">
+    <>
+      <div className="p-4">
+        <div className="mb-4">
+          <QuoteSearchBar onSearch={handleSearch} />
+        </div>
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-4">
+            <div className="flex justify-between items-center mb-4">
               <Button
-                onClick={handleDelete}
+                onClick={handleAddQuote}
                 variant="text"
-                size="small"
-                className="min-w-[110px] h-[40px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
+                size="large"
+                className="flex items-baseline gap-2 p-0 bg-transparent shadow-none border-none text-black font-bold text-xl hover:bg-transparent hover:text-black active:bg-transparent"
               >
-                <Typography variant="titleSmall">삭제</Typography>
+                <span className="text-2xl font-bold leading-none relative -top-[-1px] text-black" >+</span>
+                <Typography variant="titleSmall" className="leading-none">견적서 등록하기</Typography>
               </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={handleDelete}
+                  variant="text"
+                  size="small"
+                  className="min-w-[110px] h-[40px] border border-gray-300 bg-white shadow-none text-black font-normal hover:bg-gray-100 hover:text-black active:bg-gray-200 !rounded-none"
+                >
+                  <Typography variant="titleSmall">삭제</Typography>
+                </Button>
+              </div>
             </div>
+            <QuoteTable
+              quotes={quoteResponse?.contents || []}
+              currentPage={currentPage}
+              pageCount={quoteResponse?.pageCount || 0}
+              onPageChange={handlePageChange}
+              pageSize={pageSize}
+              onSizeChange={handleSizeChange}
+              sortOption={sortOption}
+              onSortChange={handleSortChange}
+              totalCount={quoteResponse?.totalCount || 0}
+              onQuoteClick={handleQuoteClick}
+              isLoading={isLoading}
+              selectedQuoteIds={selectedQuoteIds}
+              onSelectQuote={(id) => {
+                const newSelectedIds = new Set(selectedQuoteIds);
+                if (newSelectedIds.has(id)) {
+                  newSelectedIds.delete(id);
+                } else {
+                  newSelectedIds.add(id);
+                }
+                setSelectedQuoteIds(newSelectedIds);
+              }}
+            />
           </div>
-          <QuoteTable
-            quotes={quoteResponse?.contents || []}
-            currentPage={currentPage}
-            pageCount={quoteResponse?.pageCount || 0}
-            onPageChange={handlePageChange}
-            pageSize={pageSize}
-            onSizeChange={handleSizeChange}
-            sortOption={sortOption}
-            onSortChange={handleSortChange}
-            totalCount={quoteResponse?.totalCount || 0}
-            onQuoteClick={handleQuoteClick}
-            isLoading={isLoading}
-            selectedQuoteIds={selectedQuoteIds}
-            onSelectQuote={(id) => {
-              const newSelectedIds = new Set(selectedQuoteIds);
-              if (newSelectedIds.has(id)) {
-                newSelectedIds.delete(id);
-              } else {
-                newSelectedIds.add(id);
-              }
-              setSelectedQuoteIds(newSelectedIds);
-            }}
-          />
         </div>
       </div>
-    </div>
+
+      {/* 삭제 확인 모달 추가 */}
+      <WarningModal
+        open={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        icon={<ExclamationTriangleIcon className="h-6 w-6 text-red-500" />}
+        title={<Typography variant="titleMedium">견적서 삭제</Typography>}
+        description={
+          <Typography variant="body">
+            선택한 {selectedQuoteIds.size}개의 견적서를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.
+          </Typography>
+        }
+        actions={
+          <>
+            <Button
+              variant="text"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
+              취소
+            </Button>
+            <Button
+              variant="danger"
+              onClick={confirmDelete}
+            >
+              삭제
+            </Button>
+          </>
+        }
+      />
+    </>
   );
 }; 

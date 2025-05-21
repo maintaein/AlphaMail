@@ -8,7 +8,7 @@ import { Input } from '@/shared/components/atoms/input';
 import { Typography } from '@/shared/components/atoms/Typography';
 import { useUserInfo } from '@/shared/hooks/useUserInfo';
 import AddressInput from '@/shared/components/atoms/addressInput';
-import { toast } from 'react-toastify';
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface ClientDetailTemplateProps {
   onSave?: (data: ClientDetail) => void;
@@ -128,7 +128,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      toast.error('저장에 실패했습니다.');
+      showToast('저장에 실패했습니다.', 'error');
     }
   });
 
@@ -141,7 +141,7 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
       navigate('/work/clients', { replace: true });
     },
     onError: () => {
-      toast.error('수정에 실패했습니다.');
+      showToast('수정에 실패했습니다.', 'error');
     }
   });
 
@@ -213,19 +213,19 @@ export const ClientDetailTemplate: React.FC<ClientDetailTemplateProps> = ({
     setIsSubmitted(true);
     // 필수 입력값 체크
     if (!form.corpName.trim()) {
-      toast.error('거래처명을 입력해 주세요.');
+      showToast('거래처명을 입력해 주세요.', 'error');
       return;
     } else if (!form.representative.trim()) {
-      toast.error('대표자명을 입력해 주세요.');
+      showToast('대표자명을 입력해 주세요.', 'error');
       return;
     } else if (!form.licenseNum.trim()) {
-      toast.error('사업자번호를 입력해 주세요.');
+      showToast('사업자번호를 입력해 주세요.', 'error');
       return;
     } else if (!form.businessItem.trim()) {
-      toast.error('종목을 입력해 주세요.');
+      showToast('종목을 입력해 주세요.', 'error');
       return;
     } else if (!form.businessType.trim()) {
-      toast.error('업태를 입력해 주세요.');
+      showToast('업태를 입력해 주세요.', 'error');
       return;
     }
 

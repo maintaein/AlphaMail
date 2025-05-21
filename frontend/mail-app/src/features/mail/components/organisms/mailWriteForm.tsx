@@ -3,9 +3,8 @@ import { MailRecipientInput } from '../molecules/mailRecipientInput';
 import { MailSubjectInput } from '../molecules/mailSubjectInput';
 import { MailAttachmentInput } from '../molecules/mailAttachmentInput';
 import { MailQuillEditor } from '../molecules/mailQuillEditor';
-import { toast } from 'react-toastify';
 import { useMailStore } from '../../stores/useMailStore';
-
+import { showToast } from '@/shared/components/atoms/toast';
 
 interface MailWriteFormProps {
   initialTo: string[];
@@ -110,25 +109,19 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
       
       if (isDuplicate) {
         // 고유 ID를 가진 토스트 생성
-        toast.warning(`중복된 파일은 업로드할 수 없습니다: ${file.name}`, {
-          toastId: `duplicate-${file.name}-${Date.now()}` // 고유 ID 생성
-        });
+        showToast(`중복된 파일은 업로드할 수 없습니다: ${file.name}`, 'warning');
         continue; // 중복 파일은 건너뜀
       }
       
       // 개별 파일 크기 검사
       if (file.size > MAX_ATTACHMENT_SIZE) {
-        toast.error(`${file.name}의 크기가 6MB를 초과합니다. 6MB 이하의 파일만 첨부 가능합니다.`, {
-          toastId: `size-${file.name}-${Date.now()}` // 고유 ID 생성
-        });
+        showToast(`${file.name}의 크기가 6MB를 초과합니다. 6MB 이하의 파일만 첨부 가능합니다.`, 'error');
         continue;
       }
       
       // 총 첨부파일 크기 검사
       if (currentTotalSize + file.size > MAX_TOTAL_ATTACHMENTS_SIZE) {
-        toast.error('총 첨부파일 크기가 6MB를 초과합니다.', {
-          toastId: `total-size-${Date.now()}` // 고유 ID 생성
-        });
+        showToast('총 첨부파일 크기가 6MB를 초과합니다.', 'error');
         break;
       }
       
@@ -142,9 +135,7 @@ export const MailWriteForm: React.FC<MailWriteFormProps> = ({
           setIsUploading(false);
         }, 500);
       } catch (error) {
-        toast.error(`파일 처리 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`, {
-          toastId: `error-${Date.now()}` // 고유 ID 생성
-        });
+        showToast(`파일 처리 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`, 'error');
         setIsUploading(false);
       }
     }
