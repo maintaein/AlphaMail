@@ -19,7 +19,7 @@ export const TmpMailContents: React.FC<TmpMailContentsProps> = ({ content }) => 
 
   return (
     <div className="p-4 rounded-md h-full overflow-auto">
-      <Typography variant="body">
+      <Typography variant="body" className="text-[14px]">
         {formattedContent}
       </Typography>
     </div>

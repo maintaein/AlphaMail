@@ -60,7 +60,7 @@ export const RowTmpMail: React.FC<RowTmpMailProps> = ({ type, id }) => {
         </div>
         
         {/* 오른쪽 영역: 메일 본문 */}
-        <div className="text-[14px] md:w-1/2 pl-4 md:max-h-[300px]">
+        <div className="md:w-1/2 pl-4 md:max-h-[300px]">
           <TmpMailContents content={formattedMailData.content} />
         </div>
       </div>
