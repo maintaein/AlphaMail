@@ -46,7 +46,7 @@ const AiSummary: React.FC<AiSummaryProps> = ({ emailId }) => {
               p: ({children, ...props}) => <Typography variant="body" className="text-[14px] mb-2" {...props}>{children}</Typography>,
               ul: ({children, ...props}) => <ul className="list-disc pl-5 mb-2" {...props}>{children}</ul>,
               ol: ({children, ...props}) => <ol className="list-decimal pl-5 mb-2" {...props}>{children}</ol>,
-              li: ({children, ...props}) => <li className="mb-1" {...props}>{children}</li>,
+              li: ({children, ...props}) => <li className="mb-1 text-[14px]" {...props}>{children}</li>,
               a: ({children, ...props}) => <a className="text-blue-600 hover:underline" {...props}>{children}</a>,
               blockquote: ({children, ...props}) => <blockquote className="border-l-4 border-gray-300 pl-4 italic my-2" {...props}>{children}</blockquote>,
               code: ({children, ...props}) => <code className="bg-gray-100 px-1 py-0.5 rounded" {...props}>{children}</code>
