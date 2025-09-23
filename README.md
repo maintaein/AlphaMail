@@ -177,17 +177,15 @@ List<EmailEntity> findAllWithAttachmentsByFolderIdAndUserId(...)
 
 ## 기술 스택
 
-| 분야 | 기술 | 버전 |
-|------|------|------|
-| **Framework** | Spring Boot | 3.4.5 |
-| **Language** | Java | 17 |
-| **Database** | PostgreSQL | - |
-| **Cache** | Redis | - |
-| **Authentication** | JWT | - |
-| **ORM** | JPA/Hibernate | - |
-| **Mapping** | MapStruct | 1.5.5 |
-| **Cloud** | AWS SES/S3 | - |
-| **AI Integration** | Claude API | - |
+| 분야 | 기술 |
+|------|------|
+| **Framework** | Spring Boot |
+| **Language** | Java |
+| **Database** | PostgreSQL |
+| **Cache** | Redis |
+| **Authentication** | JWT |
+| **ORM** | JPA/Hibernate |
+| **Mapping** | MapStruct |
+| **Cloud** | AWS SES/S3 |
+| **AI Integration** | Claude API |
 | **Build** | Gradle | 8.13 |
-
-이러한 아키텍처 선택들을 통해 **확장 가능하고, 안전하며, 성능이 뛰어난** 기업용 이메일 자동화 플랫폼을 구축할 수 있었습니다.
