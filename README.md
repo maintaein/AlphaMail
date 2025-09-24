@@ -25,127 +25,6 @@ AlphaMail은 이메일로 들어오는 다양한 업무를 AI가 자동으로 �
 - Chroma DB (벡터 저장소)
 - AWS S3 (파일 저장소)
 
-## 🚀 시작하기
-
-### 필수 요구사항
-- Docker & Docker Compose
-- 최소 8GB RAM
-- 포트 3000, 5000, 5001, 8000, 8001, 8081 사용 가능
-
-### 1. 저장소 클론
-```bash
-git clone [repository-url]
-cd alphamail
-```
-
-### 2. 환경변수 설정
-프로젝트 루트에 `.env` 파일을 생성하고 다음 변수들을 설정하세요:
-
-```bash
-# 데이터베이스 설정
-DB_URL=jdbc:postgresql://your-db-host:5432/alphamail
-DB_USERNAME=your_db_user
-DB_PASSWORD=your_db_password
-
-# Redis 설정
-REDIS_HOST=your-redis-host
-REDIS_PORT=6379
-REDIS_PASSWORD=your_redis_password
-
-# AWS 설정
-YOUR_ACCESS_KEY=your_aws_access_key
-YOUR_SECRET_KEY=your_aws_secret_key
-AWS_S3_BUCKET_NAME=your_s3_bucket
-
-# JWT 및 보안
-JWT_SECRET=your_jwt_secret_key
-
-# AI 서비스 API
-ANTHROPIC_API_KEY=your_anthropic_api_key
-CLAUDE_SECRET_KEY=your_claude_secret
-CLAUDE_BASE_URL=https://api.anthropic.com
-
-# OCR 서비스
-OCR_SECRET=your_ocr_secret
-OCR_API_URL=your_ocr_api_url
-
-# 프론트엔드 설정
-VITE_API_URL=http://localhost:8081
-VITE_PUBLIC_SERVICE_KEY=your_public_service_key
-VITE_PUBLIC_HOLIDAY_API_URL=your_holiday_api_url
-```
-
-### 3. Docker Compose 실행
-```bash
-# 모든 서비스 빌드 및 시작
-docker-compose up -d --build
-
-# 로그 확인
-docker-compose logs -f
-
-# 특정 서비스 로그 확인
-docker-compose logs -f backend
-```
-
-### 4. 서비스 접속
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8081
-- **RAG Server**: http://localhost:5000
-- **Chatbot**: http://localhost:5001
-- **OCR Server**: http://localhost:3001
-- **MCP Server**: http://localhost:8000
-- **MCP Client**: http://localhost:8001
-
-### 5. 서비스 중지
-```bash
-# 서비스 중지
-docker-compose down
-
-# 볼륨까지 삭제 (데이터 초기화)
-docker-compose down -v
-```
-
-## 🔧 개발 환경 설정
-
-### 로컬 개발 (선택적)
-각 서비스를 개별적으로 개발하려면:
-
-```bash
-# Backend (Spring Boot)
-cd backend
-./gradlew bootRun
-
-# Frontend 
-cd frontend/mail-app
-npm install
-npm run dev
-
-# Python 서비스 (RAG, Chatbot)
-cd AI/server/rag
-pip install -r requirements.txt
-python app.py
-```
-
-## 🐛 트러블슈팅
-
-### 일반적인 문제들
-1. **포트 충돌**: 사용 중인 포트가 있다면 docker-compose.yml에서 포트 매핑 수정
-2. **메모리 부족**: Docker 메모리 할당량을 8GB 이상으로 증가
-3. **환경변수 누락**: `.env` 파일의 모든 필수 변수 확인
-4. **권한 문제**: `gradlew`에 실행 권한 부여: `chmod +x backend/gradlew`
-
-### 로그 확인
-```bash
-# 전체 서비스 상태 확인
-docker-compose ps
-
-# 특정 서비스 재시작
-docker-compose restart backend
-
-# 특정 서비스만 다시 빌드
-docker-compose up -d --build frontend
-```
-
 ## 🚀 핵심 기능
 
 ### 1. AI 업무 비서
@@ -1200,3 +1079,130 @@ async def extract_text_from_pdf(pdf_content: bytes) -> str:
 | **RAG System** | Python + FastAPI | Claude 3.7 Sonnet | ChromaDB + KURE-v1 | 문서 처리 |
 | **OCR System** | Node.js + Express | 네이버 클로바 OCR | - | 문서 인식 |
 | **Chatbot** | Python + Flask | - | ChromaDB + MiniLM | 문서 검색 |
+
+-----
+-----
+-----
+
+## 🚀 시작하기
+
+### 필수 요구사항
+- Docker & Docker Compose
+- 최소 8GB RAM
+- 포트 3000, 5000, 5001, 8000, 8001, 8081 사용 가능
+
+### 1. 저장소 클론
+```bash
+git clone [repository-url]
+cd alphamail
+```
+
+### 2. 환경변수 설정
+프로젝트 루트에 `.env` 파일을 생성하고 다음 변수들을 설정하세요:
+
+```bash
+# 데이터베이스 설정
+DB_URL=jdbc:postgresql://your-db-host:5432/alphamail
+DB_USERNAME=your_db_user
+DB_PASSWORD=your_db_password
+
+# Redis 설정
+REDIS_HOST=your-redis-host
+REDIS_PORT=6379
+REDIS_PASSWORD=your_redis_password
+
+# AWS 설정
+YOUR_ACCESS_KEY=your_aws_access_key
+YOUR_SECRET_KEY=your_aws_secret_key
+AWS_S3_BUCKET_NAME=your_s3_bucket
+
+# JWT 및 보안
+JWT_SECRET=your_jwt_secret_key
+
+# AI 서비스 API
+ANTHROPIC_API_KEY=your_anthropic_api_key
+CLAUDE_SECRET_KEY=your_claude_secret
+CLAUDE_BASE_URL=https://api.anthropic.com
+
+# OCR 서비스
+OCR_SECRET=your_ocr_secret
+OCR_API_URL=your_ocr_api_url
+
+# 프론트엔드 설정
+VITE_API_URL=http://localhost:8081
+VITE_PUBLIC_SERVICE_KEY=your_public_service_key
+VITE_PUBLIC_HOLIDAY_API_URL=your_holiday_api_url
+```
+
+### 3. Docker Compose 실행
+```bash
+# 모든 서비스 빌드 및 시작
+docker-compose up -d --build
+
+# 로그 확인
+docker-compose logs -f
+
+# 특정 서비스 로그 확인
+docker-compose logs -f backend
+```
+
+### 4. 서비스 접속
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8081
+- **RAG Server**: http://localhost:5000
+- **Chatbot**: http://localhost:5001
+- **OCR Server**: http://localhost:3001
+- **MCP Server**: http://localhost:8000
+- **MCP Client**: http://localhost:8001
+
+### 5. 서비스 중지
+```bash
+# 서비스 중지
+docker-compose down
+
+# 볼륨까지 삭제 (데이터 초기화)
+docker-compose down -v
+```
+
+## 🔧 개발 환경 설정
+
+### 로컬 개발 (선택적)
+각 서비스를 개별적으로 개발하려면:
+
+```bash
+# Backend (Spring Boot)
+cd backend
+./gradlew bootRun
+
+# Frontend 
+cd frontend/mail-app
+npm install
+npm run dev
+
+# Python 서비스 (RAG, Chatbot)
+cd AI/server/rag
+pip install -r requirements.txt
+python app.py
+```
+
+## 🐛 트러블슈팅
+
+### 일반적인 문제들
+1. **포트 충돌**: 사용 중인 포트가 있다면 docker-compose.yml에서 포트 매핑 수정
+2. **메모리 부족**: Docker 메모리 할당량을 8GB 이상으로 증가
+3. **환경변수 누락**: `.env` 파일의 모든 필수 변수 확인
+4. **권한 문제**: `gradlew`에 실행 권한 부여: `chmod +x backend/gradlew`
+
+### 로그 확인
+```bash
+# 전체 서비스 상태 확인
+docker-compose ps
+
+# 특정 서비스 재시작
+docker-compose restart backend
+
+# 특정 서비스만 다시 빌드
+docker-compose up -d --build frontend
+```
+
+
